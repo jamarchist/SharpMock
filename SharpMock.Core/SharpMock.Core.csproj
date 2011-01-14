@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3EE922DC-0821-4630-B51C-23EA4C4EF851}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharpMock.Core</RootNamespace>
+    <AssemblyName>SharpMock.Core</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Cci.AstsProjectedAsCodeModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.AstsProjectedAsCodeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.CodeModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.CodeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.CodeModelToIL">
+      <HintPath>..\ThirdParty\Microsoft.Cci.CodeModelToIL.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.ILGenerator">
+      <HintPath>..\ThirdParty\Microsoft.Cci.ILGenerator.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.ILToCodeModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.ILToCodeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MetadataHelper">
+      <HintPath>..\ThirdParty\Microsoft.Cci.MetadataHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MetadataModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.MetadataModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MutableCodeModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.MutableCodeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MutableMetadataModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.MutableMetadataModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PdbReader">
+      <HintPath>..\ThirdParty\Microsoft.Cci.PdbReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PdbWriter">
+      <HintPath>..\ThirdParty\Microsoft.Cci.PdbWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PeReader">
+      <HintPath>..\ThirdParty\Microsoft.Cci.PeReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PeWriter">
+      <HintPath>..\ThirdParty\Microsoft.Cci.PeWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.SourceModel">
+      <HintPath>..\ThirdParty\Microsoft.Cci.SourceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DelegateTypes\Delegates.cs" />
+    <Compile Include="DelegateTypes\IInterceptor.cs" />
+    <Compile Include="DelegateTypes\IInvocation.cs" />
+    <Compile Include="DelegateTypes\IInvocationInfo.cs" />
+    <Compile Include="DelegateTypes\InterceptorRegistry.cs" />
+    <Compile Include="DelegateTypes\Invocation.cs" />
+    <Compile Include="DelegateTypes\RegistryInterceptor.cs" />
+    <Compile Include="PostCompiler\CciExtensions\MethodDefinitionExtensions.cs" />
+    <Compile Include="PostCompiler\CciExtensions\ModuleExtensions.cs" />
+    <Compile Include="PostCompiler\CciExtensions\NamespaceExtensions.cs" />
+    <Compile Include="PostCompiler\CciExtensions\NamespaceTypeDefinitionExtensions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\BlockBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\DeclarationBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\DefinitionBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\DynamicDeclarationOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IBlockBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IConverter.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IDeclarationBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IDefinitionBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IDynamicDeclarationOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IInstanceCreator.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ILocalVariableBindings.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IMethodCallArgumentOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IMethodCallBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IMethodCallOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IMethodCallReturnOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\InstanceCreator.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IReplacementMethodBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IReturnStatementBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IStatementBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IStaticDeclarationOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ITypeDefinitionExtensions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ITypeOperatorBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\IUnitReflector.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\LocalVariableBindings.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\MethodCallArgumentOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\MethodCallBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\MethodCallModel.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\MethodCallOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\MethodCallReturnOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\QualifiedMethodPath.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ReplacementActionBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ReplacementFunctionBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ReplacementMethodBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ReplacementMethodConstructionContext.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\ReturnStatementBuilder.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\SharpMockTypes.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\StaticDeclarationOptions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\TypeDefinitionExtensions.cs" />
+    <Compile Include="PostCompiler\CodeConstruction\UnitReflector.cs" />
+    <Compile Include="PostCompiler\CommandLineArgs.cs" />
+    <Compile Include="PostCompiler\ExtensionAttribute.cs" />
+    <Compile Include="PostCompiler\IDeclarationBuilder.cs" />
+    <Compile Include="PostCompiler\IDefinitionBuilder.cs" />
+    <Compile Include="PostCompiler\IInstanceCreator.cs" />
+    <Compile Include="PostCompiler\ILocalVariableBindings.cs" />
+    <Compile Include="PostCompiler\IReplacementMethodBuilder.cs" />
+    <Compile Include="PostCompiler\MethodReferenceReplacementDictionary.cs" />
+    <Compile Include="PostCompiler\MethodReferenceReplacementRegistry.cs" />
+    <Compile Include="PostCompiler\PostCompiler.cs" />
+    <Compile Include="PostCompiler\PostCompilerArgs.cs" />
+    <Compile Include="PostCompiler\QualifiedMethodPath.cs" />
+    <Compile Include="PostCompiler\ReplacementActionBuilder.cs" />
+    <Compile Include="PostCompiler\ReplacementFunctionBuilder.cs" />
+    <Compile Include="PostCompiler\ReplacementMethodBuilder.cs" />
+    <Compile Include="PostCompiler\ReplacementMethodConstructionContext.cs" />
+    <Compile Include="PostCompiler\Replacement\ArgumentsInterceptor.cs" />
+    <Compile Include="PostCompiler\Replacement\CompoundInterceptor.cs" />
+    <Compile Include="PostCompiler\Replacement\InvokingInterceptor.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementMethodInterceptor.cs" />
+    <Compile Include="PostCompiler\Replacement\ReturnValueInterceptor.cs" />
+    <Compile Include="PostCompiler\SharpMockTypes.cs" />
+    <Compile Include="PostCompiler\StaticMethodCallRegistrar.cs" />
+    <Compile Include="PostCompiler\StaticMethodCallReplacer.cs" />
+    <Compile Include="PostCompiler\UnitReflector.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
