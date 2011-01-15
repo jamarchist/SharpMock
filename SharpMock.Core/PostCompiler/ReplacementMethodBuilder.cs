@@ -8,10 +8,6 @@ namespace SharpMock.PostCompiler.Core
 {
     public abstract class ReplacementMethodBuilder : IReplacementMethodBuilder
     {
-        //protected readonly IMetadataHost host;
-        //protected readonly BlockStatement block;
-        //protected readonly IMethodDefinition fakeMethod;
-        //protected readonly IMethodReference originalCall;
         protected SharpMockTypes sharpMockTypes { get; private set; }
         protected ReplacementMethodConstructionContext Context { get; private set; }
         protected IUnitReflector Reflector { get; private set; }
@@ -19,16 +15,11 @@ namespace SharpMock.PostCompiler.Core
         protected IDeclarationBuilder Declare { get; private set; }
         protected ILocalVariableBindings Locals { get; private set; }
         protected IInstanceCreator Create { get; private set; }
+        protected IPropertySetter Properties { get; private set; }
 
         protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context)
         {
             Context = context;
-
-            //block = context.Block;
-            //fakeMethod = context.FakeMethod;
-            //originalCall = context.OriginalCall;
-            //host = context.Host;
-
             sharpMockTypes = new SharpMockTypes(context.Host);
         }
 
@@ -40,9 +31,7 @@ namespace SharpMock.PostCompiler.Core
             Define = new DefinitionBuilder(Reflector, Locals, Context.Host.NameTable);
             Create = new InstanceCreator(Reflector);
             Declare = new DeclarationBuilder(Define);
-
-            var genericListOfObjectsDeclaration =
-                Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>());
+            Properties = new PropertySetter(Locals, Reflector, Context.Host);
 
             var openGenericFunction = GetOpenGenericFunction();
 
@@ -73,7 +62,13 @@ namespace SharpMock.PostCompiler.Core
             // Arguments
             // get the add method
             var genericListAdd = Reflector.From<List<object>>().GetMethod("Add", typeof (object));
-            var addMethodCallStatements = new List<ExpressionStatement>();
+            var addMethodCallStatements = new List<IStatement>();
+
+            Locals.AddBinding("local_0", delegateDefinition, closedGenericFunction);
+
+            Code(delegateDeclaration);
+            //Context.Block.Statements.Add(genericListOfObjectsDeclaration);
+            Code(Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>()));
 
             foreach (var originalParameter in Context.FakeMethod.Parameters)
             {
@@ -113,6 +108,9 @@ namespace SharpMock.PostCompiler.Core
                 addMethodCallStatements.Add(addArgumentCallExpression);
             }
 
+            Code(addMethodCallStatements);
+            Code(Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>()));
+
             var originalMethodCall = new MethodCall();
             var toCall = TypeHelper.GetMethod(Context.OriginalCall.ResolvedMethod.ContainingTypeDefinition, Context.OriginalCall);
 
@@ -144,51 +142,17 @@ namespace SharpMock.PostCompiler.Core
             delegateDeclaration.LocalVariable = delegateDefinition;
             delegateDeclaration.InitialValue = anonymousMethod;
 
-            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
-            var invocationInstance = Locals["invocation"];
-
-            var delegateInstance = new BoundExpression();
-            delegateInstance.Definition = delegateDefinition;
-            delegateInstance.Type = closedGenericFunction;
-
-            var delegateSetter = Reflector.From<Invocation>().GetPropertySetter<Delegate>("OriginalCall");
-            var setDelegate = new MethodCall();
-            setDelegate.ThisArgument = Locals["invocation"];
-            setDelegate.MethodToCall = delegateSetter;
-            setDelegate.Type = Context.Host.PlatformType.SystemVoid;
-            setDelegate.Arguments.Add(delegateInstance);
-
-            var setDelegateStatement = new ExpressionStatement();
-            setDelegateStatement.Expression = setDelegate;
-
             var @null2 = new CompileTimeConstant();
             @null2.Type = Context.Host.PlatformType.SystemObject;
 
-            var targetSetter = Reflector.From<Invocation>().GetPropertySetter<object>("Target");
-            var setTarget = new MethodCall();
-            setTarget.ThisArgument = Locals["invocation"];
-            setTarget.MethodToCall = targetSetter;
-            setTarget.Type = Context.Host.PlatformType.SystemVoid;
-            setTarget.Arguments.Add(@null2);
+            Code( Properties.On<Invocation>("invocation").Set<Delegate>("OriginalCall").To("local_0") );
+            Code( Properties.On<Invocation>("invocation").Set<IList<object>>("Arguments").To("arguments") );
+            Code( Properties.On<Invocation>("invocation").Set<object>("Target").To(@null2) );
 
-            var setTargetStatement = new ExpressionStatement();
-            setTargetStatement.Expression = setTarget;
+            Code(Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>()));
 
-            var listInstance = Locals["arguments"];
-
-            var argumentSetter =
-                Reflector.Extend(sharpMockTypes.Invocation).GetPropertySetter<IList<object>>("Arguments");
-            var setArguments = new MethodCall();
-            setArguments.ThisArgument = Locals["invocation"];
-            setArguments.MethodToCall = argumentSetter;
-            setArguments.Type = Context.Host.PlatformType.SystemVoid;
-            setArguments.Arguments.Add(listInstance);
-
-            var setArgumentsStatement = new ExpressionStatement();
-            setArgumentsStatement.Expression = setArguments;
-
-            var registryInterceptorDeclaration =
-                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());
+            //var registryInterceptorDeclaration =
+            //    Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());
             var interceptor = Locals["interceptor"];
 
             var interceptMethod = Reflector.From<RegistryInterceptor>().GetMethod("Intercept", typeof(IInvocation));
@@ -208,23 +172,24 @@ namespace SharpMock.PostCompiler.Core
             // abstract
             var interceptionResultDeclaration = AddInterceptionResultHandling(returnStatement);
            
-            Context.Block.Statements.Add(delegateDeclaration);
-            Context.Block.Statements.Add(genericListOfObjectsDeclaration);
-            foreach (var addStatement in addMethodCallStatements)
-            {
-                Context.Block.Statements.Add(addStatement);
-            }
-            Context.Block.Statements.Add(invocationObjectDeclaration);
-            Context.Block.Statements.Add(setDelegateStatement);
-            Context.Block.Statements.Add(setArgumentsStatement);
-            Context.Block.Statements.Add(setTargetStatement);
-
-            Context.Block.Statements.Add(registryInterceptorDeclaration);
-            Context.Block.Statements.Add(interceptMethodCallStatement);
+            Code( interceptMethodCallStatement );
 
             AddInterceptionExtraResultHandling(interceptionResultDeclaration);
-            
-            Context.Block.Statements.Add(returnStatement);
+             
+            Code( returnStatement );
+        }
+
+        private void Code(IStatement statement)
+        {
+            Context.Block.Statements.Add(statement);
+        }
+
+        private void Code(IEnumerable<IStatement> statements)
+        {
+            foreach (var statement in statements)
+            {
+                Context.Block.Statements.Add(statement);
+            }
         }
 
         protected abstract void AddInterceptionExtraResultHandling(LocalDeclarationStatement interceptionResultDeclaration);

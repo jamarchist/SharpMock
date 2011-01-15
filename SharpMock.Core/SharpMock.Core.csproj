@@ -135,11 +135,17 @@
     <Compile Include="PostCompiler\IDefinitionBuilder.cs" />
     <Compile Include="PostCompiler\IInstanceCreator.cs" />
     <Compile Include="PostCompiler\ILocalVariableBindings.cs" />
+    <Compile Include="PostCompiler\IPropertySetter.cs" />
+    <Compile Include="PostCompiler\IPropertySetterTargetOptions.cs" />
+    <Compile Include="PostCompiler\IPropertySetterValueOptions.cs" />
     <Compile Include="PostCompiler\IReplacementMethodBuilder.cs" />
     <Compile Include="PostCompiler\MethodReferenceReplacementDictionary.cs" />
     <Compile Include="PostCompiler\MethodReferenceReplacementRegistry.cs" />
     <Compile Include="PostCompiler\PostCompiler.cs" />
     <Compile Include="PostCompiler\PostCompilerArgs.cs" />
+    <Compile Include="PostCompiler\PropertySetter.cs" />
+    <Compile Include="PostCompiler\PropertySetterTargetOptions.cs" />
+    <Compile Include="PostCompiler\PropertySetterValueOptions.cs" />
     <Compile Include="PostCompiler\QualifiedMethodPath.cs" />
     <Compile Include="PostCompiler\ReplacementActionBuilder.cs" />
     <Compile Include="PostCompiler\ReplacementFunctionBuilder.cs" />
