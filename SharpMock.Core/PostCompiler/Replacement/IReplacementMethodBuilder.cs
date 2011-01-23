@@ -1,5 +1,5 @@
 ﻿
-namespace SharpMock.PostCompiler.Core.CodeConstruction
+namespace SharpMock.Core.PostCompiler.Replacement
 {
     public interface IReplacementMethodBuilder
     {

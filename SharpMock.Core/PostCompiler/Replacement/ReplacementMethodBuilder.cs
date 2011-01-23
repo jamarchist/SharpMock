@@ -10,8 +10,9 @@ using SharpMock.Core.PostCompiler.Construction.Definitions;
 using SharpMock.Core.PostCompiler.Construction.Expressions;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Construction.Variables;
+using SharpMock.PostCompiler.Core.CodeConstruction;
 
-namespace SharpMock.PostCompiler.Core.CodeConstruction
+namespace SharpMock.Core.PostCompiler.Replacement
 {
     public abstract class ReplacementMethodBuilder : IReplacementMethodBuilder
     {

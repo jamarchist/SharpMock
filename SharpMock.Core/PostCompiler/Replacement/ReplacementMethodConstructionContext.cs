@@ -1,7 +1,7 @@
 ﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
-namespace SharpMock.PostCompiler.Core.CodeConstruction
+namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementMethodConstructionContext
     {

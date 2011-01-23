@@ -108,7 +108,7 @@
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallReturnOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\InstanceCreator.cs" />
-    <Compile Include="PostCompiler\Construction\IReplacementMethodBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />
     <Compile Include="PostCompiler\Construction\IReturnStatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\IStatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Declarations\IStaticDeclarationOptions.cs" />
@@ -122,10 +122,10 @@
     <Compile Include="PostCompiler\Construction\Expressions\MethodCallOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\MethodCallReturnOptions.cs" />
     <Compile Include="PostCompiler\Construction\QualifiedMethodPath.cs" />
-    <Compile Include="PostCompiler\Construction\ReplacementActionBuilder.cs" />
-    <Compile Include="PostCompiler\Construction\ReplacementFunctionBuilder.cs" />
-    <Compile Include="PostCompiler\Construction\ReplacementMethodBuilder.cs" />
-    <Compile Include="PostCompiler\Construction\ReplacementMethodConstructionContext.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementFunctionBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementMethodConstructionContext.cs" />
     <Compile Include="PostCompiler\Construction\ReturnStatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Declarations\StaticDeclarationOptions.cs" />
     <Compile Include="PostCompiler\Construction\Reflection\TypeDefinitionExtensions.cs" />
@@ -157,9 +157,7 @@
     <Compile Include="Syntax\Faker.cs" />
     <Compile Include="Syntax\IFaker.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DelegateTypes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
