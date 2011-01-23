@@ -131,9 +131,6 @@
     <Compile Include="PostCompiler\CodeConstruction\UnitReflector.cs" />
     <Compile Include="PostCompiler\CommandLineArgs.cs" />
     <Compile Include="PostCompiler\ExtensionAttribute.cs" />
-    <Compile Include="PostCompiler\IMethodCallArgumentOptions.cs" />
-    <Compile Include="PostCompiler\IMethodCaller.cs" />
-    <Compile Include="PostCompiler\IMethodCallTargetOptions.cs" />
     <Compile Include="PostCompiler\CodeConstruction\IPropertySetter.cs" />
     <Compile Include="PostCompiler\CodeConstruction\IPropertySetterTargetOptions.cs" />
     <Compile Include="PostCompiler\CodeConstruction\IPropertySetterValueOptions.cs" />
