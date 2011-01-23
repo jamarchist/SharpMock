@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Scenarios;
-using SharpMock.Core.DelegateTypes;
-using SharpMock.Core.PostCompiler.Replacement;
+using SharpMock.Core;
+using SharpMock.Core.Interception;
+using SharpMock.Core.Interception.Interceptors;
 
 namespace MethodInterceptionTests
 {

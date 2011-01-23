@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core.CodeConstruction;
 using AssemblyReference = Microsoft.Cci.MutableCodeModel.AssemblyReference;
 using MethodReference = Microsoft.Cci.MethodReference;
@@ -12,6 +13,7 @@ using NestedUnitNamespaceReference = Microsoft.Cci.MutableCodeModel.NestedUnitNa
 using RootUnitNamespaceReference = Microsoft.Cci.MutableCodeModel.RootUnitNamespaceReference;
 using SourceMethodBody = Microsoft.Cci.MutableCodeModel.SourceMethodBody;
 using SharpMock.PostCompiler.Core.CciExtensions;
+using QualifiedMethodPath = SharpMock.Core.PostCompiler.Replacement.QualifiedMethodPath;
 
 namespace SharpMock.PostCompiler.Core
 {

@@ -1,6 +1,4 @@
-﻿using SharpMock.Core.DelegateTypes;
-
-namespace SharpMock.Core.Syntax
+﻿namespace SharpMock.Core.Syntax
 {
     public interface IFaker
     {
