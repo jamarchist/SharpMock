@@ -26,7 +26,7 @@ namespace SharpMock.PostCompiler.Core
 
         protected override ITypeReference GetOpenGenericFunction()
         {
-            return sharpMockTypes.Actions[Context.OriginalCall.ParameterCount];
+            return SharpMockTypes.Actions[Context.OriginalCall.ParameterCount];
         }
 
         protected override void AddOriginalMethodCallStatement(BlockStatement anonymousMethodBody, ReturnStatement anonymousMethodReturnStatement, MethodCall originalMethodCall)

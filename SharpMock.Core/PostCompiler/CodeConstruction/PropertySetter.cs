@@ -1,4 +1,5 @@
 ﻿using Microsoft.Cci;
+using SharpMock.PostCompiler.Core.CodeConstruction;
 
 namespace SharpMock.PostCompiler.Core
 {

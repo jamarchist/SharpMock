@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.DelegateTypes;
+using SharpMock.PostCompiler.Core.CodeConstruction;
 
 namespace SharpMock.PostCompiler.Core
 {
     public abstract class ReplacementMethodBuilder : IReplacementMethodBuilder
     {
-        protected SharpMockTypes sharpMockTypes { get; private set; }
+        protected SharpMockTypes SharpMockTypes { get; private set; }
         protected ReplacementMethodConstructionContext Context { get; private set; }
         protected IUnitReflector Reflector { get; private set; }
         protected IDefinitionBuilder Define { get; private set; }
@@ -20,7 +21,7 @@ namespace SharpMock.PostCompiler.Core
         protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context)
         {
             Context = context;
-            sharpMockTypes = new SharpMockTypes(context.Host);
+            SharpMockTypes = new SharpMockTypes(context.Host);
         }
 
         private void BuildMethodTemplate()

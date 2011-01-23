@@ -8,12 +8,10 @@ namespace SharpMock.PostCompiler
 {
     public class SpecifiedMethodCallRegistrar : CodeMutatingVisitor
     {
-        private readonly IMetadataHost host;
         private readonly IUnitReflector reflector;
 
         public SpecifiedMethodCallRegistrar(IMetadataHost host) : base(host)
         {
-            this.host = host;
             reflector = new UnitReflector(host);
         }
 
