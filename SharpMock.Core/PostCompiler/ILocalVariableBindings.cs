@@ -6,6 +6,12 @@ using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.PostCompiler.Core
 {
+    //public interface IParameterBindings
+    //{
+    //    void AddBinding();
+    //    void ForEach()
+    //}
+
     public interface ILocalVariableBindings
     {
         void AddBinding(string localVariableName, ILocalDefinition definition, ITypeReference type);

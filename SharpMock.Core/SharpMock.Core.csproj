@@ -135,6 +135,9 @@
     <Compile Include="PostCompiler\IDefinitionBuilder.cs" />
     <Compile Include="PostCompiler\IInstanceCreator.cs" />
     <Compile Include="PostCompiler\ILocalVariableBindings.cs" />
+    <Compile Include="PostCompiler\IMethodCallArgumentOptions.cs" />
+    <Compile Include="PostCompiler\IMethodCaller.cs" />
+    <Compile Include="PostCompiler\IMethodCallTargetOptions.cs" />
     <Compile Include="PostCompiler\IPropertySetter.cs" />
     <Compile Include="PostCompiler\IPropertySetterTargetOptions.cs" />
     <Compile Include="PostCompiler\IPropertySetterValueOptions.cs" />
@@ -154,13 +157,17 @@
     <Compile Include="PostCompiler\Replacement\ArgumentsInterceptor.cs" />
     <Compile Include="PostCompiler\Replacement\CompoundInterceptor.cs" />
     <Compile Include="PostCompiler\Replacement\InvokingInterceptor.cs" />
+    <Compile Include="PostCompiler\Replacement\RecordingInterceptor.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodInterceptor.cs" />
     <Compile Include="PostCompiler\Replacement\ReturnValueInterceptor.cs" />
     <Compile Include="PostCompiler\SharpMockTypes.cs" />
+    <Compile Include="PostCompiler\SpecifiedMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\StaticMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\StaticMethodCallReplacer.cs" />
     <Compile Include="PostCompiler\UnitReflector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Syntax\Faker.cs" />
+    <Compile Include="Syntax\IFaker.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

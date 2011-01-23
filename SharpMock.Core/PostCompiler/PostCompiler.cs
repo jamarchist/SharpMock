@@ -24,6 +24,33 @@ namespace SharpMock.PostCompiler.Core
 			this.postCompilerArgs = postCompilerArgs;
 		}
 
+        public void InterceptSpecifications()
+        {
+            if (postCompilerArgs.AreValid())
+            {
+                var nameTable = new NameTable();
+                var host = new PeReader.DefaultHost(nameTable);
+
+                host.Errors += host_Errors;
+
+                var mutableAssembly = GetMutableAssembly(postCompilerArgs.ReferencedAssemblyPath, host);
+                var sharpMockCore = host.LoadUnitFrom(
+                        System.Reflection.Assembly.GetExecutingAssembly().Location
+                    );
+                var sharpMockDelegateTypes = sharpMockCore as IAssembly;
+
+                mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
+
+                LoadReferencedAssemblies(mutableAssembly, host);
+
+                ScanForInterceptionSpecifications(mutableAssembly, host);
+                AddInterceptionTargets(mutableAssembly, host);
+                var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
+
+                SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, mutableAssembly, host);
+            }            
+        }
+
         public void InterceptAllStaticMethodCalls()
         {
             if (postCompilerArgs.AreValid())
@@ -34,11 +61,6 @@ namespace SharpMock.PostCompiler.Core
                 host.Errors += host_Errors;
 
                 var mutableAssembly = GetMutableAssembly(postCompilerArgs.ReferencedAssemblyPath, host);
-                //mutableAssembly.UsePublicKeyTokensForAssemblyReferences = false;
-                //var ass =
-                //    host.LoadUnitFrom(
-                //        @"C:\Documents and Settings\Administrator\My Documents\My Dropbox\Source\GoogleCode\SharpMock\SharpMock\SharpMock.Core.DelegateTypes\bin\Debug\SharpMock.Core.DelegateTypes.dll");
-                //var sharpMockDelegateTypes = ass as IAssembly;
                 var sharpMockCore = host.LoadUnitFrom(
                         System.Reflection.Assembly.GetExecutingAssembly().Location
                     );
@@ -51,24 +73,6 @@ namespace SharpMock.PostCompiler.Core
                 ScanForStaticMethodCalls(mutableAssembly, host);
                 AddInterceptionTargets(mutableAssembly, host);
                 var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
-
-                //
-                //////var test1 = new NamespaceTypeDefinition();
-                //////test1.IsClass = true;
-                //////test1.InternFactory = host.InternFactory;
-                //////test1.ContainingUnitNamespace = mutableAssembly.UnitNamespaceRoot;
-                //////test1.Name = nameTable.GetNameFor("Test1");
-
-                //////var test2 = new NestedTypeDefinition();
-                //////test2.IsClass = true;
-                //////test2.InternFactory = host.InternFactory;
-                //////test2.ContainingTypeDefinition = test1;
-                //////test2.Name = nameTable.GetNameFor("Test2");
-
-                //////test1.NestedTypes.Add(test2);
-                //////mutableAssembly.AllTypes.Add(test1);
-                //////mutableAssembly.AllTypes.Add(test2);
-                //
 
                 SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, mutableAssembly, host);
             }
@@ -95,6 +99,12 @@ namespace SharpMock.PostCompiler.Core
                     LoadReferencedAssemblies(unit, host);   
                 }
             }
+        }
+
+        private static IAssembly ScanForInterceptionSpecifications(IAssembly assembly, IMetadataHost host)
+        {
+            var registrar = new SpecifiedMethodCallRegistrar(host);
+            return registrar.Visit(assembly);
         }
 
         private static IAssembly ScanForStaticMethodCalls(IAssembly assembly, IMetadataHost host)

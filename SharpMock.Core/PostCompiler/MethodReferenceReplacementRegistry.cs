@@ -24,6 +24,11 @@ namespace SharpMock.PostCompiler
             }
         }
 
+        public static bool HasReplacementFor(IMethodReference original)
+        {
+            return replacements.ContainsKey(original);
+        }
+
         public static IMethodReference GetReplacementFor(IMethodReference original)
         {
             if (replacements.ContainsKey(original))

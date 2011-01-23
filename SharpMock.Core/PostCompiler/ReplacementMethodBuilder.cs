@@ -108,8 +108,8 @@ namespace SharpMock.PostCompiler.Core
                 addMethodCallStatements.Add(addArgumentCallExpression);
             }
 
-            Code(addMethodCallStatements);
-            Code(Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>()));
+            Code( addMethodCallStatements );
+            Code( Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>()) );
 
             var originalMethodCall = new MethodCall();
             var toCall = TypeHelper.GetMethod(Context.OriginalCall.ResolvedMethod.ContainingTypeDefinition, Context.OriginalCall);
@@ -149,7 +149,7 @@ namespace SharpMock.PostCompiler.Core
             Code( Properties.On<Invocation>("invocation").Set<IList<object>>("Arguments").To("arguments") );
             Code( Properties.On<Invocation>("invocation").Set<object>("Target").To(@null2) );
 
-            Code(Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>()));
+            Code( Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>()) );
 
             //var registryInterceptorDeclaration =
             //    Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());

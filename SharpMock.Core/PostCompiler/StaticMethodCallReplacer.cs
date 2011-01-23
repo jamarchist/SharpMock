@@ -11,7 +11,7 @@ namespace SharpMock.PostCompiler
 
         public override IExpression Visit(MethodCall methodCall)
         {
-            if (methodCall.IsStaticCall)
+            if (methodCall.IsStaticCall && MethodReferenceReplacementRegistry.HasReplacementFor(methodCall.MethodToCall))
             {
                 var replacementCall = MethodReferenceReplacementRegistry.GetReplacementFor(methodCall.MethodToCall);
                 methodCall.MethodToCall = replacementCall;
