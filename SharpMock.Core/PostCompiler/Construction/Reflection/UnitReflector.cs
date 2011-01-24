@@ -18,6 +18,18 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             nameTable = host.NameTable;
         }
 
+        private ITypeReference CreateArrayType(string elementTypeName)
+        {
+            var elementType = FindTypeInLoadedUnits(elementTypeName, 0);
+            var arrayType = new VectorTypeReference();
+            arrayType.TypeCode = PrimitiveTypeCode.NotPrimitive;
+            arrayType.PlatformType = host.PlatformType;
+            arrayType.ElementType = elementType;
+            
+
+            return arrayType;
+        }
+
         private ITypeReference FindTypeInLoadedUnits(string typeName, int numberOfGenericParameters)
         {
             if (cache.ContainsKey(typeName))
@@ -43,6 +55,13 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
 
         public ITypeReference Get(Type type)
         {
+            if (type.IsArray)
+            {
+                var arrayElementType = type.GetElementType();
+
+                return CreateArrayType(arrayElementType.FullName);
+            }
+
             if (type.IsGenericTypeDefinition)
             {
                 var genericParameters = type.GetGenericArguments();

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Cci;
 
-namespace SharpMock.PostCompiler.Core.CodeConstruction
+namespace SharpMock.Core.PostCompiler.Construction
 {
     public interface ITypeOperatorBuilder
     {
-        
+        IExpression TypeOf(ITypeReference typeReference);
     }
 }

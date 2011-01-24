@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ScenarioDependencies;
 
 namespace Scenarios
@@ -74,37 +75,39 @@ namespace Scenarios
         //    return sample.Name;
         //}
 
-        ////// For instance methods
-        //public static string WhatIWantThisToLookLikeForInstanceMethods(string x, int y)
-        //{
-        //    Function<string, int, string> originalCall =
-        //        (replacedX, replacedY) => InterceptedCall(replacedX, replacedY);
+        //// For instance methods
+        public static string WhatIWantThisToLookLikeForInstanceMethods(string x, int y)
+        {
+            //Function<string, int, string> originalCall =
+            //    (replacedX, replacedY) => InterceptedCall(replacedX, replacedY);
 
-        //    var interceptedType = typeof (CodeUnderTest);
-        //    var parameterTypes = new Type[2];
-        //    parameterTypes[0] = typeof (string);
-        //    parameterTypes[1] = typeof (int);
-        //    var interceptedMethod = interceptedType.GetMethod("WhatIWantThisToLookLikeForInstanceMethods", parameterTypes);
+            var interceptedType = typeof (CodeUnderTest);
+            var parameterTypes = new Type[2];
+            parameterTypes[0] = typeof (string);
+            parameterTypes[1] = typeof (int);
+            var interceptedMethod = interceptedType.GetMethod("WhatIWantThisToLookLikeForInstanceMethods", parameterTypes);
 
-        //    var interceptor = new RegistryInterceptor();
-        //    if (interceptor.ShouldIntercept(interceptedMethod))
-        //    {
-        //        var arguments = new List<object>();
-        //        arguments.Add(x);
-        //        arguments.Add(y);
+            //var interceptor = new RegistryInterceptor();
+            //if (interceptor.ShouldIntercept(interceptedMethod))
+            //{
+            //    var arguments = new List<object>();
+            //    arguments.Add(x);
+            //    arguments.Add(y);
 
-        //        var invocation = new Invocation();
-        //        invocation.Arguments = arguments;
-        //        invocation.OriginalCall = originalCall;
-        //        invocation.Target = null;
+            //    var invocation = new Invocation();
+            //    invocation.Arguments = arguments;
+            //    invocation.OriginalCall = originalCall;
+            //    invocation.Target = null;
 
-        //        interceptor.Intercept(invocation);
+            //    interceptor.Intercept(invocation);
 
-        //        return (string)invocation.Return;                
-        //    }
+            //    return (string)invocation.Return;                
+            //}
 
-        //    return originalCall(x, y);
-        //}
+            //return originalCall(x, y);
+
+            return String.Empty;
+        }
 
         //public class Sample
         //{

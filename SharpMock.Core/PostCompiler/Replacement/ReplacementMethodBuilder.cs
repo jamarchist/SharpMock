@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Interceptors;
+using SharpMock.Core.PostCompiler.Construction;
 using SharpMock.Core.PostCompiler.Construction.Conversions;
 using SharpMock.Core.PostCompiler.Construction.Declarations;
 using SharpMock.Core.PostCompiler.Construction.Definitions;
@@ -26,6 +28,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         protected IMethodCallBuilder Call { get; private set; }
         protected IConverter ChangeType { get; private set; }
         protected IStatementBuilder Statements { get; private set; }
+        protected ITypeOperatorBuilder Operators { get; private set; }
 
         protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context)
         {
@@ -43,11 +46,70 @@ namespace SharpMock.Core.PostCompiler.Replacement
             Call = new MethodCallBuilder(Context.Host, Reflector, Locals);
             ChangeType = new Converter(Reflector);
             Statements = new StatementBuilder();
-
+            Operators = new TypeOperatorBuilder(Reflector);
         }
 
         private void BuildMethodTemplate()
         {
+
+
+            //  ...
+            //  var interceptedType = typeof (#SOMETYPE#);
+            //  ...
+            var interceptedTypeDeclaration =
+                Declare.Variable<Type>("interceptedType").As(Operators.TypeOf(Context.OriginalCall.ContainingType.ResolvedType));
+
+            //  ...
+            //  var parameterTypes = new Type[#SOMESIZE#];
+            //  ...
+            var parameterTypesDeclaration =
+                Declare.Variable<Type[]>("parameterTypes").As(Create.NewArray<Type>(Context.OriginalCall.ParameterCount));
+
+            //  ...
+            //  parameterTypes[#SOMEINDEX#] = typeof (#SOMETYPE#);
+            //  ...
+            var arrayElementAssignments = new List<IStatement>();
+            foreach (var parameter in Context.OriginalCall.Parameters)
+            {
+                var indexer = new ArrayIndexer();
+                indexer.IndexedObject = Locals["parameterTypes"];
+                indexer.Indices.Add(new CompileTimeConstant { Type = Reflector.Get<int>(), Value = parameter.Index });
+                indexer.Type = Reflector.Get<Type>();
+
+                var target = new TargetExpression();
+                target.Definition = indexer;
+                target.Instance = Locals["parameterTypes"];
+                target.Type = Reflector.Get<Type[]>();
+
+                var assignment = new Assignment();
+                assignment.Type = Reflector.Get<Type>();
+                assignment.Source = Operators.TypeOf(parameter.Type);
+                assignment.Target = target;
+
+                arrayElementAssignments.Add(
+                    Statements.Execute(
+                        assignment
+                        )
+                    );
+            }
+
+            // ...
+            // var invocation = new Invocation();
+            // ...
+            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
+
+            //  ...
+            //  var interceptedMethod = interceptedType.GetMethod(#SOMEMETHODNAME#, parameterTypes);
+            //  ...
+            var interceptedMethodDeclaration = Declare.Variable<MethodInfo>("interceptedMethod").As(
+                Call.VirtualMethod("GetMethod", typeof (string), typeof (Type[]))
+                    .ThatReturns<MethodInfo>()
+                    .WithArguments(
+                        new CompileTimeConstant {Type = Reflector.Get<string>(), Value = Context.OriginalCall.Name.Value},
+                        Locals["parameterTypes"])
+                    .On("interceptedType")
+                );
+
             //  ... 
             //  var arguments = new List<object>();
             //  ...
@@ -136,11 +198,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var delegateDeclaration = Declare.Variable("local_0", closedGenericFunction).As(anonymousMethod);
             
             // ...
-            // var invocation = new Invocation();
-            // ...
-            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
-
-            // ...
             // invocation.OriginalCall = local_0;
             // ...
             var setDelegateStatement = Statements.Execute(
@@ -184,14 +241,22 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             // abstract
             var interceptionResultDeclaration = AddInterceptionResultHandling(returnStatement);
-           
+
+            Context.Block.Statements.Add(invocationObjectDeclaration);
+            Context.Block.Statements.Add(interceptedTypeDeclaration);
+            Context.Block.Statements.Add(parameterTypesDeclaration);
+            foreach (var arrayElementAssigment in arrayElementAssignments)
+            {
+                Context.Block.Statements.Add(arrayElementAssigment);
+            }
+            Context.Block.Statements.Add(interceptedMethodDeclaration);
             Context.Block.Statements.Add(delegateDeclaration);
             Context.Block.Statements.Add(genericListOfObjectsDeclaration);
             foreach (var addStatement in addMethodCallStatements)
             {
                 Context.Block.Statements.Add(addStatement);
             }
-            Context.Block.Statements.Add(invocationObjectDeclaration);
+
             Context.Block.Statements.Add(setDelegateStatement);
             Context.Block.Statements.Add(setArgumentsStatement);
             Context.Block.Statements.Add(setTargetStatement);

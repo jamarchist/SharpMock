@@ -1,4 +1,5 @@
-﻿using Microsoft.Cci.MutableCodeModel;
+﻿using System;
+using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 
 namespace SharpMock.Core.PostCompiler.Construction.Expressions
@@ -20,6 +21,23 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
             createObjectInstance.MethodToCall = reflector.From<TReflectionType>().GetConstructor();
 
             return createObjectInstance;
+        }
+
+        public CreateArray NewArray<TReflectionType>(int size)
+        {
+            var createArray = new CreateArray();
+            var objectType = reflector.Get<TReflectionType[]>();
+            var elementType = reflector.Get<TReflectionType>();
+            createArray.Type = objectType.ResolvedType;
+            createArray.ElementType = elementType;
+
+            var sizeConstant = new CompileTimeConstant();
+            sizeConstant.Type = reflector.Get<int>();
+            sizeConstant.Value = size;
+
+            createArray.Sizes.Add(sizeConstant);
+
+            return createArray;
         }
     }
 }
