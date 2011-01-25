@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
-using SharpMock.PostCompiler.Core.CodeConstruction;
 
 namespace SharpMock.Core.PostCompiler.Construction.Reflection
 {
@@ -25,7 +24,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             arrayType.TypeCode = PrimitiveTypeCode.NotPrimitive;
             arrayType.PlatformType = host.PlatformType;
             arrayType.ElementType = elementType;
-            
+            arrayType.InternFactory = host.InternFactory;
 
             return arrayType;
         }
@@ -58,7 +57,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             if (type.IsArray)
             {
                 var arrayElementType = type.GetElementType();
-
                 return CreateArrayType(arrayElementType.FullName);
             }
 

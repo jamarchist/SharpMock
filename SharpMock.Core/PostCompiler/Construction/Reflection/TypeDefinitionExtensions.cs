@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Cci;
 
 namespace SharpMock.Core.PostCompiler.Construction.Reflection
@@ -29,7 +30,43 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
                 convertedArguments[argumentIndex] = reflector.Get(arguments[argumentIndex]);
             }
 
-            return TypeHelper.GetMethod(type, nameTable.GetNameFor(name), convertedArguments);
+            var method = TypeHelper.GetMethod(type, nameTable.GetNameFor(name), convertedArguments);
+            
+            // Try to find the method by brute force
+            if (method.Equals(Dummy.Method))
+            {
+                foreach (var member in type.Methods)
+                {
+                    if (member.Name.Value == name)
+                    {
+                        var parameters = new List<IParameterDefinition>(member.Parameters);
+
+                        if (parameters.Count == convertedArguments.Length)
+                        {
+                            var matches = new bool[arguments.Length];
+
+                            for (int parameterIndex = 0; parameterIndex < parameters.Count; parameterIndex++)
+                            {
+                                matches[parameterIndex] = TypeHelper.TypesAreEquivalent(
+                                    convertedArguments[parameterIndex], parameters[parameterIndex].Type);
+                            }
+
+                            var matchList = new List<bool>(matches);
+                            if (matchList.Contains(false))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                method = member;
+                                break;
+                            }
+                        }    
+                    }
+                }
+            }
+
+            return method;
         }
 
         public IMethodDefinition GetMethod(IMethodReference method)
