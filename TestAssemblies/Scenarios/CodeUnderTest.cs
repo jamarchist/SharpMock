@@ -87,13 +87,20 @@ namespace Scenarios
             parameterTypes[1] = typeof (int);
             var interceptedMethod = interceptedType.GetMethod("WhatIWantThisToLookLikeForInstanceMethods", parameterTypes);
 
+            var arguments = new List<object>();
+            arguments.Add(x);
+            arguments.Add(y);
+
+            if (x == "blah")
+            {
+                return null;
+            }
+
+            return x;
+
             //var interceptor = new RegistryInterceptor();
             //if (interceptor.ShouldIntercept(interceptedMethod))
             //{
-            //    var arguments = new List<object>();
-            //    arguments.Add(x);
-            //    arguments.Add(y);
-
             //    var invocation = new Invocation();
             //    invocation.Arguments = arguments;
             //    invocation.OriginalCall = originalCall;
@@ -106,7 +113,7 @@ namespace Scenarios
 
             //return originalCall(x, y);
 
-            return String.Empty;
+            //return String.Empty;
         }
 
         //public class Sample

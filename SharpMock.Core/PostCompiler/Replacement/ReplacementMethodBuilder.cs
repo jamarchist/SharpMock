@@ -12,7 +12,6 @@ using SharpMock.Core.PostCompiler.Construction.Definitions;
 using SharpMock.Core.PostCompiler.Construction.Expressions;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Construction.Variables;
-using SharpMock.PostCompiler.Core.CodeConstruction;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -29,6 +28,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         protected IConverter ChangeType { get; private set; }
         protected IStatementBuilder Statements { get; private set; }
         protected ITypeOperatorBuilder Operators { get; private set; }
+        protected ICompileTimeConstantBuilder Constant { get; private set; }
 
         protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context)
         {
@@ -47,12 +47,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
             ChangeType = new Converter(Reflector);
             Statements = new StatementBuilder();
             Operators = new TypeOperatorBuilder(Reflector);
+            Constant = new CompileTimeConstantBuilder(Reflector);
         }
 
         private void BuildMethodTemplate()
         {
-
-
             //  ...
             //  var interceptedType = typeof (#SOMETYPE#);
             //  ...
@@ -93,22 +92,14 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     );
             }
 
-            // ...
-            // var invocation = new Invocation();
-            // ...
-            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
-
             //  ...
             //  var interceptedMethod = interceptedType.GetMethod(#SOMEMETHODNAME#, parameterTypes);
             //  ...
-            //  I have to manually build the method call here, because there is something
-            //  wrong with TypeHelper.GetMethod, or the arguments I'm passing to it.
-            //  It has something to do with passing an array.
             var interceptedMethodDeclaration = Declare.Variable<MethodInfo>("interceptedMethod").As(
                 Call.VirtualMethod("GetMethod", typeof (string), typeof (Type[]))
                     .ThatReturns<MethodInfo>()
                     .WithArguments(
-                        new CompileTimeConstant {Type = Reflector.Get<string>(), Value = Context.OriginalCall.Name.Value},
+                        Constant.Of<string>(Context.OriginalCall.Name.Value),
                         Locals["parameterTypes"])
                     .On("interceptedType")
                 );
@@ -118,7 +109,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             //  ...
             var genericListOfObjectsDeclaration =
                 Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>());
-
 
             var openGenericFunction = GetOpenGenericFunction();
 
@@ -199,7 +189,30 @@ namespace SharpMock.Core.PostCompiler.Replacement
             anonymousMethodBody.Statements.Add(anonymousMethodReturnStatement);
 
             var delegateDeclaration = Declare.Variable("local_0", closedGenericFunction).As(anonymousMethod);
-            
+
+            //  ...
+            //  var interceptor = new RegistryInterceptor();
+            //  ...
+            var registryInterceptorDeclaration =
+                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());
+
+            //  ...
+            //  if (interceptor.ShouldIntercept(interceptedMethod))
+            //  {
+            //  ...
+            var ifStatement = new ConditionalStatement();
+            ifStatement.Condition =
+                Call.Method("ShouldIntercept").ThatReturns<bool>().WithArguments("interceptedMethod").On("interceptor");
+
+            //  ...
+            //  } // end if
+            //  ...
+
+            //  ...
+            //  var invocation = new Invocation();
+            //  ...
+            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
+
             // ...
             // invocation.OriginalCall = local_0;
             // ...
@@ -223,12 +236,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var setArgumentsStatement = Statements.Execute(
                     Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation")
                 );
-
-            // ...
-            // var interceptor = new RegistryInterceptor();
-            // ...
-            var registryInterceptorDeclaration =
-                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());
 
             // ...
             // interceptor.Intercept(invocation);
@@ -271,35 +278,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             
             Context.Block.Statements.Add(returnStatement);
         }
-
-        //private LocalDeclarationStatement CallGetMethodOnInterceptedTypeVariable()
-        //{
-        //    //var definition = Define.VariableOf<MethodInfo>("interceptedMethod");
-            
-        //    //var methodDefinition = new MethodDefinition();
-        //    //methodDefinition.Type = Microsoft.Cci.MemberHelper.
-
-        //    //var methodCall = new MethodCall();
-        //    //methodCall.IsVirtualCall = true;
-        //    //methodCall.ThisArgument = Locals["interceptedType"];
-        //    //methodCall.Type = Reflector.Get<MethodInfo>();
-        //    //methodCall.Arguments.Add(new CompileTimeConstant{ Type = Reflector.Get<string>(), Value = "GetMethod" });
-        //    //methodCall.Arguments.Add(Locals["parameterTypes"]);
-
-        //    //var declaration = new LocalDeclarationStatement();
-        //    //declaration.LocalVariable = definition;
-
-        //    //return declaration;
-
-        //    //return Declare.Variable<MethodInfo>("interceptedMethod").As(
-        //    //    Call.VirtualMethod("GetMethod", typeof(string), typeof(Type[]))
-        //    //        .ThatReturns<MethodInfo>()
-        //    //        .WithArguments(
-        //    //            new CompileTimeConstant { Type = Reflector.Get<string>(), Value = Context.OriginalCall.Name.Value },
-        //    //            Locals["parameterTypes"])
-        //    //        .On("interceptedType")
-        //    //    );
-        //}
 
         protected abstract void AddInterceptionExtraResultHandling(LocalDeclarationStatement interceptionResultDeclaration);
 

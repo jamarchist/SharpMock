@@ -104,6 +104,8 @@
     <Compile Include="PostCompiler\Construction\Expressions\IInstanceCreator.cs" />
     <Compile Include="PostCompiler\Construction\StatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\TypeOperatorBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\CompileTimeConstantBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\ICompileTimeConstantBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Variables\ILocalVariableBindings.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallArgumentOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallBuilder.cs" />
