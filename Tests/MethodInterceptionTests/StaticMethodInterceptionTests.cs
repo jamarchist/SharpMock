@@ -37,8 +37,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new ReplacementMethodInterceptor(replacement),
-                    new InvokingInterceptor(new AlwaysMatches())));
+                    new ReplaceCall(replacement),
+                    new InvokeCall(new AlwaysMatches())));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
@@ -53,8 +53,8 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new ReplacementMethodInterceptor(replacement),
-                    new InvokingInterceptor(new AlwaysMatches())
+                    new ReplaceCall(replacement),
+                    new InvokeCall(new AlwaysMatches())
                 ));
 
             var mocked = new CodeUnderTest();
@@ -66,12 +66,12 @@ namespace MethodInterceptionTests
         [Test]
         public void InterceptsReturnValue()
         {
-            ReturnValueInterceptor.ReturnValueReplacementFunction replace = o => "Replacement.";
+            ReplaceReturnValue.ReturnValueReplacementFunction replace = o => "Replacement.";
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new InvokingInterceptor(new AlwaysMatches()),
-                    new ReturnValueInterceptor(replace))
+                    new InvokeCall(new AlwaysMatches()),
+                    new ReplaceReturnValue(replace))
                 );
 
             var mock = new CodeUnderTest();
@@ -83,12 +83,12 @@ namespace MethodInterceptionTests
         [Test]
         public void InterceptsArguments()
         {
-            ArgumentsInterceptor.ArgumentValuesReplacementFunction replace = args => new List<object> { 5555 };
+            ReplaceArguments.ArgumentValuesReplacementFunction replace = args => new List<object> { 5555 };
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new ArgumentsInterceptor(replace),
-                    new InvokingInterceptor(new AlwaysMatches())
+                    new ReplaceArguments(replace),
+                    new InvokeCall(new AlwaysMatches())
                     ));
 
             var mocked = new CodeUnderTest();
@@ -101,12 +101,12 @@ namespace MethodInterceptionTests
         public void InterceptsArgumentsAndReplacesMethod()
         {
             Function<int, string> replacementMethod = number => String.Format("Intercepted: {0}", number);
-            ArgumentsInterceptor.ArgumentValuesReplacementFunction replaceArgs = args => new List<object>{ 4444 };
+            ReplaceArguments.ArgumentValuesReplacementFunction replaceArgs = args => new List<object>{ 4444 };
 
             var compoundInterceptor = new CompoundInterceptor(
-                    new ArgumentsInterceptor(replaceArgs),
-                    new ReplacementMethodInterceptor(replacementMethod),
-                    new InvokingInterceptor(new AlwaysMatches())
+                    new ReplaceArguments(replaceArgs),
+                    new ReplaceCall(replacementMethod),
+                    new InvokeCall(new AlwaysMatches())
                 );
 
             InterceptorRegistry.AddInterceptor(compoundInterceptor);
@@ -126,8 +126,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new ReplacementMethodInterceptor(replacement),
-                    new InvokingInterceptor(new EquivalentCallsMatch(writeLine))
+                    new ReplaceCall(replacement),
+                    new InvokeCall(new EquivalentCallsMatch(writeLine))
                 ));
 
             var mocked = new CodeUnderTest();
@@ -145,8 +145,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new ReplacementMethodInterceptor(replacement),
-                    new InvokingInterceptor(new EquivalentCallsMatch(writeLineWithFormatString))
+                    new ReplaceCall(replacement),
+                    new InvokeCall(new EquivalentCallsMatch(writeLineWithFormatString))
                 ));
 
             var mocked = new CodeUnderTest();

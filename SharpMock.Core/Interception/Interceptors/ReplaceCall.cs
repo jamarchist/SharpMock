@@ -3,11 +3,11 @@ using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
-    public class ReplacementMethodInterceptor : IInterceptor
+    public class ReplaceCall : IInterceptor
     {
         private readonly Delegate methodToCallInstead;
 
-        public ReplacementMethodInterceptor(Delegate methodToCallInstead)
+        public ReplaceCall(Delegate methodToCallInstead)
         {
             this.methodToCallInstead = methodToCallInstead;
         }

@@ -2,13 +2,13 @@
 
 namespace SharpMock.Core.Interception.Interceptors
 {
-    public class ReturnValueInterceptor : IInterceptor
+    public class ReplaceReturnValue : IInterceptor
     {
         public delegate object ReturnValueReplacementFunction(object originalReturnValue);
 
         private readonly ReturnValueReplacementFunction replacementFunction;
 
-        public ReturnValueInterceptor(ReturnValueReplacementFunction replacementFunction)
+        public ReplaceReturnValue(ReturnValueReplacementFunction replacementFunction)
         {
             this.replacementFunction = replacementFunction;
         }

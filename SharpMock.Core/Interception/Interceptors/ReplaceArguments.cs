@@ -3,13 +3,13 @@ using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
-    public class ArgumentsInterceptor : IInterceptor
+    public class ReplaceArguments : IInterceptor
     {
         public delegate IList<object> ArgumentValuesReplacementFunction(IList<object> originalArguments);
 
         private readonly ArgumentValuesReplacementFunction replacementFunction;
 
-        public ArgumentsInterceptor(ArgumentValuesReplacementFunction replacementFunction)
+        public ReplaceArguments(ArgumentValuesReplacementFunction replacementFunction)
         {
             this.replacementFunction = replacementFunction;
         }

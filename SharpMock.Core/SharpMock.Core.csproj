@@ -156,12 +156,12 @@
     <Compile Include="PostCompiler\Construction\Expressions\PropertySetterTargetOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\PropertySetterValueOptions.cs" />
     <Compile Include="PostCompiler\Replacement\QualifiedMethodPath.cs" />
-    <Compile Include="Interception\Interceptors\ArgumentsInterceptor.cs" />
+    <Compile Include="Interception\Interceptors\ReplaceArguments.cs" />
     <Compile Include="Interception\Interceptors\CompoundInterceptor.cs" />
-    <Compile Include="Interception\Interceptors\InvokingInterceptor.cs" />
+    <Compile Include="Interception\Interceptors\InvokeCall.cs" />
     <Compile Include="Interception\Interceptors\RecordingInterceptor.cs" />
-    <Compile Include="Interception\Interceptors\ReplacementMethodInterceptor.cs" />
-    <Compile Include="Interception\Interceptors\ReturnValueInterceptor.cs" />
+    <Compile Include="Interception\Interceptors\ReplaceCall.cs" />
+    <Compile Include="Interception\Interceptors\ReplaceReturnValue.cs" />
     <Compile Include="PostCompiler\Construction\Reflection\SharpMockTypes.cs" />
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallRegistrar.cs" />

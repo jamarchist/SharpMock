@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
-    public class InvokingInterceptor : IInterceptor
+    public class InvokeCall : IInterceptor
     {
         private readonly IMatchingStrategy matcher;
 
-        public InvokingInterceptor(IMatchingStrategy matcher)
+        public InvokeCall(IMatchingStrategy matcher)
         {
             this.matcher = matcher;
         }
