@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 
-namespace SharpMock.Core.Interception
+namespace SharpMock.Core.Interception.Matchers
 {
-    public class EquivalentCallMatcher : IMethodCallMatcher
+    public class EquivalentCallsMatch : IMatchingStrategy
     {
         private readonly MethodInfo expectedMethod;
 
-        public EquivalentCallMatcher(MethodInfo expectedMethod)
+        public EquivalentCallsMatch(MethodInfo expectedMethod)
         {
             this.expectedMethod = expectedMethod;
         }

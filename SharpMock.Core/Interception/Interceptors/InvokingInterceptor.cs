@@ -6,9 +6,9 @@ namespace SharpMock.Core.Interception.Interceptors
 {
     public class InvokingInterceptor : IInterceptor
     {
-        private readonly IMethodCallMatcher matcher;
+        private readonly IMatchingStrategy matcher;
 
-        public InvokingInterceptor(IMethodCallMatcher matcher)
+        public InvokingInterceptor(IMatchingStrategy matcher)
         {
             this.matcher = matcher;
         }

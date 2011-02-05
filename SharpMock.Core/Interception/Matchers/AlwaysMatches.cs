@@ -2,7 +2,7 @@
 
 namespace SharpMock.Core.Interception.Matchers
 {
-    public class AlwaysMatchesMatcher : IMethodCallMatcher
+    public class AlwaysMatches : IMatchingStrategy
     {
         public bool Matches(MethodInfo calledMethod)
         {
