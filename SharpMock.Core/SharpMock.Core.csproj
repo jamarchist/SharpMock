@@ -91,6 +91,12 @@
     <Compile Include="PostCompiler\CciExtensions\NamespaceExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\NamespaceTypeDefinitionExtensions.cs" />
     <Compile Include="PostCompiler\Construction\Blocks\BlockBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\ControlFlow\IfBranchOptions.cs" />
+    <Compile Include="PostCompiler\Construction\ControlFlow\IfStatementBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\ControlFlow\IfStatementOptions.cs" />
+    <Compile Include="PostCompiler\Construction\ControlFlow\IIfBranchOptions.cs" />
+    <Compile Include="PostCompiler\Construction\ControlFlow\IIfStatementBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\ControlFlow\IIfStatementOptions.cs" />
     <Compile Include="PostCompiler\Construction\Conversions\Converter.cs" />
     <Compile Include="PostCompiler\Construction\Conversions\IConversionOptions.cs" />
     <Compile Include="PostCompiler\Construction\Declarations\DeclarationBuilder.cs" />
