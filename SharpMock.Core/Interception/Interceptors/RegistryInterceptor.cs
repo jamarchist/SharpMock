@@ -4,8 +4,13 @@ namespace SharpMock.Core.Interception.Interceptors
 {
     public class RegistryInterceptor : IInterceptor
     {
+        private MethodInfo interceptedMethod;
+
         public bool ShouldIntercept(MethodInfo method)
         {
+            interceptedMethod = method;
+
+            // It doesn't matter what we return here
             return true;
         }
 
@@ -13,7 +18,10 @@ namespace SharpMock.Core.Interception.Interceptors
         {
             foreach (var interceptor in InterceptorRegistry.GetInterceptors())
             {
-                interceptor.Intercept(invocation);
+                if (interceptor.ShouldIntercept(interceptedMethod))
+                {
+                    interceptor.Intercept(invocation);    
+                }
             }
         }
     }

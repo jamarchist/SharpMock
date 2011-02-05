@@ -20,8 +20,6 @@ namespace SharpMock.Core.Interception.Interceptors
         public void Intercept(IInvocation invocation)
         {
             invocation.OriginalCall = methodToCallInstead;
-            //var argumentArray = new List<object>(invocation.Arguments).ToArray();
-            //invocation.Return = methodToCallInstead.DynamicInvoke(argumentArray);
         }
     }
 }

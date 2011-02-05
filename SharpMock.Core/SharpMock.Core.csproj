@@ -80,10 +80,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Delegates.cs" />
+    <Compile Include="Interception\Matchers\AlwaysMatchesMatcher.cs" />
+    <Compile Include="Interception\Matchers\EquivalentCallMatcher.cs" />
     <Compile Include="Interception\IInterceptor.cs" />
     <Compile Include="Interception\IInvocation.cs" />
     <Compile Include="Interception\IInvocationInfo.cs" />
     <Compile Include="Interception\InterceptorRegistry.cs" />
+    <Compile Include="Interception\IMethodCallMatcher.cs" />
     <Compile Include="Interception\Invocation.cs" />
     <Compile Include="Interception\Interceptors\RegistryInterceptor.cs" />
     <Compile Include="PostCompiler\CciExtensions\MethodDefinitionExtensions.cs" />

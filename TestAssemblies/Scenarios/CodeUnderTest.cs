@@ -1,9 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using ScenarioDependencies;
 
 namespace Scenarios
 {
+    public class SomethingWithUnusedBoolReturn
+    {
+        public bool ShouldIntercept(MethodInfo method)
+        {
+            return true;
+        }
+    }
+
 	public class CodeUnderTest
 	{
         public string CallsStringReturnNoParameters()
@@ -76,7 +85,7 @@ namespace Scenarios
         //}
 
         //// For instance methods
-        public static string WhatIWantThisToLookLikeForInstanceMethods(string x, int y)
+        public static string WhatIWantThisToLookLikeForStaticMethods(string x, int y)
         {
             //Function<string, int, string> originalCall =
             //    (replacedX, replacedY) => InterceptedCall(replacedX, replacedY);
@@ -86,6 +95,8 @@ namespace Scenarios
             parameterTypes[0] = typeof (string);
             parameterTypes[1] = typeof (int);
             var interceptedMethod = interceptedType.GetMethod("WhatIWantThisToLookLikeForInstanceMethods", parameterTypes);
+            var interceptor = new SomethingWithUnusedBoolReturn();
+            var notUsed = interceptor.ShouldIntercept(interceptedMethod);
 
             var arguments = new List<object>();
             arguments.Add(x);

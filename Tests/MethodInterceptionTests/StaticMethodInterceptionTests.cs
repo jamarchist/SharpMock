@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 using NUnit.Framework;
 using Scenarios;
 using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Interceptors;
+using SharpMock.Core.Interception.Matchers;
 
 namespace MethodInterceptionTests
 {
@@ -35,7 +38,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ReplacementMethodInterceptor(replacement),
-                    new InvokingInterceptor()));
+                    new InvokingInterceptor(new AlwaysMatchesMatcher())));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
@@ -51,7 +54,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ReplacementMethodInterceptor(replacement),
-                    new InvokingInterceptor()
+                    new InvokingInterceptor(new AlwaysMatchesMatcher())
                 ));
 
             var mocked = new CodeUnderTest();
@@ -67,7 +70,7 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
-                    new InvokingInterceptor(),
+                    new InvokingInterceptor(new AlwaysMatchesMatcher()),
                     new ReturnValueInterceptor(replace))
                 );
 
@@ -85,7 +88,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsInterceptor(replace),
-                    new InvokingInterceptor()
+                    new InvokingInterceptor(new AlwaysMatchesMatcher())
                     ));
 
             var mocked = new CodeUnderTest();
@@ -103,7 +106,7 @@ namespace MethodInterceptionTests
             var compoundInterceptor = new CompoundInterceptor(
                     new ArgumentsInterceptor(replaceArgs),
                     new ReplacementMethodInterceptor(replacementMethod),
-                    new InvokingInterceptor()
+                    new InvokingInterceptor(new AlwaysMatchesMatcher())
                 );
 
             InterceptorRegistry.AddInterceptor(compoundInterceptor);
@@ -112,6 +115,44 @@ namespace MethodInterceptionTests
             var result = mocked.CallsStringReturnOneParameter();
 
             Assert.AreEqual("Intercepted: 4444", result);
+        }
+
+        [Test]
+        public void InterceptsWhenMethodCallsMatchExactly()
+        {
+            Action<string> replacement = s => Replacement.Call("Intercepted.");
+            var console = typeof (Console);
+            var writeLine = console.GetMethod("WriteLine", new[] {typeof (string)});
+
+            InterceptorRegistry.AddInterceptor(
+                new CompoundInterceptor(
+                    new ReplacementMethodInterceptor(replacement),
+                    new InvokingInterceptor(new EquivalentCallMatcher(writeLine))
+                ));
+
+            var mocked = new CodeUnderTest();
+            mocked.CallsConsoleWriteLine();
+
+            Assert.AreEqual("Intercepted.", Replacement.ReplacementArg1);
+        }
+
+        [Test]
+        public void DoesNotInterceptWhenMethodCallsDoNotMatchExactly()
+        {
+            Action<string> replacement = s => Replacement.Call("Intercepted.");
+            var console = typeof(Console);
+            var writeLineWithFormatString = console.GetMethod("WriteLine", new[] { typeof(string), typeof(string) });
+
+            InterceptorRegistry.AddInterceptor(
+                new CompoundInterceptor(
+                    new ReplacementMethodInterceptor(replacement),
+                    new InvokingInterceptor(new EquivalentCallMatcher(writeLineWithFormatString))
+                ));
+
+            var mocked = new CodeUnderTest();
+            mocked.CallsConsoleWriteLine();
+
+            Assert.AreNotEqual("Intercepted.", Replacement.ReplacementArg1);            
         }
 	}
 }

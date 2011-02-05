@@ -5,6 +5,7 @@ namespace SharpMock.Core.Interception.Interceptors
     public class CompoundInterceptor : IInterceptor
     {
         private readonly IInterceptor[] interceptors;
+        private MethodInfo interceptedMethod;
 
         public CompoundInterceptor(params IInterceptor[] interceptors)
         {
@@ -13,6 +14,7 @@ namespace SharpMock.Core.Interception.Interceptors
 
         public bool ShouldIntercept(MethodInfo method)
         {
+            interceptedMethod = method;
             return true;
         }
 
@@ -20,7 +22,10 @@ namespace SharpMock.Core.Interception.Interceptors
         {
             foreach (var interceptor in interceptors)
             {
-                interceptor.Intercept(invocation);
+                if (interceptor.ShouldIntercept(interceptedMethod))
+                {
+                    interceptor.Intercept(invocation);    
+                }
             }
         }
     }

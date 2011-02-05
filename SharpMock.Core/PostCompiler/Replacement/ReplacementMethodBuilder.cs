@@ -203,59 +203,37 @@ namespace SharpMock.Core.PostCompiler.Replacement
             //  if (interceptor.ShouldIntercept(interceptedMethod))
             //  {
             //  ...
-            var ifStatement =
-                If.
-                True(
-                    Call.Method("ShouldIntercept").ThatReturns<bool>().WithArguments("interceptedMethod").On("interceptor")
-                ).
-                Then(code =>
-                {
-                    //  ...
-                    //  var invocation = new Invocation();
-                    //  ...
-                    code.Add(Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>()));
-
-                    // ...
-                    // invocation.OriginalCall = local_0;
-                    // ...
-                    code.Add(Statements.Execute(
-                            Call.PropertySetter<Delegate>("OriginalCall").WithArguments("local_0").On("invocation")
-                        ));
-
-                    // ...
-                    // invocation.Target = null;
-                    // ...
-                    code.Add(Statements.Execute(
-                            Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation")
-                        ));
-
-                    // ...
-                    // invocation.Arguments = arguments;
-                    // ...
-                    code.Add( Statements.Execute(
-                            Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation")
-                        ));
-
-                    // ...
-                    // interceptor.Intercept(invocation);
-                    // ...
-                    code.Add( Statements.Execute(
-                            Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor")
-                        ));
-
-                    var @return = new ReturnStatement();
-                    code.Add(
-                        AddInterceptionResultHandling(@return)
-                        );
-                }).
-                Else(code =>
-                {
-                             
-                });
+            var shouldInterceptCall = Declare.Variable<bool>("shouldIntercept").As(
+                Call.VirtualMethod("ShouldIntercept", typeof(MethodInfo)).ThatReturns<bool>().WithArguments("interceptedMethod").On("interceptor"));
 
             //  ...
-            //  } // end if
+            //  var invocation = new Invocation();
             //  ...
+            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
+
+            // ...
+            // invocation.OriginalCall = local_0;
+            // ...
+            var setDelegateStatement = Statements.Execute(
+                Call.PropertySetter<Delegate>("OriginalCall").WithArguments("local_0").On("invocation"));
+
+            // ...
+            // invocation.Target = null;
+            // ...
+            var setTargetStatement = Statements.Execute(
+                    Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"));
+
+            // ...
+            // invocation.Arguments = arguments;
+            // ...
+            var setArgumentsStatement = Statements.Execute(
+                    Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation"));
+
+            // ...
+            // interceptor.Intercept(invocation);
+            // ...
+            var interceptMethodCallStatement = Statements.Execute(
+                    Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor"));
 
             // ...
             // return; | return interceptionResult;
@@ -265,7 +243,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // abstract
             var interceptionResultDeclaration = AddInterceptionResultHandling(returnStatement);
 
-            //Context.Block.Statements.Add(invocationObjectDeclaration);
+            Context.Block.Statements.Add(registryInterceptorDeclaration);
+            Context.Block.Statements.Add(invocationObjectDeclaration);
             Context.Block.Statements.Add(interceptedTypeDeclaration);
             Context.Block.Statements.Add(parameterTypesDeclaration);
             foreach (var arrayElementAssigment in arrayElementAssignments)
@@ -273,6 +252,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 Context.Block.Statements.Add(arrayElementAssigment);
             }
             Context.Block.Statements.Add(interceptedMethodDeclaration);
+            Context.Block.Statements.Add(shouldInterceptCall);
             Context.Block.Statements.Add(delegateDeclaration);
             Context.Block.Statements.Add(genericListOfObjectsDeclaration);
             foreach (var addStatement in addMethodCallStatements)
@@ -280,12 +260,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 Context.Block.Statements.Add(addStatement);
             }
 
-            //Context.Block.Statements.Add(setDelegateStatement);
-            //Context.Block.Statements.Add(setArgumentsStatement);
-            //Context.Block.Statements.Add(setTargetStatement);
+            Context.Block.Statements.Add(setDelegateStatement);
+            Context.Block.Statements.Add(setArgumentsStatement);
+            Context.Block.Statements.Add(setTargetStatement);
 
-            Context.Block.Statements.Add(registryInterceptorDeclaration);
-            //Context.Block.Statements.Add(interceptMethodCallStatement);
+            Context.Block.Statements.Add(interceptMethodCallStatement);
 
             AddInterceptionExtraResultHandling(interceptionResultDeclaration);
             
