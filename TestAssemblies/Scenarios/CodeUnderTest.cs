@@ -30,6 +30,11 @@ namespace Scenarios
             Console.WriteLine("This should not appear.");
         }
 
+        public void CallsConsoleWriteLineFormatStingOverload()
+        {
+            Console.WriteLine("{0}-{0} should not appear.", 1, "This");
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

@@ -118,42 +118,6 @@ namespace MethodInterceptionTests
             Assert.AreEqual("Intercepted: 4444", result);
         }
 
-        [Test]
-        public void InterceptsWhenMethodCallsMatchExactly()
-        {
-            Action<string> replacement = s => Replacement.Call("Intercepted.");
-            var console = typeof (Console);
-            var writeLine = console.GetMethod("WriteLine", new[] {typeof (string)});
 
-            InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
-                    new ReplaceCall(replacement),
-                    new InvokeCall()
-                ));
-
-            var mocked = new CodeUnderTest();
-            mocked.CallsConsoleWriteLine();
-
-            Assert.AreEqual("Intercepted.", Replacement.ReplacementArg1);
-        }
-
-        [Test]
-        public void DoesNotInterceptWhenMethodCallsDoNotMatchExactly()
-        {
-            Action<string> replacement = s => Replacement.Call("Intercepted.");
-            var console = typeof(Console);
-            var writeLineWithFormatString = console.GetMethod("WriteLine", new[] { typeof(string), typeof(string) });
-
-            InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
-                    new ReplaceCall(replacement),
-                    new InvokeCall()
-                ));
-
-            var mocked = new CodeUnderTest();
-            mocked.CallsConsoleWriteLine();
-
-            Assert.AreNotEqual("Intercepted.", Replacement.ReplacementArg1);            
-        }
 	}
 }
