@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Delegates.cs" />
+    <Compile Include="Interception\IInterceptionStrategy.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeCallSafe.cs" />
     <Compile Include="Interception\MatchingStrategies\AllOverloadsMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\AlwaysMatches.cs" />

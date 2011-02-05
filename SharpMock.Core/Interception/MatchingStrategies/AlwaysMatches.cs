@@ -1,10 +1,11 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
-namespace SharpMock.Core.Interception.Matchers
+namespace SharpMock.Core.Interception.MatchingStrategies
 {
     public class AlwaysMatches : IMatchingStrategy
     {
-        public bool Matches(MethodInfo calledMethod)
+        public bool Matches(MethodInfo calledMethod, IList<object> arguments)
         {
             return true;
         }

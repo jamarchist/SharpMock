@@ -9,6 +9,7 @@ using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.Matchers;
+using SharpMock.Core.Interception.MatchingStrategies;
 
 namespace MethodInterceptionTests
 {

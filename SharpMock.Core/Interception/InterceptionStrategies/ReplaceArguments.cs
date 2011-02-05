@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
-    public class ReplaceArguments : IInterceptor
+    public class ReplaceArguments : IInterceptionStrategy
     {
         public delegate IList<object> ArgumentValuesReplacementFunction(IList<object> originalArguments);
 
@@ -14,16 +14,9 @@ namespace SharpMock.Core.Interception.Interceptors
             this.replacementFunction = replacementFunction;
         }
 
-        public bool ShouldIntercept(MethodInfo method)
-        {
-            return true;
-        }
-
         public void Intercept(IInvocation invocation)
         {
             invocation.Arguments = replacementFunction(invocation.Arguments);
-            //var replacementArguments = replacementFunction(invocation.Arguments);
-            //invocation.Return = invocation.OriginalCall.DynamicInvoke(new List<object>(replacementArguments).ToArray());
         }
     }
 }

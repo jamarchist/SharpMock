@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace SharpMock.Core.Interception.Matchers
 {
@@ -11,7 +12,7 @@ namespace SharpMock.Core.Interception.Matchers
             this.expectedMethod = expectedMethod;
         }
 
-        public bool Matches(MethodInfo calledMethod)
+        public bool Matches(MethodInfo calledMethod, IList<object> arguments)
         {
             return calledMethod.Equals(expectedMethod);
         }

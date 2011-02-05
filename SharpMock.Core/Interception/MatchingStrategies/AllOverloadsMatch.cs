@@ -16,7 +16,7 @@ namespace SharpMock.Core.Interception.MatchingStrategies
             this.methodName = methodName;
         }
 
-        public bool Matches(MethodInfo calledMethod)
+        public bool Matches(MethodInfo calledMethod, IList<object> arguments)
         {
             if (calledMethod.DeclaringType.Equals(declaringType) && calledMethod.Name == methodName)
             {

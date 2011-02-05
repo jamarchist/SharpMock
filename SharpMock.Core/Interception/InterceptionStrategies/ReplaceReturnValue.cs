@@ -2,7 +2,7 @@
 
 namespace SharpMock.Core.Interception.Interceptors
 {
-    public class ReplaceReturnValue : IInterceptor
+    public class ReplaceReturnValue : IInterceptionStrategy
     {
         public delegate object ReturnValueReplacementFunction(object originalReturnValue);
 
@@ -13,15 +13,8 @@ namespace SharpMock.Core.Interception.Interceptors
             this.replacementFunction = replacementFunction;
         }
 
-        public bool ShouldIntercept(MethodInfo method)
-        {
-            return true;
-        }
-
         public void Intercept(IInvocation invocation)
         {
-            //var argumentArray = new List<object>(invocation.Arguments).ToArray();
-            //var orignalReturnValue = invocation.OriginalCall.DynamicInvoke(argumentArray);
             invocation.Return = replacementFunction(invocation.Return);
         }
     }

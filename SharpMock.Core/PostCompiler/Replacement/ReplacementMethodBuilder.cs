@@ -200,11 +200,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());
 
             //  ...
-            //  if (interceptor.ShouldIntercept(interceptedMethod))
-            //  {
+            //  interceptor.ShouldIntercept(interceptedMethod);
             //  ...
             var shouldInterceptCall = Declare.Variable<bool>("shouldIntercept").As(
-                Call.VirtualMethod("ShouldIntercept", typeof(MethodInfo)).ThatReturns<bool>().WithArguments("interceptedMethod").On("interceptor"));
+                Call.VirtualMethod("ShouldIntercept", typeof(MethodInfo), typeof(IList<object>)).ThatReturns<bool>().WithArguments("interceptedMethod", "arguments").On("interceptor"));
 
             //  ...
             //  var invocation = new Invocation();

@@ -1,21 +1,22 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
     public class CompoundInterceptor : IInterceptor
     {
         private readonly IMatchingStrategy matcher;
-        private readonly IInterceptor[] interceptors;
+        private readonly IInterceptionStrategy[] interceptors;
 
-        public CompoundInterceptor(IMatchingStrategy matcher, params IInterceptor[] interceptors)
+        public CompoundInterceptor(IMatchingStrategy matcher, params IInterceptionStrategy[] interceptors)
         {
             this.interceptors = interceptors;
             this.matcher = matcher;
         }
 
-        public bool ShouldIntercept(MethodInfo method)
+        public bool ShouldIntercept(MethodInfo method, IList<object> arguments)
         {
-            return matcher.Matches(method);
+            return matcher.Matches(method, arguments);
         }
 
         public void Intercept(IInvocation invocation)
