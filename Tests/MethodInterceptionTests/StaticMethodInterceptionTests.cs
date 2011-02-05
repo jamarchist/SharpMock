@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Scenarios;
 using SharpMock.Core;
 using SharpMock.Core.Interception;
+using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.Matchers;
 
@@ -36,9 +37,9 @@ namespace MethodInterceptionTests
             Action<string> replacement = s => suppliedArgument = s;
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(
+                new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceCall(replacement),
-                    new InvokeCall(new AlwaysMatches())));
+                    new InvokeCall()));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
@@ -52,9 +53,9 @@ namespace MethodInterceptionTests
             Action<string> replacement = s => Replacement.Call("Intercepted.");
             
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(
+                new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceCall(replacement),
-                    new InvokeCall(new AlwaysMatches())
+                    new InvokeCall()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -69,8 +70,8 @@ namespace MethodInterceptionTests
             ReplaceReturnValue.ReturnValueReplacementFunction replace = o => "Replacement.";
             
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(
-                    new InvokeCall(new AlwaysMatches()),
+                new CompoundInterceptor(new AlwaysMatches(),
+                    new InvokeCall(),
                     new ReplaceReturnValue(replace))
                 );
 
@@ -86,9 +87,9 @@ namespace MethodInterceptionTests
             ReplaceArguments.ArgumentValuesReplacementFunction replace = args => new List<object> { 5555 };
             
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(
+                new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceArguments(replace),
-                    new InvokeCall(new AlwaysMatches())
+                    new InvokeCall()
                     ));
 
             var mocked = new CodeUnderTest();
@@ -103,10 +104,10 @@ namespace MethodInterceptionTests
             Function<int, string> replacementMethod = number => String.Format("Intercepted: {0}", number);
             ReplaceArguments.ArgumentValuesReplacementFunction replaceArgs = args => new List<object>{ 4444 };
 
-            var compoundInterceptor = new CompoundInterceptor(
+            var compoundInterceptor = new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceArguments(replaceArgs),
                     new ReplaceCall(replacementMethod),
-                    new InvokeCall(new AlwaysMatches())
+                    new InvokeCall()
                 );
 
             InterceptorRegistry.AddInterceptor(compoundInterceptor);
@@ -125,9 +126,9 @@ namespace MethodInterceptionTests
             var writeLine = console.GetMethod("WriteLine", new[] {typeof (string)});
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(
+                new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
                     new ReplaceCall(replacement),
-                    new InvokeCall(new EquivalentCallsMatch(writeLine))
+                    new InvokeCall()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -144,9 +145,9 @@ namespace MethodInterceptionTests
             var writeLineWithFormatString = console.GetMethod("WriteLine", new[] { typeof(string), typeof(string) });
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(
+                new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
                     new ReplaceCall(replacement),
-                    new InvokeCall(new EquivalentCallsMatch(writeLineWithFormatString))
+                    new InvokeCall()
                 ));
 
             var mocked = new CodeUnderTest();

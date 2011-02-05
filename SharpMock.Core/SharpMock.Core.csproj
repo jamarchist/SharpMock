@@ -80,8 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Delegates.cs" />
-    <Compile Include="Interception\Matchers\AlwaysMatches.cs" />
-    <Compile Include="Interception\Matchers\EquivalentCallsMatch.cs" />
+    <Compile Include="Interception\MatchingStrategies\AlwaysMatches.cs" />
+    <Compile Include="Interception\MatchingStrategies\EquivalentCallsMatch.cs" />
     <Compile Include="Interception\IInterceptor.cs" />
     <Compile Include="Interception\IInvocation.cs" />
     <Compile Include="Interception\IInvocationInfo.cs" />
@@ -156,12 +156,12 @@
     <Compile Include="PostCompiler\Construction\Expressions\PropertySetterTargetOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\PropertySetterValueOptions.cs" />
     <Compile Include="PostCompiler\Replacement\QualifiedMethodPath.cs" />
-    <Compile Include="Interception\Interceptors\ReplaceArguments.cs" />
+    <Compile Include="Interception\InterceptionStrategies\ReplaceArguments.cs" />
     <Compile Include="Interception\Interceptors\CompoundInterceptor.cs" />
-    <Compile Include="Interception\Interceptors\InvokeCall.cs" />
+    <Compile Include="Interception\InterceptionStrategies\InvokeCall.cs" />
     <Compile Include="Interception\Interceptors\RecordingInterceptor.cs" />
-    <Compile Include="Interception\Interceptors\ReplaceCall.cs" />
-    <Compile Include="Interception\Interceptors\ReplaceReturnValue.cs" />
+    <Compile Include="Interception\InterceptionStrategies\ReplaceCall.cs" />
+    <Compile Include="Interception\InterceptionStrategies\ReplaceReturnValue.cs" />
     <Compile Include="PostCompiler\Construction\Reflection\SharpMockTypes.cs" />
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallRegistrar.cs" />
