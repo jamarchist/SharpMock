@@ -84,6 +84,7 @@
     <Compile Include="Interception\InterceptionStrategies\InvokeCallSafe.cs" />
     <Compile Include="Interception\MatchingStrategies\AllOverloadsMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\AlwaysMatches.cs" />
+    <Compile Include="Interception\MatchingStrategies\ArgumentsMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\EquivalentCallsMatch.cs" />
     <Compile Include="Interception\IInterceptor.cs" />
     <Compile Include="Interception\IInvocation.cs" />
@@ -92,6 +93,8 @@
     <Compile Include="Interception\IMatchingStrategy.cs" />
     <Compile Include="Interception\Invocation.cs" />
     <Compile Include="Interception\Interceptors\RegistryInterceptor.cs" />
+    <Compile Include="Interception\MatchingStrategies\IArgumentMatcher.cs" />
+    <Compile Include="Interception\MatchingStrategies\MatchesExactly.cs" />
     <Compile Include="PostCompiler\CciExtensions\MethodDefinitionExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\ModuleExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\NamespaceExtensions.cs" />

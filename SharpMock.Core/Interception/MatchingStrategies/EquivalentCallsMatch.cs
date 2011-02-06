@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace SharpMock.Core.Interception.Matchers
+namespace SharpMock.Core.Interception.MatchingStrategies
 {
     public class EquivalentCallsMatch : IMatchingStrategy
     {

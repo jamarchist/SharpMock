@@ -251,7 +251,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 Context.Block.Statements.Add(arrayElementAssigment);
             }
             Context.Block.Statements.Add(interceptedMethodDeclaration);
-            Context.Block.Statements.Add(shouldInterceptCall);
             Context.Block.Statements.Add(delegateDeclaration);
             Context.Block.Statements.Add(genericListOfObjectsDeclaration);
             foreach (var addStatement in addMethodCallStatements)
@@ -263,6 +262,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             Context.Block.Statements.Add(setArgumentsStatement);
             Context.Block.Statements.Add(setTargetStatement);
 
+            Context.Block.Statements.Add(shouldInterceptCall);
             Context.Block.Statements.Add(interceptMethodCallStatement);
 
             AddInterceptionExtraResultHandling(interceptionResultDeclaration);
