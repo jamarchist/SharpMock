@@ -47,9 +47,9 @@ namespace SharpMock.PostCompiler.Core
 
                 ScanForInterceptionSpecifications(mutableAssembly, host);
                 AddInterceptionTargets(mutableAssembly, host);
-                var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
+                var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
 
-                SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, mutableAssembly, host);
+                SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, modifiedAssembly, host);
             }            
         }
 
@@ -113,6 +113,12 @@ namespace SharpMock.PostCompiler.Core
         {
             var registrar = new StaticMethodCallRegistrar(host);
             return registrar.Visit(assembly);
+        }
+
+        private static IAssembly ReplaceSpecifiedStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
+        {
+            var methodCallReplacer = new SpecifiedMethodCallReplacer(host);
+            return methodCallReplacer.Visit(mutableAssembly);
         }
 
         private static IAssembly ReplaceStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)

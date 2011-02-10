@@ -2,15 +2,14 @@
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Syntax;
-using SharpMock.PostCompiler;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class SpecifiedMethodCallRegistrar : CodeMutatingVisitor
+    public class SpecifiedMethodCallReplacer : CodeMutatingVisitor
     {
         private readonly IUnitReflector reflector;
 
-        public SpecifiedMethodCallRegistrar(IMetadataHost host) : base(host)
+        public SpecifiedMethodCallReplacer(IMetadataHost host) : base(host)
         {
             reflector = new UnitReflector(host);
         }
@@ -25,18 +24,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
                 var firstMethodCall = firstMethodCallExpression.Expression as MethodCall;
 
-                if (firstMethodCall.IsStaticCall)
+                if (firstMethodCall.IsStaticCall &&
+                    MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
                 {
-                    MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
+                    var replacementCall =
+                        MethodReferenceReplacementRegistry.GetReplacementFor(firstMethodCall.MethodToCall);
+                    firstMethodCall.MethodToCall = replacementCall;
                 }
-
-                //var methodRegistrar = new StaticMethodCallRegistrar(host);
-                //return methodRegistrar.Visit(methodCall.Arguments[0]);
-
-                //if (methodCall.IsStaticCall)
-                //{
-                //    MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
-                //}
             }
 
             return base.Visit(methodCall);

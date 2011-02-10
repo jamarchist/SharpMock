@@ -1,4 +1,6 @@
-﻿namespace SharpMock.Core.Syntax
+﻿using System;
+
+namespace SharpMock.Core.Syntax
 {
     public interface IFaker
     {
