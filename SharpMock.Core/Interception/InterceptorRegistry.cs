@@ -27,6 +27,8 @@ namespace SharpMock.Core.Interception
 
         public static void Clear()
         {
+            isRecording = false;
+            recorder = null;
             interceptors.Clear();
         }
 

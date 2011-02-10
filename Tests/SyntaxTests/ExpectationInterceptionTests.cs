@@ -8,6 +8,12 @@ namespace SyntaxTests
     [TestFixture]
     public class ExpectationInterceptionTests
     {
+        [TearDown]
+        public void ClearRegistry()
+        {
+            InterceptorRegistry.Clear();
+        }
+
         [Test]
         public void InterceptsStaticExpectation()
         {
@@ -33,6 +39,35 @@ namespace SyntaxTests
         public void DoesNotInterceptStaticMethodThatIsntExplicitlyFaked()
         {
             StaticClass.VoidReturnNoParameters();
+        }
+
+        [Test]
+        public void RecordsCallingAssertion()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).Asserting(() => true == true);
+
+            var recorder = InterceptorRegistry.GetCurrentRecorder();
+
+            var expectedAction = recorder.GetExpectations().Assertion;
+            var result = expectedAction.DynamicInvoke(null);
+
+            Assert.IsTrue((bool)result);
+        }
+
+        [Test]
+        public void RecordsReplacement()
+        {
+            var wasCalled = false;
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => wasCalled = true);
+
+            var recorder = InterceptorRegistry.GetCurrentRecorder();
+
+            var replacementAction = recorder.GetExpectations().Replacement;
+            replacementAction.DynamicInvoke(null);
+
+            Assert.IsTrue(wasCalled);
         }
     }
 }
