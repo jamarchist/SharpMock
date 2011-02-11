@@ -107,7 +107,8 @@ namespace Scenarios
             arguments.Add(x);
             arguments.Add(y);
 
-            if (x == "blah")
+            var p = "five".Length + "blah".PadLeft(5, '0').Length;
+            if (p.ToString() == "blah")
             {
                 return null;
             }

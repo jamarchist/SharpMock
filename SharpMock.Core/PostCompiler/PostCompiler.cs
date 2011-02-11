@@ -35,7 +35,7 @@ namespace SharpMock.PostCompiler.Core
 
                 host.Errors += host_Errors;
 
-                var mutableAssembly = GetMutableAssembly(postCompilerArgs.ReferencedAssemblyPath, host);
+                var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
                 var sharpMockCore = host.LoadUnitFrom(
                         System.Reflection.Assembly.GetExecutingAssembly().Location
                     );
@@ -49,7 +49,7 @@ namespace SharpMock.PostCompiler.Core
                 AddInterceptionTargets(mutableAssembly, host);
                 var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
 
-                SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, modifiedAssembly, host);
+                SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
             }            
         }
 

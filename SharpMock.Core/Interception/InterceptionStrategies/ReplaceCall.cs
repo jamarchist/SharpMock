@@ -7,6 +7,13 @@ namespace SharpMock.Core.Interception.Interceptors
     {
         private readonly Delegate methodToCallInstead;
 
+        private readonly Function<Delegate> replacementMethodBinder;
+
+        public ReplaceCall(Function<Delegate> replacementMethodBinder)
+        {
+            this.replacementMethodBinder = replacementMethodBinder;
+        }
+
         public ReplaceCall(Delegate methodToCallInstead)
         {
             this.methodToCallInstead = methodToCallInstead;
@@ -14,7 +21,7 @@ namespace SharpMock.Core.Interception.Interceptors
 
         public void Intercept(IInvocation invocation)
         {
-            invocation.OriginalCall = methodToCallInstead;
+            invocation.OriginalCall = replacementMethodBinder == null ? methodToCallInstead : replacementMethodBinder();
         }
     }
 }

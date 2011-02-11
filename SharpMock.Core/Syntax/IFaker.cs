@@ -5,5 +5,6 @@ namespace SharpMock.Core.Syntax
     public interface IFaker
     {
         IFakerOptions CallsTo(VoidAction methodToRecord);
+        //void CallsTo(VoidAction method, VoidAction<IFakerOptions> by);
     }
 }
