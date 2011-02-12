@@ -49,7 +49,7 @@ namespace SyntaxTests
 
             var recorder = InterceptorRegistry.GetCurrentRecorder();
 
-            var expectedAction = recorder.GetExpectations().Assertion;
+            var expectedAction = recorder.GetExpectations().Assertions;
             var result = expectedAction.DynamicInvoke(null);
 
             Assert.IsTrue((bool)result);

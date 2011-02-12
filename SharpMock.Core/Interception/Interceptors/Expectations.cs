@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
@@ -12,6 +13,7 @@ namespace SharpMock.Core.Interception.Interceptors
         {
             this.method = method;
             this.arguments = arguments;
+            this.Assertions = new List<Delegate>();
         }
 
         public MethodInfo Method
@@ -24,7 +26,7 @@ namespace SharpMock.Core.Interception.Interceptors
             get { return arguments; }
         }
 
-        public System.Delegate Assertion { get; set; }
-        public System.Delegate Replacement { get; set; }
+        public IList<Delegate> Assertions { get; private set; }
+        public Delegate Replacement { get; set; }
     }
 }

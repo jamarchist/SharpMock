@@ -7,5 +7,6 @@
         IFakerOptions ByReplacingWith(VoidAction replacement);
         IFakerOptions ByReplacingWith<TInterceptedArgument>(VoidAction<TInterceptedArgument> replacement);
         IFakerOptions ByReplacingWith<TReturnValue>(Function<TReturnValue> replacement);
+        IFakerOptions ByReplacingWith<TInterceptedArgument, TReturnValue>(Function<TInterceptedArgument, TReturnValue> replacement);
     }
 }

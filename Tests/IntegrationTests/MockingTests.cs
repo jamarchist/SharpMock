@@ -69,7 +69,9 @@ namespace IntegrationTests
             code.CallsStringReturnOneParameter();
         }
 
-        [Test, ExpectedException(ExpectedException = typeof(InvalidOperationException), ExpectedMessage = "I threw this from a replacement.")]
+        [Test, ExpectedException(
+            ExpectedException = typeof(InvalidOperationException), 
+            ExpectedMessage = "I threw this from a replacement.")]
         public void ThrowExceptionFromReplacement()
         {
             var fake = new Faker();
@@ -78,6 +80,32 @@ namespace IntegrationTests
 
             var code = new CodeUnderTest();
             code.CallsVoidReturnNoParameters();
+        }
+
+        [Test, ExpectedException(typeof(AssertionFailedException))]
+        public void MakesMultipleAssertionsOrderOne()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .Asserting((int x) => x > 10)
+                .Asserting((int x) => x > 1000)
+                .ByReplacingWith((int x) => "dummy return value");
+
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
+
+        [Test, ExpectedException(typeof(AssertionFailedException))]
+        public void MakesMultipleAssertionsOrderTwo()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .Asserting((int x) => x > 1000)
+                .Asserting((int x) => x > 10)
+                .ByReplacingWith((int x) => "dummy return value");
+
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
         }
     }
 }

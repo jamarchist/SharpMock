@@ -7,24 +7,25 @@ namespace SharpMock.Core.Interception.InterceptionStrategies
 {
     public class Assert : IInterceptionStrategy
     {
-        private readonly Function<Delegate> assertionBinder;
+        private readonly Function<IList<Delegate>> assertionsBinder;
 
-        public Assert(Function<Delegate> assertionBinder)
+        public Assert(Function<IList<Delegate>> assertionsBinder)
         {
-            this.assertionBinder = assertionBinder;
+            this.assertionsBinder = assertionsBinder;
         }
 
         public void Intercept(IInvocation invocation)
         {
-            var assertion = assertionBinder();
-            if (assertion != null)
+            var assertions = assertionsBinder();
+            
+            foreach (var individualAssertion in assertions)
             {
-                var assertionPassed = (bool) assertion.SafeInvoke(invocation.Arguments);
+                var assertionPassed = (bool)individualAssertion.SafeInvoke(invocation.Arguments);
 
                 if (!assertionPassed)
                 {
                     throw new AssertionFailedException();
-                }
+                }    
             }
         }
     }
