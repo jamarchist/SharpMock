@@ -26,7 +26,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCall()
                 ));
 
@@ -45,7 +45,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCall()
                 ));
 
@@ -63,7 +63,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AllOverloadsMatch(console, "WriteLine"),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCallSafe()
                 ));
 
@@ -84,7 +84,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly(arg)),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCall()
                 ));
 
@@ -104,7 +104,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly("Something that doesn't match.")),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCall()
                 ));
 

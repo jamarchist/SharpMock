@@ -7,6 +7,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
 	{
         private static readonly IDictionary<IMethodReference, IMethodReference> replacements = new MethodReferenceReplacementDictionary();
 
+        public static void Clear()
+        {
+            replacements.Clear();
+        }
+
 		public static void AddMethodToIntercept(IMethodReference method)
 		{
             if (!replacements.ContainsKey(method))

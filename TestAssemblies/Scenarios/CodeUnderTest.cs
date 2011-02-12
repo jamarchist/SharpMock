@@ -35,6 +35,11 @@ namespace Scenarios
             Console.WriteLine("{0}-{0} should not appear.", 1, "This");
         }
 
+        public void CallsVoidReturnNoParameters()
+        {
+            StaticClass.VoidReturnNoParameters();
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

@@ -19,17 +19,31 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void ProvidesReplacementMethodAndCallsIt()
+        public void CallsReplacementAction()
         {
             var wasCalled = false;
 
             var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => wasCalled = true);
+            fake.CallsTo(() => StaticClass.VoidReturnNoParameters()).ByReplacingWith(() => wasCalled = true);
 
             var code = new CodeUnderTest();
-            code.CallsStringReturnNoParameters();
+            code.CallsVoidReturnNoParameters();
 
             Assert.IsTrue(wasCalled);
         }
+
+        [Test]
+        public void CallsReplacementFunction()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => "Interception Result");
+
+            var code = new CodeUnderTest();
+            var result = code.CallsStringReturnNoParameters();
+
+            Assert.AreEqual("Interception Result", result);
+        }
+
+        
     }
 }

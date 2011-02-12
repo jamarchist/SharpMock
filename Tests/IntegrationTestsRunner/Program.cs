@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 
 namespace MethodInterceptionTestsRunner
@@ -22,6 +23,7 @@ namespace MethodInterceptionTestsRunner
             var postCompilerArgs = new PostCompilerArgs(new[] { testAssemblyLocation, assemblyToModifyLocation });
             var postCompiler = new PostCompiler(postCompilerArgs);
             postCompiler.InterceptSpecifications();
+            MethodReferenceReplacementRegistry.Clear();
             postCompiler.InterceptAllStaticMethodCalls();
 
             //  3) Run tests (against modified dll)

@@ -35,5 +35,11 @@ namespace SharpMock.Core.Syntax
             currentExpectations.Replacement = replacement;
             return this;
         }
+
+        public IFakerOptions ByReplacingWith<TReturnValue>(Function<TReturnValue> replacement)
+        {
+            currentExpectations.Replacement = replacement;
+            return this;
+        }
     }
 }

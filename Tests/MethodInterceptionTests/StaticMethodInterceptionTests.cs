@@ -38,7 +38,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCall()));
 
             var mocked = new CodeUnderTest();
@@ -54,7 +54,7 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new ReplaceCall(replacement),
+                    new ReplaceCall(() => replacement),
                     new InvokeCall()
                 ));
 
@@ -106,7 +106,7 @@ namespace MethodInterceptionTests
 
             var compoundInterceptor = new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceArguments(replaceArgs),
-                    new ReplaceCall(replacementMethod),
+                    new ReplaceCall(() => replacementMethod),
                     new InvokeCall()
                 );
 
