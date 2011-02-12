@@ -26,8 +26,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCall()
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCall()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -45,8 +45,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCall()
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCall()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -63,8 +63,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AllOverloadsMatch(console, "WriteLine"),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCallSafe()
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCallSafe()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -84,8 +84,8 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly(arg)),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCall()
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCall()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -104,8 +104,8 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly("Something that doesn't match.")),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCall()
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCall()
                 ));
 
             var mocked = new CodeUnderTest();

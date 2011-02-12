@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SharpMock.Core.Interception.InterceptionStrategies
 {
-    public class InvokeCall : IInterceptionStrategy
+    public class InvokeOriginalCall : IInterceptionStrategy
     {
         public void Intercept(IInvocation invocation)
         {

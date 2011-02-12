@@ -1,22 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 
-namespace SharpMock.Core.Interception.Interceptors
+namespace SharpMock.Core.Interception.InterceptionStrategies
 {
     public class ReplaceArguments : IInterceptionStrategy
     {
-        public delegate IList<object> ArgumentValuesReplacementFunction(IList<object> originalArguments);
+        private readonly Function<Function<IList<object>, IList<object>>> replacementMethodBinder;
 
-        private readonly ArgumentValuesReplacementFunction replacementFunction;
-
-        public ReplaceArguments(ArgumentValuesReplacementFunction replacementFunction)
+        public ReplaceArguments(Function<Function<IList<object>, IList<object>>> replacementMethodBinder)
         {
-            this.replacementFunction = replacementFunction;
+            this.replacementMethodBinder = replacementMethodBinder;
         }
 
         public void Intercept(IInvocation invocation)
         {
-            invocation.Arguments = replacementFunction(invocation.Arguments);
+            invocation.Arguments = replacementMethodBinder()(invocation.Arguments);
         }
     }
 }

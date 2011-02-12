@@ -38,8 +38,8 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCall()));
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCall()));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
@@ -54,8 +54,8 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new ReplaceCall(() => replacement),
-                    new InvokeCall()
+                    new InvokeReplacementCall(() => replacement),
+                    new InvokeOriginalCall()
                 ));
 
             var mocked = new CodeUnderTest();
@@ -71,7 +71,7 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new InvokeCall(),
+                    new InvokeOriginalCall(),
                     new ReplaceReturnValue(replace))
                 );
 
@@ -84,12 +84,12 @@ namespace MethodInterceptionTests
         [Test]
         public void InterceptsArguments()
         {
-            ReplaceArguments.ArgumentValuesReplacementFunction replace = args => new List<object> { 5555 };
+            Function<IList<object>, IList<object>> replace = args => new List<object> { 5555 };
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new ReplaceArguments(replace),
-                    new InvokeCall()
+                    new ReplaceArguments(() => replace),
+                    new InvokeOriginalCall()
                     ));
 
             var mocked = new CodeUnderTest();
@@ -102,12 +102,12 @@ namespace MethodInterceptionTests
         public void InterceptsArgumentsAndReplacesMethod()
         {
             Function<int, string> replacementMethod = number => String.Format("Intercepted: {0}", number);
-            ReplaceArguments.ArgumentValuesReplacementFunction replaceArgs = args => new List<object>{ 4444 };
+            Function<IList<object>, IList<object>> replaceArgs = args => new List<object>{ 4444 };
 
             var compoundInterceptor = new CompoundInterceptor(new AlwaysMatches(),
-                    new ReplaceArguments(replaceArgs),
-                    new ReplaceCall(() => replacementMethod),
-                    new InvokeCall()
+                    new ReplaceArguments(() =>replaceArgs),
+                    new InvokeReplacementCall(() => replacementMethod),
+                    new InvokeOriginalCall()
                 );
 
             InterceptorRegistry.AddInterceptor(compoundInterceptor);
