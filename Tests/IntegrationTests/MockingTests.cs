@@ -4,6 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
+using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
@@ -44,6 +45,39 @@ namespace IntegrationTests
             Assert.AreEqual("Interception Result", result);
         }
 
-        
+        [Test, ExpectedException(typeof(AssertionFailedException))]
+        public void ThrowsAssertionException()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .Asserting((int x) => x == 77)
+                .ByReplacingWith((int x) => x.ToString());
+
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
+
+        [Test]
+        public void DoesNotThrowAssertionException()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .ByReplacingWith((int x) => x.ToString())
+                .Asserting((int x) => x == 999);
+
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
+
+        [Test, ExpectedException(ExpectedException = typeof(InvalidOperationException), ExpectedMessage = "I threw this from a replacement.")]
+        public void ThrowExceptionFromReplacement()
+        {
+            var fake = new Faker();
+            fake.CallsTo(() => StaticClass.VoidReturnNoParameters())
+                .ByReplacingWith(() => { throw new InvalidOperationException("I threw this from a replacement."); });
+
+            var code = new CodeUnderTest();
+            code.CallsVoidReturnNoParameters();
+        }
     }
 }

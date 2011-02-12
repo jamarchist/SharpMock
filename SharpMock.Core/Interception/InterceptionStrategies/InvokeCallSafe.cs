@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.Interception.InterceptionStrategies
 {
@@ -19,12 +20,7 @@ namespace SharpMock.Core.Interception.InterceptionStrategies
         public void Intercept(IInvocation invocation)
         {
             var call = callBinder();
-
-            var arguments = new List<object>(invocation.Arguments);
-            var parameters = call.Method.GetParameters();
-
-            var truncatedArguments = arguments.GetRange(0, parameters.Length);
-            invocation.Return = call.DynamicInvoke(truncatedArguments.ToArray());
+            invocation.Return = call.SafeInvoke(invocation.Arguments);
         }
     }
 }

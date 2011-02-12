@@ -79,8 +79,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertionFailedException.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="Interception\Helpers\InvocationHelper.cs" />
     <Compile Include="Interception\IInterceptionStrategy.cs" />
+    <Compile Include="Interception\InterceptionStrategies\Assert.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeCall.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeCallSafe.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeOriginalCallSafe.cs" />
@@ -169,7 +172,6 @@
     <Compile Include="Interception\Interceptors\CompoundInterceptor.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeOriginalCall.cs" />
     <Compile Include="Interception\Interceptors\RecordingInterceptor.cs" />
-    <Compile Include="Interception\InterceptionStrategies\InvokeReplacementCall.cs" />
     <Compile Include="Interception\InterceptionStrategies\ReplaceReturnValue.cs" />
     <Compile Include="PostCompiler\Construction\Reflection\SharpMockTypes.cs" />
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallRegistrar.cs" />

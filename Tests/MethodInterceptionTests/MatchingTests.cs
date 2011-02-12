@@ -26,8 +26,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCall()
+                    new InvokeCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -45,8 +44,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCall()
+                    new InvokeCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -63,8 +61,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AllOverloadsMatch(console, "WriteLine"),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCallSafe()
+                    new InvokeCallSafe(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -84,8 +81,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly(arg)),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCall()
+                    new InvokeCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -104,8 +100,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly("Something that doesn't match.")),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCall()
+                    new InvokeCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();

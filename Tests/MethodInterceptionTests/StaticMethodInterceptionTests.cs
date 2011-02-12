@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 using NUnit.Framework;
 using Scenarios;
 using SharpMock.Core;
@@ -38,8 +36,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCall()));
+                    new InvokeCall(() => replacement)));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
@@ -54,8 +51,7 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new InvokeReplacementCall(() => replacement),
-                    new InvokeOriginalCall()
+                    new InvokeCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -106,8 +102,7 @@ namespace MethodInterceptionTests
 
             var compoundInterceptor = new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceArguments(() =>replaceArgs),
-                    new InvokeReplacementCall(() => replacementMethod),
-                    new InvokeOriginalCall()
+                    new InvokeCall(() => replacementMethod)
                 );
 
             InterceptorRegistry.AddInterceptor(compoundInterceptor);
