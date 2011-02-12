@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace SharpMock.Core.Interception.Interceptors
+﻿namespace SharpMock.Core.Interception.InterceptionStrategies
 {
     public class ReplaceReturnValue : IInterceptionStrategy
     {
