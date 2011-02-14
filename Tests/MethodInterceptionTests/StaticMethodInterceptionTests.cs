@@ -7,6 +7,8 @@ using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
+using Assert = NUnit.Framework.Assert;
+using AssertAction = SharpMock.Core.Interception.InterceptionStrategies.Assert;
 
 namespace MethodInterceptionTests
 {

@@ -243,31 +243,54 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var interceptionResultDeclaration = AddInterceptionResultHandling(returnStatement);
 
             Context.Block.Statements.Add(registryInterceptorDeclaration);
+            WriteOut("registry interceptor declared");
             Context.Block.Statements.Add(invocationObjectDeclaration);
+            WriteOut("invocation object declared");
             Context.Block.Statements.Add(interceptedTypeDeclaration);
+            WriteOut("intercepted type declared");
             Context.Block.Statements.Add(parameterTypesDeclaration);
+            WriteOut("parameter types declared");
             foreach (var arrayElementAssigment in arrayElementAssignments)
             {
                 Context.Block.Statements.Add(arrayElementAssigment);
+                WriteOut("array element assigned");
             }
             Context.Block.Statements.Add(interceptedMethodDeclaration);
+            WriteOut("intercepted method declared");
             Context.Block.Statements.Add(delegateDeclaration);
+            WriteOut("delegate declared");
             Context.Block.Statements.Add(genericListOfObjectsDeclaration);
+            WriteOut("generic list of objects declared");
             foreach (var addStatement in addMethodCallStatements)
             {
                 Context.Block.Statements.Add(addStatement);
+                WriteOut("method call statement added");
             }
 
             Context.Block.Statements.Add(setDelegateStatement);
+            WriteOut("delegate set");
             Context.Block.Statements.Add(setArgumentsStatement);
+            WriteOut("argument set");
             Context.Block.Statements.Add(setTargetStatement);
 
             Context.Block.Statements.Add(shouldInterceptCall);
+            WriteOut("shouldintercept called");
             Context.Block.Statements.Add(interceptMethodCallStatement);
+            WriteOut("intercept called");
 
             AddInterceptionExtraResultHandling(interceptionResultDeclaration);
+            WriteOut("result declared");
             
             Context.Block.Statements.Add(returnStatement);
+        }
+
+        private void WriteOut(string message)
+        {
+            //Context.Block.Statements.Add(
+            //    Statements.Execute(
+            //        Call.StaticMethod("WriteLine", typeof(string)).ThatReturnsVoid().WithArguments(Constant.Of<string>(message)).On(typeof(Console))
+            //    )
+            //);
         }
 
         protected abstract void AddInterceptionExtraResultHandling(LocalDeclarationStatement interceptionResultDeclaration);

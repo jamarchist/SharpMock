@@ -41,5 +41,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             return base.Visit(methodCall);
         }
+
+        public override IBlockStatement Visit(BlockStatement blockStatement)
+        {
+            return base.Visit(blockStatement);
+        }
     }
 }

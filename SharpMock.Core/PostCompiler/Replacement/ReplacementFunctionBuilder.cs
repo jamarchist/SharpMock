@@ -20,7 +20,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // ...
             // var interceptionResult = (METHOD_RETURN_TYPE)invocation.Return;
             // ...
-            var interceptionResultDeclaration = Declare.Variable<object>("interceptionResult").As(
+            // [ In order to produce the correct IL, we need to declare the correct variable type. 'Object' doesn't cut it. ]
+            var interceptionResultDeclaration = Declare.Variable("interceptionResult", Context.FakeMethod.Type).As(
                 ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.FakeMethod.Type));
 
             returnStatement.Expression = Locals["interceptionResult"];

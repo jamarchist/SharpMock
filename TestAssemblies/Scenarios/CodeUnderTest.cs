@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Reflection;
 using ScenarioDependencies;
+using SharpMock.Core;
+using SharpMock.Core.Interception;
+using SharpMock.Core.Interception.Interceptors;
 
 namespace Scenarios
 {
-    public class SomethingWithUnusedBoolReturn
-    {
-        public bool ShouldIntercept(MethodInfo method)
-        {
-            return true;
-        }
-    }
-
 	public class CodeUnderTest
 	{
         public string CallsStringReturnNoParameters()
@@ -95,30 +90,30 @@ namespace Scenarios
         //}
 
         //// For instance methods
-        public static string WhatIWantThisToLookLikeForStaticMethods(string x, int y)
+        public static decimal DecimalParse(string x)
         {
-            //Function<string, int, string> originalCall =
-            //    (replacedX, replacedY) => InterceptedCall(replacedX, replacedY);
+            Function<string, decimal> originalCall =
+                (replacedX) => decimal.Parse("blah");
 
-            var interceptedType = typeof (CodeUnderTest);
-            var parameterTypes = new Type[2];
-            parameterTypes[0] = typeof (string);
-            parameterTypes[1] = typeof (int);
-            var interceptedMethod = interceptedType.GetMethod("WhatIWantThisToLookLikeForInstanceMethods", parameterTypes);
-            var interceptor = new SomethingWithUnusedBoolReturn();
-            var notUsed = interceptor.ShouldIntercept(interceptedMethod);
+            var interceptedType = typeof(decimal);
+            var parameterTypes = new Type[1];
+            parameterTypes[0] = typeof(string);
+
+            var interceptedMethod = interceptedType.GetMethod("Parse", parameterTypes);
+            var interceptor = new RegistryInterceptor();
 
             var arguments = new List<object>();
             arguments.Add(x);
-            arguments.Add(y);
 
-            var p = "five".Length + "blah".PadLeft(5, '0').Length;
-            if (p.ToString() == "blah")
-            {
-                return null;
-            }
+            var invocation = new Invocation();
+            invocation.Arguments = arguments;
+            invocation.OriginalCall = originalCall;
+            invocation.Target = null;
 
-            return x;
+            var notUsed = interceptor.ShouldIntercept(interceptedMethod, arguments);
+            interceptor.Intercept(invocation);
+
+            return (decimal)invocation.Return;
 
             //var interceptor = new RegistryInterceptor();
             //if (interceptor.ShouldIntercept(interceptedMethod))

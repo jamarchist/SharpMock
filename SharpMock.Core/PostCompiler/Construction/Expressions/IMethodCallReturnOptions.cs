@@ -1,4 +1,5 @@
-﻿using Microsoft.Cci;
+﻿using System;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Construction.Expressions
@@ -7,6 +8,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
     {
         MethodCall On(string localVariableName);
         MethodCall On(ITypeReference type);
-        MethodCall On<TStaticType>();
+        MethodCall On<TTypeWithStaticMethod>();
+        MethodCall On(Type staticType);
     }
 }

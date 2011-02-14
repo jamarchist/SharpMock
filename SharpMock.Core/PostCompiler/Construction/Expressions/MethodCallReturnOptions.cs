@@ -1,4 +1,5 @@
-﻿using Microsoft.Cci;
+﻿using System;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Construction.Variables;
@@ -30,9 +31,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
             return MethodCall(type);
         }
 
-        public MethodCall On<TStaticType>()
+        public MethodCall On<TTypeWithStaticMethod>()
         {
-            return On(reflector.Get<TStaticType>());
+            return On(reflector.Get<TTypeWithStaticMethod>());
+        }
+
+        public MethodCall On(Type staticType)
+        {
+            return On(reflector.Get(staticType));
         }
 
         private IMethodReference GetMethodToCall(ITypeReference targetType)

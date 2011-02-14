@@ -112,6 +112,7 @@
     <Compile Include="PostCompiler\Construction\ControlFlow\IIfBranchOptions.cs" />
     <Compile Include="PostCompiler\Construction\ControlFlow\IIfStatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\ControlFlow\IIfStatementOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Conversions\ConversionOptions.cs" />
     <Compile Include="PostCompiler\Construction\Conversions\Converter.cs" />
     <Compile Include="PostCompiler\Construction\Conversions\IConversionOptions.cs" />
     <Compile Include="PostCompiler\Construction\Declarations\DeclarationBuilder.cs" />

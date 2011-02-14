@@ -12,19 +12,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
         public IEnumerator<string> GetEnumerator()
         {
             return new Queue<string>(elements).GetEnumerator();
-            //return new Stack<string>(elements).GetEnumerator();
         }
 
         public string GetClassName()
         {
             return className;
-            //var copy = new Stack<string>(elements);
-            //string className = null;
-            //while (copy.Count > 0)
-            //{
-            //    className = copy.Pop();
-            //}
-            //return className;
         }
 
         public override string ToString()
@@ -34,13 +26,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             foreach (var element in copy)
             {
-                if (IsFirstElementIn(element, copy))
+                if (!IsFirstElementIn(element, copy))
                 {
                     path.Append('.');
                 }
 
                 path.AppendFormat("{0}", element);    
             }
+
+            path.AppendFormat(".{0}", GetClassName());
 
             return path.ToString();            
         }

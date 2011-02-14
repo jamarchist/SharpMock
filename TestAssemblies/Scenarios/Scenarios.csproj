@@ -44,9 +44,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeUnderTest.cs" />
+    <Compile Include="CodeWithMscorlibDependencies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tuple.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SharpMock.Core\SharpMock.Core.csproj">
+      <Project>{3EE922DC-0821-4630-B51C-23EA4C4EF851}</Project>
+      <Name>SharpMock.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ScenarioDependencies\ScenarioDependencies.csproj">
       <Project>{4F935393-3A25-40C6-936C-E9B2122008D5}</Project>
       <Name>ScenarioDependencies</Name>

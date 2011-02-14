@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", 
 		ThirdParty\Microsoft.Cci.CodeModelToIL.dll = ThirdParty\Microsoft.Cci.CodeModelToIL.dll
 		ThirdParty\Microsoft.Cci.ILGenerator.dll = ThirdParty\Microsoft.Cci.ILGenerator.dll
 		ThirdParty\Microsoft.Cci.ILToCodeModel.dll = ThirdParty\Microsoft.Cci.ILToCodeModel.dll
-		ThirdParty\Microsoft.Cci.MetadataHelper.dll = ThirdParty\Microsoft.Cci.MetadataHelper.dll
 		ThirdParty\Microsoft.Cci.MetadataModel.dll = ThirdParty\Microsoft.Cci.MetadataModel.dll
 		ThirdParty\Microsoft.Cci.MutableCodeModel.dll = ThirdParty\Microsoft.Cci.MutableCodeModel.dll
 		ThirdParty\Microsoft.Cci.MutableMetadataModel.dll = ThirdParty\Microsoft.Cci.MutableMetadataModel.dll
