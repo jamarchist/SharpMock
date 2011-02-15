@@ -34,7 +34,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     firstMethodCall.MethodToCall = replacementCall;
                 }
             }
-
+            base.Visit(methodCall);
             //return base.Visit(methodCall);
         }
     }
