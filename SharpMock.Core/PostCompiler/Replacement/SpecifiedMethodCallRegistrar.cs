@@ -6,21 +6,23 @@ using SharpMock.PostCompiler;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class SpecifiedMethodCallRegistrar : CodeMutatingVisitor
+    public class SpecifiedMethodCallRegistrar : BaseCodeTraverser //CodeMutatingVisitor
     {
         private readonly IUnitReflector reflector;
 
-        public SpecifiedMethodCallRegistrar(IMetadataHost host) : base(host)
+        public SpecifiedMethodCallRegistrar(IMetadataHost host) : base()
         {
             reflector = new UnitReflector(host);
         }
 
-        public override IExpression Visit(MethodCall methodCall)
+        public override void Visit(IMethodCall methodCall)
         {
+            var mutableMethodCall = methodCall as MethodCall;
+
             var fakeCall = reflector.From<Faker>().GetMethod("CallsTo", typeof (VoidAction));
-            if (methodCall.MethodToCall.ResolvedMethod.Equals(fakeCall.ResolvedMethod))
+            if (mutableMethodCall.MethodToCall.ResolvedMethod.Equals(fakeCall.ResolvedMethod))
             {
-                var lambda = methodCall.Arguments[0] as AnonymousDelegate;
+                var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
                 var lambdaBody = lambda.Body as BlockStatement;
                 var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
                 var firstMethodCall = firstMethodCallExpression.Expression as MethodCall;
@@ -39,12 +41,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 //}
             }
 
-            return base.Visit(methodCall);
+            //return base.Visit(methodCall);
         }
 
-        public override IBlockStatement Visit(BlockStatement blockStatement)
-        {
-            return base.Visit(blockStatement);
-        }
+        //public override IBlockStatement Visit(BlockStatement blockStatement)
+        //{
+        //    return base.Visit(blockStatement);
+        //}
     }
 }

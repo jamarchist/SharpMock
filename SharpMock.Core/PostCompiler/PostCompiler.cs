@@ -106,25 +106,29 @@ namespace SharpMock.PostCompiler.Core
         private static IAssembly ScanForInterceptionSpecifications(IAssembly assembly, IMetadataHost host)
         {
             var registrar = new SpecifiedMethodCallRegistrar(host);
-            return registrar.Visit(assembly);
+            registrar.Visit(assembly);
+            return assembly;
         }
 
         private static IAssembly ScanForStaticMethodCalls(IAssembly assembly, IMetadataHost host)
         {
             var registrar = new StaticMethodCallRegistrar(host);
-            return registrar.Visit(assembly);
+            registrar.Visit(assembly);
+            return assembly;
         }
 
         private static IAssembly ReplaceSpecifiedStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
         {
             var methodCallReplacer = new SpecifiedMethodCallReplacer(host);
-            return methodCallReplacer.Visit(mutableAssembly);
+            methodCallReplacer.Visit(mutableAssembly);
+            return mutableAssembly;
         }
 
         private static IAssembly ReplaceStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
         {
             var methodCallReplacer = new StaticMethodCallReplacer(host);
-            return methodCallReplacer.Visit(mutableAssembly);
+            methodCallReplacer.Visit(mutableAssembly);
+            return mutableAssembly;
         }
 
         private static void SaveAssembly(string assemblyName, IModule mutableAssembly, IMetadataHost host)

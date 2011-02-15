@@ -3,21 +3,23 @@ using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class StaticMethodCallReplacer : CodeMutatingVisitor
+    public class StaticMethodCallReplacer : BaseCodeTraverser //CodeMutatingVisitor
     {
-        public StaticMethodCallReplacer(IMetadataHost host) : base(host)
+        public StaticMethodCallReplacer(IMetadataHost host) : base()
         {
         }
 
-        public override IExpression Visit(MethodCall methodCall)
+        public override void Visit(IMethodCall methodCall)
         {
-            if (methodCall.IsStaticCall && MethodReferenceReplacementRegistry.HasReplacementFor(methodCall.MethodToCall))
+            var mutableMethodCall = methodCall as MethodCall;
+
+            if (mutableMethodCall.IsStaticCall && MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall))
             {
-                var replacementCall = MethodReferenceReplacementRegistry.GetReplacementFor(methodCall.MethodToCall);
-                methodCall.MethodToCall = replacementCall;
+                var replacementCall = MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);
+                mutableMethodCall.MethodToCall = replacementCall;
             }
 
-            return base.Visit(methodCall);
+            //return base.Visit(methodCall);
         }
     }
 }
