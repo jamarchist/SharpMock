@@ -107,5 +107,19 @@ namespace IntegrationTests
             var code = new CodeUnderTest();
             code.CallsStringReturnOneParameter();
         }
+
+        [Test]
+        public void DoesNotInterceptCallsThatArentSpecified()
+        {
+            var fake = new Faker();
+
+            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => "Intercepted.");
+
+            var code = new CodeUnderTest();
+            var result = code.CallsTwoMethods();
+
+            Assert.AreEqual("Intercepted.", result.FirstValue);
+            Assert.AreEqual("|| Original method return value when passed '9876'. ||", result.SecondValue);
+        }
     }
 }

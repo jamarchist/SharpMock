@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SharpMock.Core.Interception.InterceptionStrategies;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
@@ -20,12 +21,20 @@ namespace SharpMock.Core.Interception.Interceptors
 
         public void Intercept(IInvocation invocation)
         {
+            var wasIntercepted = false;
             foreach (var interceptor in InterceptorRegistry.GetInterceptors())
             {
                 if (interceptor.ShouldIntercept(interceptedMethod, interceptedArguments))
                 {
-                    interceptor.Intercept(invocation);    
+                    interceptor.Intercept(invocation);
+                    wasIntercepted = true;
                 }
+            }
+
+            if (!wasIntercepted)
+            {
+                var callOriginal = new InvokeOriginalCall();
+                callOriginal.Intercept(invocation);
             }
         }
     }

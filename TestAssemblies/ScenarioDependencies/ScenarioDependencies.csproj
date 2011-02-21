@@ -46,6 +46,7 @@
     <Compile Include="Junk.cs" />
     <Compile Include="MethodNotInterceptedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SealedClass.cs" />
     <Compile Include="StaticClass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

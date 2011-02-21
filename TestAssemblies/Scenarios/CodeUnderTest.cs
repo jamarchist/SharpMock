@@ -35,6 +35,14 @@ namespace Scenarios
             StaticClass.VoidReturnNoParameters();
         }
 
+        public Tuple<string, string> CallsTwoMethods()
+        {
+            var firstResult = StaticClass.StringReturnNoParameters();
+            var secondResult = StaticClass.StringReturnOneParameter(9876);
+
+            return new Tuple<string, string>(firstResult, secondResult);
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

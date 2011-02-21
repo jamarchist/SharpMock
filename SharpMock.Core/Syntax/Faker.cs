@@ -18,6 +18,11 @@ namespace SharpMock.Core.Syntax
             return RecordCallsTo(propertyToRecord);
         }
 
+        public IFakerOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord)
+        {
+            return RecordCallsTo(instanceMethodToRecord);
+        }
+
         private static IFakerOptions RecordCallsTo(Delegate method)
         {
             InterceptorRegistry.Record();

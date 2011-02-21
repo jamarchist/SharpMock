@@ -28,4 +28,26 @@
             get { return firstValue; }
         }
     }
+
+    public class Tuple<T1, T2>
+    {
+        private readonly T1 firstValue;
+        private readonly T2 secondValue;
+
+        public Tuple(T1 firstValue, T2 secondValue)
+        {
+            this.firstValue = firstValue;
+            this.secondValue = secondValue;
+        }
+
+        public T2 SecondValue
+        {
+            get { return secondValue; }
+        }
+
+        public T1 FirstValue
+        {
+            get { return firstValue; }
+        }
+    }
 }

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InstanceMethodInterceptionTests.cs" />
     <Compile Include="MatchingTests.cs" />
     <Compile Include="StaticMethodInterceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
