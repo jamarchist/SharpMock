@@ -26,5 +26,15 @@ namespace Scenarios
         {
             return Environment.MachineName;
         }
+
+        public DateTime GetsCurrentDateTime()
+        {
+            return DateTime.Now;
+        }
+
+        public bool ChecksIfFileExists()
+        {
+            return System.IO.File.Exists(@"C:\Temp\iknowthisfiledoesntexist.txt");
+        }
     }
 }
