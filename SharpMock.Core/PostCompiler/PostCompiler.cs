@@ -112,7 +112,7 @@ namespace SharpMock.PostCompiler.Core
 
         private static IAssembly ScanForStaticMethodCalls(IAssembly assembly, IMetadataHost host)
         {
-            var registrar = new StaticMethodCallRegistrar(host);
+            var registrar = new StaticMethodCallRegistrar();
             registrar.Visit(assembly);
             return assembly;
         }
@@ -126,7 +126,7 @@ namespace SharpMock.PostCompiler.Core
 
         private static IAssembly ReplaceStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
         {
-            var methodCallReplacer = new StaticMethodCallReplacer(host);
+            var methodCallReplacer = new StaticMethodCallReplacer();
             methodCallReplacer.Visit(mutableAssembly);
             return mutableAssembly;
         }

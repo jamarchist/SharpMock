@@ -8,11 +8,11 @@ using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class SpecifiedMethodCallRegistrar : BaseCodeTraverser //CodeMutatingVisitor
+    public class SpecifiedMethodCallRegistrar : BaseCodeTraverser
     {
         private readonly IUnitReflector reflector;
 
-        public SpecifiedMethodCallRegistrar(IMetadataHost host) : base()
+        public SpecifiedMethodCallRegistrar(IMetadataHost host)
         {
             reflector = new UnitReflector(host);
         }

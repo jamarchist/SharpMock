@@ -1,14 +1,9 @@
 using Microsoft.Cci;
-using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class StaticMethodCallRegistrar : BaseCodeTraverser //CodeMutatingVisitor
+    public class StaticMethodCallRegistrar : BaseCodeTraverser
     {
-        public StaticMethodCallRegistrar(IMetadataHost host) : base()
-        {
-        }
-
         public override void Visit(IMethodCall methodCall)
         {
             if (methodCall.IsStaticCall)
@@ -16,7 +11,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
             }
             base.Visit(methodCall);
-            //return base.Visit(methodCall);
         }
 
         //public override IBlockStatement Visit(BlockStatement blockStatement)
