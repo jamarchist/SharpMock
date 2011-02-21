@@ -82,6 +82,7 @@
     <Compile Include="AssertionFailedException.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Interception\Helpers\InvocationHelper.cs" />
+    <Compile Include="Interception\Helpers\MatchingHelper.cs" />
     <Compile Include="Interception\IInterceptionStrategy.cs" />
     <Compile Include="Interception\InterceptionStrategies\Assert.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeCall.cs" />

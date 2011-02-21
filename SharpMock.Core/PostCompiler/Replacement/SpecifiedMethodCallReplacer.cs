@@ -1,7 +1,9 @@
-﻿using Microsoft.Cci;
+﻿using System.Collections.Generic;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Syntax;
+using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -18,13 +20,24 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             var mutableMethodCall = methodCall as MethodCall;
 
-            var fakeCall = reflector.From<Faker>().GetMethod("CallsTo", typeof (VoidAction));
-            if (mutableMethodCall.MethodToCall.ResolvedMethod.Equals(fakeCall.ResolvedMethod))
+            var callsToOverloads = reflector.From<Faker>().GetAllOverloadsOf("CallsTo");
+            if (mutableMethodCall.MethodCallMatchesAnOverload(callsToOverloads))
             {
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
                 var lambdaBody = lambda.Body as BlockStatement;
-                var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
-                var firstMethodCall = firstMethodCallExpression.Expression as MethodCall;
+
+                MethodCall firstMethodCall = null;
+
+                if (mutableMethodCall.MethodToCall.IsGeneric)
+                {
+                    var firstMethodCallDeclaration = lambdaBody.Statements[0] as LocalDeclarationStatement;
+                    firstMethodCall = firstMethodCallDeclaration.InitialValue as MethodCall;
+                }
+                else
+                {
+                    var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
+                    firstMethodCall = firstMethodCallExpression.Expression as MethodCall;
+                }
 
                 if (firstMethodCall.IsStaticCall &&
                     MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))

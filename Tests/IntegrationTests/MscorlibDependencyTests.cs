@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using Scenarios;
+using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
@@ -17,21 +19,51 @@ namespace IntegrationTests
             InterceptorRegistry.Clear();
         }
 
-        [Test]
-        public void InterceptsPrimitiveParsing()
-        {
-            var faker = new Faker();
+        //[Test]
+        //public void InterceptsPrimitiveParsing()
+        //{
+        //    var faker = new Faker();
 
-            faker.CallsTo(() => bool.Parse("")).ByReplacingWith((string x) => false);
-            //faker.CallsTo(() => int.Parse("")).ByReplacingWith((string x) => 4);
-            faker.CallsTo(() => decimal.Parse("")).ByReplacingWith((string x) => 3.14M);
+        //    faker.CallsTo(() => bool.Parse("")).ByReplacingWith((string x) => false);
+        //    faker.CallsTo(() => int.Parse("")).ByReplacingWith((string x) => 4);
+        //    faker.CallsTo(() => decimal.Parse("")).ByReplacingWith((string x) => 3.14M);
+
+        //    var code = new CodeWithMscorlibDependencies();
+        //    var result = code.ParsesHardCodedStrings();
+
+        //    Assert.AreEqual(false, result.FirstValue);
+        //    Assert.AreEqual(4, result.SecondValue);
+        //    Assert.AreEqual(3.14M, result.ThirdValue);
+        //}
+
+        //[Test]
+        //public void InterceptsCreateDelegate()
+        //{
+        //    var fake = new Faker();
+        //    var wasCalled = false;
+        //    VoidAction setWasCalledEqualToTrue = () => { wasCalled = true; };
+        //    Delegate substitute = setWasCalledEqualToTrue;
+
+        //    fake.CallsTo(() => Delegate.CreateDelegate(null, null)).ByReplacingWith((Type t, MethodInfo m) => substitute);
+
+        //    var code = new CodeWithMscorlibDependencies();
+        //    var createdDelegate = code.CreatesDelegate();
+        //    createdDelegate.DynamicInvoke(null);
+
+        //    Assert.IsTrue(wasCalled);
+        //}
+
+        [Test]
+        public void InterceptsEnvironmentProperty()
+        {
+            var fake = new Faker();
+
+            fake.CallsTo(() => Environment.MachineName).ByReplacingWith(() => "Machine-X");
 
             var code = new CodeWithMscorlibDependencies();
-            var result = code.ParsesHardCodedStrings();
+            var machineName = code.GetsMachineName();
 
-            Assert.AreEqual(false, result.FirstValue);
-            //Assert.AreEqual(4, result.SecondValue);
-            Assert.AreEqual(3.14M, result.ThirdValue);
+            Assert.AreEqual("Machine-X", machineName);
         }
     }
 }

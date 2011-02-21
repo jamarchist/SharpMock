@@ -36,6 +36,12 @@ namespace SharpMock.Core.Syntax
             return this;
         }
 
+        public IFakerOptions ByReplacingWith<TArg1, TArg2>(VoidAction<TArg1, TArg2> replacement)
+        {
+            currentExpectations.Replacement = replacement;
+            return this;
+        }
+
         public IFakerOptions ByReplacingWith<TReturnValue>(Function<TReturnValue> replacement)
         {
             currentExpectations.Replacement = replacement;
@@ -43,6 +49,12 @@ namespace SharpMock.Core.Syntax
         }
 
         public IFakerOptions ByReplacingWith<TInterceptedArgument, TReturnValue>(Function<TInterceptedArgument, TReturnValue> replacement)
+        {
+            currentExpectations.Replacement = replacement;
+            return this;
+        }
+
+        public IFakerOptions ByReplacingWith<TArg1, TArg2, TReturnValue>(Function<TArg1, TArg2, TReturnValue> replacement)
         {
             currentExpectations.Replacement = replacement;
             return this;

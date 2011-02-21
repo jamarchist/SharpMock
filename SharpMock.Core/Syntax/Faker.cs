@@ -10,9 +10,19 @@ namespace SharpMock.Core.Syntax
     {
         public IFakerOptions CallsTo(VoidAction methodToRecord)
         {
+            return RecordCallsTo(methodToRecord);
+        }
+
+        public IFakerOptions CallsTo<TResult>(Function<TResult> propertyToRecord)
+        {
+            return RecordCallsTo(propertyToRecord);
+        }
+
+        private static IFakerOptions RecordCallsTo(Delegate method)
+        {
             InterceptorRegistry.Record();
 
-            methodToRecord();
+            method.DynamicInvoke(null);
             var expectations = InterceptorRegistry.GetCurrentRecorder().GetExpectations();
 
             var interceptor = new CompoundInterceptor(
