@@ -48,7 +48,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
                     if (!firstMethodCall.IsStaticCall)
                     {
-                        firstMethodCall.Arguments.Add(firstMethodCall.ThisArgument);
+                        firstMethodCall.Arguments.Insert(0, firstMethodCall.ThisArgument);
                         firstMethodCall.IsStaticCall = true;
                         firstMethodCall.IsVirtualCall = false;
                         firstMethodCall.ThisArgument = CodeDummy.Expression;

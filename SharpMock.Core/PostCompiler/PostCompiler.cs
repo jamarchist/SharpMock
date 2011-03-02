@@ -174,15 +174,17 @@ namespace SharpMock.PostCompiler.Core
 
 			    var fakeMethod = methodClass.AddPublicStaticMethod(method.Name.Value, method.Type, host);
 
-				foreach (var parameter in method.Parameters)
-				{
-				    fakeMethod.AddParameter(parameter.Index, "p" + parameter.Index, parameter.Type, host);
-                }
-
                 // if it's an instance method, we add a parameter at the end for the target
+			    ushort extraParameters = 0;
                 if (!method.ResolvedMethod.IsStatic)
                 {
-                    fakeMethod.AddParameter(method.ParameterCount, "target", method.ContainingType, host);
+                    fakeMethod.AddParameter(0, "target", method.ContainingType, host);
+                    extraParameters = 1;
+                }
+
+				foreach (var parameter in method.Parameters)
+				{
+				    fakeMethod.AddParameter((ushort)(parameter.Index + extraParameters), "p" + parameter.Index, parameter.Type, host);
                 }
 
 				fakeMethod.Body = GetBody(host, fakeMethod, method);

@@ -55,6 +55,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         private void BuildMethodTemplate()
         {
+            var ParamBindings = new Dictionary<string, IBoundExpression>();
+            if (!Context.OriginalCall.ResolvedMethod.IsStatic)
+            {
+                var targetBinding = new BoundExpression();
+                var ps = new List<IParameterDefinition>(Context.FakeMethod.Parameters);
+                targetBinding.Definition = ps[0];
+                targetBinding.Type = ps[0].Type;
+
+                ParamBindings.Add(ps[0].Name.Value, targetBinding);
+            }
+
             //  ...
             //  var interceptedType = typeof (#SOMETYPE#);
             //  ...
@@ -113,18 +124,19 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var genericListOfObjectsDeclaration =
                 Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>());
 
+            // This may not actually be generic
             var openGenericFunction = GetOpenGenericFunction();
 
             var closedGenericFunction = new GenericTypeInstanceReference();
             closedGenericFunction.GenericType = openGenericFunction;
-            foreach (var originalParameter in Context.FakeMethod.Parameters)
+            foreach (var originalParameter in Context.OriginalCall.Parameters)
             {
                 closedGenericFunction.GenericArguments.Add(originalParameter.Type);
 
-                if (!Context.OriginalCall.ResolvedMethod.IsStatic)
-                {
-                    closedGenericFunction.GenericArguments.RemoveAt(closedGenericFunction.GenericArguments.Count - 1);
-                }
+                //if (!Context.OriginalCall.ResolvedMethod.IsStatic)
+                //{
+                //    closedGenericFunction.GenericArguments.RemoveAt(0);
+                //}
             }
             // abstract
             AddReturnTypeSpecificGenericArguments(closedGenericFunction);
@@ -133,8 +145,14 @@ namespace SharpMock.Core.PostCompiler.Replacement
             closedGenericFunction.TypeCode = PrimitiveTypeCode.NotPrimitive;
             closedGenericFunction.PlatformType = Context.Host.PlatformType;
 
+            ITypeReference func = openGenericFunction;
+            if (openGenericFunction.ResolvedType.IsGeneric)
+            {
+                func = closedGenericFunction;
+            }
+
             var anonymousMethod = new AnonymousDelegate();
-            anonymousMethod.Type = closedGenericFunction;
+            anonymousMethod.Type = func; //closedGenericFunction;
             anonymousMethod.ReturnType = Context.FakeMethod.Type;
             anonymousMethod.CallingConvention = CallingConvention.HasThis;
 
@@ -172,7 +190,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             if (!Context.OriginalCall.ResolvedMethod.IsStatic)
             {
-                addMethodCallStatements.RemoveAt(addMethodCallStatements.Count - 1);
+                addMethodCallStatements.RemoveAt(0);
             }
 
             var originalCallArguments = new List<IExpression>();
@@ -198,8 +216,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
             else
             {
-                var target = originalCallArguments[originalCallArguments.Count - 1];
-                originalCallArguments.RemoveAt(originalCallArguments.Count - 1);
+                var target = originalCallArguments[0];
+                originalCallArguments.RemoveAt(0);
 
                 originalMethodCall = Call.Method(Context.OriginalCall)
                                         .ThatReturns(Context.OriginalCall.Type)
@@ -244,8 +262,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // ...
             // invocation.Target = null;
             // ...
-            var setTargetStatement = Statements.Execute(
-                    Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"));
+            ExpressionStatement setTargetStatement = null;
+            if (Context.OriginalCall.ResolvedMethod.IsStatic)
+            {
+                setTargetStatement = Statements.Execute(
+                    Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"));                
+            }
+            else
+            {
+                setTargetStatement = Statements.Execute(
+                    Call.PropertySetter<object>("Target").WithArguments(ParamBindings["target"]).On("invocation"));
+            }
 
             // ...
             // invocation.Arguments = arguments;

@@ -27,7 +27,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
                 if (!methodCall.IsStaticCall)
                 {
-                    mutableMethodCall.Arguments.Add(mutableMethodCall.ThisArgument);
+                    mutableMethodCall.Arguments.Insert(0, mutableMethodCall.ThisArgument);
                     mutableMethodCall.IsStaticCall = true;
                     mutableMethodCall.IsVirtualCall = false;
                     mutableMethodCall.ThisArgument = CodeDummy.Expression;
