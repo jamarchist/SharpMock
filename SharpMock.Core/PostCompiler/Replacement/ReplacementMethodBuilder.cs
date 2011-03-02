@@ -120,6 +120,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
             foreach (var originalParameter in Context.FakeMethod.Parameters)
             {
                 closedGenericFunction.GenericArguments.Add(originalParameter.Type);
+
+                if (!Context.OriginalCall.ResolvedMethod.IsStatic)
+                {
+                    closedGenericFunction.GenericArguments.RemoveAt(closedGenericFunction.GenericArguments.Count - 1);
+                }
             }
             // abstract
             AddReturnTypeSpecificGenericArguments(closedGenericFunction);
@@ -165,6 +170,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 addMethodCallStatements.Add(addArgumentCallExpression);
             }
 
+            if (!Context.OriginalCall.ResolvedMethod.IsStatic)
+            {
+                addMethodCallStatements.RemoveAt(addMethodCallStatements.Count - 1);
+            }
+
             var originalCallArguments = new List<IExpression>();
             foreach (var parameter in anonymousMethod.Parameters)
             {
@@ -178,10 +188,25 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // ...
             // 
             // ...
-            var originalMethodCall = Call.StaticMethod(Context.OriginalCall)
+            MethodCall originalMethodCall = null;
+            if (Context.OriginalCall.ResolvedMethod.IsStatic)
+            {
+                originalMethodCall = Call.StaticMethod(Context.OriginalCall)
+                                            .ThatReturns(Context.OriginalCall.Type)
+                                            .WithArguments(originalCallArguments.ToArray()) 
+                                            .On(Context.OriginalCall.ResolvedMethod.ContainingTypeDefinition);               
+            }
+            else
+            {
+                var target = originalCallArguments[originalCallArguments.Count - 1];
+                originalCallArguments.RemoveAt(originalCallArguments.Count - 1);
+
+                originalMethodCall = Call.Method(Context.OriginalCall)
                                         .ThatReturns(Context.OriginalCall.Type)
-                                        .WithArguments(originalCallArguments.ToArray()) 
-                                        .On(Context.OriginalCall.ResolvedMethod.ContainingTypeDefinition);
+                                        .WithArguments(originalCallArguments.ToArray())
+                                        .On(target);
+            }
+
 
             var anonymousMethodBody = new BlockStatement();
             anonymousMethod.Body = anonymousMethodBody;
@@ -243,43 +268,43 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var interceptionResultDeclaration = AddInterceptionResultHandling(returnStatement);
 
             Context.Block.Statements.Add(registryInterceptorDeclaration);
-            WriteOut("registry interceptor declared");
+            //WriteOut("registry interceptor declared");
             Context.Block.Statements.Add(invocationObjectDeclaration);
-            WriteOut("invocation object declared");
+            //WriteOut("invocation object declared");
             Context.Block.Statements.Add(interceptedTypeDeclaration);
-            WriteOut("intercepted type declared");
+            //WriteOut("intercepted type declared");
             Context.Block.Statements.Add(parameterTypesDeclaration);
-            WriteOut("parameter types declared");
+            //WriteOut("parameter types declared");
             foreach (var arrayElementAssigment in arrayElementAssignments)
             {
                 Context.Block.Statements.Add(arrayElementAssigment);
-                WriteOut("array element assigned");
+                //WriteOut("array element assigned");
             }
             Context.Block.Statements.Add(interceptedMethodDeclaration);
-            WriteOut("intercepted method declared");
+            //WriteOut("intercepted method declared");
             Context.Block.Statements.Add(delegateDeclaration);
-            WriteOut("delegate declared");
+            //WriteOut("delegate declared");
             Context.Block.Statements.Add(genericListOfObjectsDeclaration);
-            WriteOut("generic list of objects declared");
+            //WriteOut("generic list of objects declared");
             foreach (var addStatement in addMethodCallStatements)
             {
                 Context.Block.Statements.Add(addStatement);
-                WriteOut("method call statement added");
+                //WriteOut("method call statement added");
             }
 
             Context.Block.Statements.Add(setDelegateStatement);
-            WriteOut("delegate set");
+            //WriteOut("delegate set");
             Context.Block.Statements.Add(setArgumentsStatement);
-            WriteOut("argument set");
+            //WriteOut("argument set");
             Context.Block.Statements.Add(setTargetStatement);
 
             Context.Block.Statements.Add(shouldInterceptCall);
-            WriteOut("shouldintercept called");
+            //WriteOut("shouldintercept called");
             Context.Block.Statements.Add(interceptMethodCallStatement);
-            WriteOut("intercept called");
+            //WriteOut("intercept called");
 
             AddInterceptionExtraResultHandling(interceptionResultDeclaration);
-            WriteOut("result declared");
+            //WriteOut("result declared");
             
             Context.Block.Statements.Add(returnStatement);
         }

@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core.CodeConstruction;
 using AssemblyReference = Microsoft.Cci.MutableCodeModel.AssemblyReference;
@@ -112,7 +113,7 @@ namespace SharpMock.PostCompiler.Core
 
         private static IAssembly ScanForStaticMethodCalls(IAssembly assembly, IMetadataHost host)
         {
-            var registrar = new StaticMethodCallRegistrar();
+            var registrar = new StaticMethodCallRegistrar(host);
             registrar.Visit(assembly);
             return assembly;
         }
@@ -126,7 +127,7 @@ namespace SharpMock.PostCompiler.Core
 
         private static IAssembly ReplaceStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
         {
-            var methodCallReplacer = new StaticMethodCallReplacer();
+            var methodCallReplacer = new StaticMethodCallReplacer(host);
             methodCallReplacer.Visit(mutableAssembly);
             return mutableAssembly;
         }
@@ -162,7 +163,6 @@ namespace SharpMock.PostCompiler.Core
 			            lastNs = lastNs.AddNestedNamespace(element, host);
                     }
 
-			        //var ns = mutableAssembly.UnitNamespaceRoot.AddNestedNamespace(method.Name.Value + "NS", host);
 			        methodClass = lastNs.AddStaticClass(mutableAssembly, qualifiedMethodPath.GetClassName(), host);
 
                     createdPaths.Add(qualifiedMethodPath, methodClass);
@@ -177,13 +177,25 @@ namespace SharpMock.PostCompiler.Core
 				foreach (var parameter in method.Parameters)
 				{
 				    fakeMethod.AddParameter(parameter.Index, "p" + parameter.Index, parameter.Type, host);
-				}
+                }
+
+                // if it's an instance method, we add a parameter at the end for the target
+                if (!method.ResolvedMethod.IsStatic)
+                {
+                    fakeMethod.AddParameter(method.ParameterCount, "target", method.ContainingType, host);
+                }
 
 				fakeMethod.Body = GetBody(host, fakeMethod, method);
 
+			    var parameterTypes = new List<ITypeDefinition>();
+                foreach (var param in fakeMethod.Parameters)
+                {
+                    parameterTypes.Add(param.Type.ResolvedType);
+                }
+
                 var fakeCallReference = new MethodReference(host, fakeMethod.ContainingTypeDefinition,
                     fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name,
-                    0, method.Parameters);
+                    0, parameterTypes.ToArray());
 
                 MethodReferenceReplacementRegistry.ReplaceWith(method, fakeCallReference);
 			}

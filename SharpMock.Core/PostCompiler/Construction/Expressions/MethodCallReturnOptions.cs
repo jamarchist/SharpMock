@@ -41,6 +41,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
             return On(reflector.Get(staticType));
         }
 
+        public MethodCall On(IExpression target)
+        {
+            return MethodCall(target.Type, target);
+        }
+
         private IMethodReference GetMethodToCall(ITypeReference targetType)
         {
             if (model.IsSetter)

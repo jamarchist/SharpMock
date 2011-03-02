@@ -9,10 +9,10 @@ namespace MethodInterceptionTests
     [TestFixture]
     public class InstanceMethodInterceptionTests
     {
-        [Test, Ignore]
+        [Test]
         public void InterceptsSealedTypeMethod()
         {
-        
+
         }
     }
 }

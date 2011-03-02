@@ -10,5 +10,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
         MethodCall On(ITypeReference type);
         MethodCall On<TTypeWithStaticMethod>();
         MethodCall On(Type staticType);
+        MethodCall On(IExpression target);
     }
 }

@@ -28,7 +28,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
                 MethodCall firstMethodCall = null;
 
-                if (mutableMethodCall.MethodToCall.IsGeneric)
+                if (mutableMethodCall.MethodToCall.IsGeneric && lambda.Parameters.Count == 0)
                 {
                     var firstMethodCallDeclaration = lambdaBody.Statements[0] as LocalDeclarationStatement;
                     firstMethodCall = firstMethodCallDeclaration.InitialValue as MethodCall;
@@ -39,12 +39,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     firstMethodCall = firstMethodCallExpression.Expression as MethodCall;
                 }
 
-                if (firstMethodCall.IsStaticCall &&
+                if (//firstMethodCall.IsStaticCall &&
                     MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
                 {
                     var replacementCall =
                         MethodReferenceReplacementRegistry.GetReplacementFor(firstMethodCall.MethodToCall);
                     firstMethodCall.MethodToCall = replacementCall;
+
+                    if (!firstMethodCall.IsStaticCall)
+                    {
+                        firstMethodCall.Arguments.Add(firstMethodCall.ThisArgument);
+                        firstMethodCall.IsStaticCall = true;
+                        firstMethodCall.IsVirtualCall = false;
+                        firstMethodCall.ThisArgument = CodeDummy.Expression;
+                    }
                 }
             }
             base.Visit(methodCall);

@@ -43,6 +43,12 @@ namespace Scenarios
             return new Tuple<string, string>(firstResult, secondResult);
         }
 
+        public void CallsSealedMethod()
+        {
+            var s = new SealedClass();
+            s.VoidReturnNoParameters();
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{
@@ -98,30 +104,29 @@ namespace Scenarios
         //}
 
         //// For instance methods
-        public static decimal DecimalParse(string x)
+        public static void VoidReturnNoParameters(SealedClass c)
         {
-            Function<string, decimal> originalCall =
-                (replacedX) => decimal.Parse("blah");
-
-            var interceptedType = typeof(decimal);
-            var parameterTypes = new Type[1];
-            parameterTypes[0] = typeof(string);
-
-            var interceptedMethod = interceptedType.GetMethod("Parse", parameterTypes);
             var interceptor = new RegistryInterceptor();
+            var invocation = new Invocation();
+            
+            var interceptedType = typeof(SealedClass);
+            var parameterTypes = new Type[0];
+            //parameterTypes[0] = typeof(string);
+
+            var interceptedMethod = interceptedType.GetMethod("VoidReturnNoParameters", parameterTypes);
+            VoidAction<SealedClass> originalCall = (SealedClass s) => s.VoidReturnNoParameters();
 
             var arguments = new List<object>();
-            arguments.Add(x);
-
-            var invocation = new Invocation();
-            invocation.Arguments = arguments;
+            //arguments.Add(x);
+            
             invocation.OriginalCall = originalCall;
-            invocation.Target = null;
+            invocation.Arguments = arguments;
+            invocation.Target = c;
 
             var notUsed = interceptor.ShouldIntercept(interceptedMethod, arguments);
             interceptor.Intercept(invocation);
 
-            return (decimal)invocation.Return;
+            //return (decimal)invocation.Return;
 
             //var interceptor = new RegistryInterceptor();
             //if (interceptor.ShouldIntercept(interceptedMethod))

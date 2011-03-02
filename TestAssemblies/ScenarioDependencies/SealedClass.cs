@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ScenarioDependencies
 {
-    public class SealedClass
+    public sealed class SealedClass
     {
         public void VoidReturnNoParameters()
         {

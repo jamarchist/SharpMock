@@ -1,7 +1,7 @@
 ﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
-namespace SharpMock.PostCompiler.Core.CciExtensions
+namespace SharpMock.Core.PostCompiler.CciExtensions
 {
     public static class NamespaceTypeDefinitionExtensions
     {
