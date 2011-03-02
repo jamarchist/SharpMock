@@ -13,5 +13,14 @@ namespace SharpMock.Core.Interception.Helpers
             var truncatedArguments = args.GetRange(0, parameters.Length);
             return method.DynamicInvoke(truncatedArguments.ToArray());
         }
+
+        public static object[] FakeInvocationArguments(this Delegate method)
+        {
+            var parameters = method.Method.GetParameters();
+            if (parameters.Length == 0) return null;
+
+            var firstParameterType = parameters[0].GetType();
+            return firstParameterType.IsValueType ? new[] {Activator.CreateInstance(firstParameterType)} : new object[] {null};
+        }
     }
 }

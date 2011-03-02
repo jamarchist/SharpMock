@@ -3,6 +3,7 @@ using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
+using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.Syntax
 {
@@ -20,70 +21,16 @@ namespace SharpMock.Core.Syntax
 
         public IFakerOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord)
         {
-            var sealedType = typeof (TInstanceType);
-            object untypedArg = null;
-
-            untypedArg = sealedType.IsValueType ? Activator.CreateInstance(sealedType) : null;
-
-            TInstanceType cheater = (TInstanceType) untypedArg;
-            return RecordCallsTo(instanceMethodToRecord, cheater);
-        }
-
-        private static IFakerOptions RecordCallsTo<TInstanceType>(Delegate method, TInstanceType defaultArgument)
-        {
-            InterceptorRegistry.Record();
-
-            //System.Diagnostics.Debugger.Launch();
-            //var arguments = new object[] {defaultArgument};
-
-            //var voidActionOfSealedType = (VoidAction<TInstanceType>)method;
-            //voidActionOfSealedType(defaultArgument);
-
-            //method.DynamicInvoke(arguments);
-            //method.DynamicInvoke(null);
-
-            method.DynamicInvoke(new object[] { defaultArgument });
-
-            var expectations = InterceptorRegistry.GetCurrentRecorder().GetExpectations();
-
-            var interceptor = new CompoundInterceptor(
-                new EquivalentCallsMatch(expectations.Method),
-                new Assert(() => expectations.Assertions),
-                new InvokeCall(() => expectations.Replacement)
-            );
-
-            InterceptorRegistry.AddInterceptor(interceptor);
-
-            InterceptorRegistry.StopRecording();
-
-            return new FakerOptions(expectations);
+            return RecordCallsTo(instanceMethodToRecord);
         }
 
         private static IFakerOptions RecordCallsTo(Delegate method)
         {
             InterceptorRegistry.Record();
 
-            //System.Diagnostics.Debugger.Launch();
+            var arguments = method.FakeInvocationArguments();
+            method.DynamicInvoke(arguments);
 
-            var parameters = method.Method.GetParameters();
-            if (parameters.Length == 0)
-            {
-                method.DynamicInvoke(null);
-            }
-            else
-            {
-                var firstParameter = parameters[0];
-                if (firstParameter.ParameterType.IsValueType)
-                {
-                    method.DynamicInvoke(Activator.CreateInstance(firstParameter.ParameterType));
-                }
-                else
-                {
-                    method.DynamicInvoke(new object[]{ null });
-                }
-            }
-
-            //method.DynamicInvoke(null);
             var expectations = InterceptorRegistry.GetCurrentRecorder().GetExpectations();
 
             var interceptor = new CompoundInterceptor(
