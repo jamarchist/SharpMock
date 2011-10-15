@@ -89,7 +89,7 @@ namespace SharpMock.PostCompiler.Core
         private static Assembly GetMutableAssembly(string startingAssembly, IMetadataHost host)
         {
             var testAssembly = host.LoadUnitFrom(startingAssembly) as IAssembly;
-            return Decompiler.GetCodeModelFromMetadataModel(host, testAssembly, null);    
+            return Decompiler.GetCodeModelFromMetadataModel(host, testAssembly, null, DecompilerOptions.AnonymousDelegates | DecompilerOptions.Iterators | DecompilerOptions.Loops);
         }
 
         private static void LoadReferencedAssemblies(IUnit assembly, IMetadataHost host)

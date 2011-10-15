@@ -1,4 +1,5 @@
-﻿using Microsoft.Cci;
+﻿using System.Collections.Generic;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.PostCompiler.Core.CciExtensions
@@ -32,6 +33,7 @@ namespace SharpMock.PostCompiler.Core.CciExtensions
             @class.IsSealed = true;
             @class.Name = host.NameTable.GetNameFor(className);
 
+            @class.BaseClasses = new List<ITypeReference>();
             @class.BaseClasses.Add(host.PlatformType.SystemObject);
 
             module.AllTypes.Add(@class);

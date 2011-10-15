@@ -76,7 +76,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
 
                 var genericType = new GenericTypeInstanceReference();
                 var typeDef = Get(type.GetGenericTypeDefinition());
-                genericType.GenericType = typeDef;
+                genericType.GenericType = typeDef as INamedTypeReference; // cheating to compile
                 //var arguments = new ITypeReference[genericArguments.Length];
                 for (int argumentIndex = 0; argumentIndex < genericArguments.Length; argumentIndex++)
                 {

@@ -37,7 +37,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 else
                 {
                     var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
-                    firstMethodCall = firstMethodCallExpression.Expression as MethodCall;    
+                    if (firstMethodCallExpression != null)
+                    {
+                        firstMethodCall = firstMethodCallExpression.Expression as MethodCall;    
+                    }
+                    else
+                    {
+                        var firstMethodCallReturn = lambdaBody.Statements[0] as ReturnStatement;
+                        firstMethodCall = firstMethodCallReturn.Expression as MethodCall;
+                    }
                 }
 
                 

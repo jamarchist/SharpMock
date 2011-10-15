@@ -1,22 +1,16 @@
 ﻿<Project ToolsVersion="4.0" DefaultTargets="CopyDlls" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <CciRootDirectory>C:\Open Source\Microsoft CCI</CciRootDirectory>
-    <SharpMockThirdPartyDirectory>C:\Projects\SharpMock\ThirdParty</SharpMockThirdPartyDirectory>
+    <SharpMockThirdPartyDirectory>C:\Projects\github\SharpMock\ThirdParty</SharpMockThirdPartyDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <CciDlls Include="$(CciRootDirectory)\Sources\MutableCodeModel\bin\Debug\*.dll" />
-    <CciDlls Include="$(CciRootDirectory)\Sources\AstsProjectedAsCodeModel\bin\Debug\Microsoft.Cci.AstsProjectedAsCodeModel.dll" />
-    <CciDlls Include="$(CciRootDirectory)\Sources\ILToCodeModel\bin\Debug\Microsoft.Cci.ILToCodeModel.dll" />
-    <CciDlls Include="$(CciRootDirectory)\Metadata\Sources\PdbReader\bin\Debug\Microsoft.Cci.PdbReader.dll" />
-    <CciDlls Include="$(CciRootDirectory)\Metadata\Sources\PdbReader\bin\Debug\Microsoft.Cci.PeReader.dll" />
-    <CciDlls Include="$(CciRootDirectory)\Metadata\Sources\PdbWriter\bin\Debug\Microsoft.Cci.PdbWriter.dll" />
-    <CciDlls Include="$(CciRootDirectory)\Metadata\Sources\PdbWriter\bin\Debug\Microsoft.Cci.PeWriter.dll" />
+    <CciDlls Include="$(CciRootDirectory)\bin\Debug\*.dll" />
   </ItemGroup>
   <Target Name="CopyDlls">
     <!-- Get latest -->
     <!-- TODO: Add this svn task -->
     <!-- Build -->
-    <MSBuild Projects="$(CciRootDirectory)\Ast.sln" Targets="Rebuild" />
+    <MSBuild Projects="$(CciRootDirectory)\Ast.sln" Targets="Rebuild" Properties="Configuration=Debug;Platform=x86" />
     <!-- Deploy -->
     <Copy 
       SourceFiles="@(CciDlls)" 

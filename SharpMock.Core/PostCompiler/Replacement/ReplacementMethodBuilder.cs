@@ -128,7 +128,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var openGenericFunction = GetOpenGenericFunction();
 
             var closedGenericFunction = new GenericTypeInstanceReference();
-            closedGenericFunction.GenericType = openGenericFunction;
+            closedGenericFunction.GenericType = openGenericFunction as INamedTypeReference; // cheating to compile
             foreach (var originalParameter in Context.OriginalCall.Parameters)
             {
                 closedGenericFunction.GenericArguments.Add(originalParameter.Type);
