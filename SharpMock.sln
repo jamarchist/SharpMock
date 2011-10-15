@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTestsRunner", "T
 		{3E4820EC-1D02-44BE-A686-EDE7934AB327} = {3E4820EC-1D02-44BE-A686-EDE7934AB327}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUtilities", "Tests\TestUtilities\TestUtilities.csproj", "{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -180,6 +182,16 @@ Global
 		{40FE3B1D-9BE6-47FF-8208-5DE6BEC0AF6F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{40FE3B1D-9BE6-47FF-8208-5DE6BEC0AF6F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{40FE3B1D-9BE6-47FF-8208-5DE6BEC0AF6F}.Release|x86.ActiveCfg = Release|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,5 +205,6 @@ Global
 		{62FE0A10-83CC-4105-A783-40C3167F5CA0} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
 		{3E4820EC-1D02-44BE-A686-EDE7934AB327} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
 		{40FE3B1D-9BE6-47FF-8208-5DE6BEC0AF6F} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
+		{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
 	EndGlobalSection
 EndGlobal

@@ -81,6 +81,10 @@
       <Project>{3EE922DC-0821-4630-B51C-23EA4C4EF851}</Project>
       <Name>SharpMock.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestUtilities\TestUtilities.csproj">
+      <Project>{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}</Project>
+      <Name>TestUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

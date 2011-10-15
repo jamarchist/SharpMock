@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using SharpMock.PostCompiler.Core;
+using TestUtilities;
 
 namespace MethodInterceptionTestsRunner
 {
@@ -16,25 +17,12 @@ namespace MethodInterceptionTestsRunner
             //      e) Build of MethodInterceptionTests
 
             //  2) Run SharpMock.PostCompiler.exe from build directory against compiled dll for tests
-            const string testAssemblyLocation = @"C:\Projects\github\SharpMock\Tests\MethodInterceptionTests\bin\Debug\MethodInterceptionTests.dll";
-            const string assemblyToModifyLocation = @"C:\Projects\github\SharpMock\Tests\MethodInterceptionTests\bin\Debug\Scenarios.dll";
+            var assemblyLocations = new AssemblyLocations(
+                @"C:\Projects\github\SharpMock\Tests\MethodInterceptionTests\bin\Debug\MethodInterceptionTests.dll", 
+                @"C:\Projects\github\SharpMock\Tests\MethodInterceptionTests\bin\Debug\Scenarios.dll");
 
-            var postCompilerArgs = new PostCompilerArgs(new[]{ testAssemblyLocation, assemblyToModifyLocation });
-            var postCompiler = new PostCompiler(postCompilerArgs);
-            postCompiler.InterceptAllStaticMethodCalls();
-
-            //  3) Run tests (against modified dll)
-            const string nunitConsoleLocation = @"C:\Projects\github\SharpMock\packages\NUnit.2.5.7.10213\Tools\nunit-console.exe";
-            var nunitConsole = new Process();
-            var nunitArgs = new ProcessStartInfo(nunitConsoleLocation, WrapInQuotes(testAssemblyLocation) + " /wait");
-            nunitConsole.StartInfo = nunitArgs;
-            nunitConsole.Start();
-            nunitConsole.WaitForExit();
-        }
-
-        private static string WrapInQuotes(string path)
-        {
-            return String.Format("\"{0}\"", path);
+            var runner = new StaticMethodCallInterceptionTestRunner(assemblyLocations);
+            runner.RunTests();
         }
     }
 }

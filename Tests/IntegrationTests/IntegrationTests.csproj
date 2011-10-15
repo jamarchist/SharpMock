@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="MockingTests.cs" />
     <Compile Include="MscorlibDependencyTests.cs" />
+    <Compile Include="PeVerifyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SealedMethodTests.cs" />
   </ItemGroup>
@@ -88,6 +89,10 @@
     <ProjectReference Include="..\..\TestAssemblies\Scenarios\Scenarios.csproj">
       <Project>{87AEE727-15CD-4ED4-A2F1-0EA9AF036FA6}</Project>
       <Name>Scenarios</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestUtilities\TestUtilities.csproj">
+      <Project>{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}</Project>
+      <Name>TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
