@@ -25,6 +25,11 @@ namespace Scenarios
             Console.WriteLine("This should not appear.");
         }
 
+        public void CallsConsoleWriteLineNotIntercepted()
+        {
+            Console.WriteLine("This *should* appear.");
+        }
+
         public void CallsConsoleWriteLineFormatStingOverload()
         {
             Console.WriteLine("{0}-{0} should not appear.", 1, "This");

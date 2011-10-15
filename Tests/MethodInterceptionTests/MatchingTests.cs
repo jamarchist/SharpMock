@@ -50,7 +50,7 @@ namespace MethodInterceptionTests
                 ));
 
             var mocked = new CodeUnderTest();
-            mocked.CallsConsoleWriteLine();
+            mocked.CallsConsoleWriteLineNotIntercepted();
 
             Assert.AreNotEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);
         }
@@ -106,7 +106,7 @@ namespace MethodInterceptionTests
                 ));
 
             var mocked = new CodeUnderTest();
-            mocked.CallsConsoleWriteLine();
+            mocked.CallsConsoleWriteLineNotIntercepted();
 
             Assert.AreNotEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);
         }
