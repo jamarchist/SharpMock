@@ -20,7 +20,8 @@ public class PeVerifyResult
     public int ExitCode;
     public string AssemblyName;
     public List<string> Errors;
-    public List<string> MetaDataErrors; 
+    public List<string> MetaDataErrors;
+    public string StandardOutput;
 
     public string NormalizeErrorString(string error)
     {
@@ -53,7 +54,7 @@ public class PeVerify
         PeVerifyResult result = RunPeVerifyOnAssembly(assemblyName);
         if (result.ExitCode != 0 && !verificationMayFail)
         {
-            throw new Exception("PeVerify Failed with " + result.Errors.Count + " different errors.");
+            throw new Exception("PeVerify Failed with " + result.Errors.Count + " different IL errors and " + result.MetaDataErrors.Count + " different MD errors." + Environment.NewLine + result.StandardOutput);
         }
         return result;
     }
@@ -109,6 +110,7 @@ public class PeVerify
 
         string stdOut, stdErr;
         result.ExitCode = StartAndWaitForResult(PeVerifyPath, assemblyName + " /UNIQUE /IL /NOLOGO /MD", out stdOut, out stdErr);
+        result.StandardOutput = stdOut;
         ParseErrors(result, stdOut);
 
         return result;
