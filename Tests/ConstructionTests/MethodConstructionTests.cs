@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using NUnit.Framework;
 using SharpMock.Core;
-using SharpMock.Core.PostCompiler.Construction.Assemblies;
+using SharpMock.Core.PostCompiler.Construction.Methods;
 
 namespace ConstructionTests
 {
@@ -25,13 +25,33 @@ namespace ConstructionTests
         }
 
         [Test]
-        public void CanCreateEmptyPublicStaticMethod()
+        public void CanCreateStaticMethod()
         {
             InStaticClass(createMethod => createMethod.Public.Static.Named("TestMethod"));
 
             var testMethod = GetMethodFromTestClass("TestMethod");
             Assert.IsNotNull(testMethod);
             Assert.IsTrue(testMethod.IsStatic);
+        }
+
+        [Test]
+        public void CanCreateMethodThatReturnsVoid()
+        {
+            InStaticClass(createMethod => createMethod.Public.Static.Named("TestMethod"));
+
+            var testMethod = GetMethodFromTestClass("TestMethod");
+            Assert.IsNotNull(testMethod);
+            Assert.AreEqual(typeof(void), testMethod.ReturnType);
+        }
+
+        [Test]
+        public void CanCreateEmptyStaticMethodReturningString()
+        {
+            InStaticClass(createMethod => createMethod.Public.Static.Named("TestMethod").Returning<string>());
+
+            var testMethod = GetMethodFromTestClass("TestMethod");
+            Assert.IsNotNull(testMethod);
+            Assert.AreEqual(typeof(string), testMethod.ReturnType);
         }
     }
 }
