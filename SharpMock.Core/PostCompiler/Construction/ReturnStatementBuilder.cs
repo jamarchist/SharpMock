@@ -1,7 +1,8 @@
 ﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.PostCompiler.Core.CodeConstruction;
 
-namespace SharpMock.PostCompiler.Core.CodeConstruction
+namespace SharpMock.Core.PostCompiler.Construction
 {
     public class ReturnStatementBuilder : IReturnStatementBuilder
     {
@@ -30,6 +31,34 @@ namespace SharpMock.PostCompiler.Core.CodeConstruction
         {
             @return.Expression = new CompileTimeConstant();
             return this;
+        }
+    }
+
+    public interface ICodeReturnStatementBuilder
+    {
+        IStatement Variable(IBoundExpression localVariable);
+        IStatement Null();
+        IStatement Void();
+    }
+
+    public class CodeReturnStatementBuilder : ICodeReturnStatementBuilder
+    {
+        private readonly ReturnStatement @return = new ReturnStatement();
+
+        public IStatement Variable(IBoundExpression localVariable)
+        {
+            @return.Expression = localVariable;
+            return @return;
+        }
+
+        public IStatement Null()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IStatement Void()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

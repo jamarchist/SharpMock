@@ -8,5 +8,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         public bool IsStatic { get; set; }
         public string Name { get; set; }
         public Type ReturnType { get; set; }
+        public VoidAction<ICodeBuilder> MethodBody { get; set; } 
     }
 }

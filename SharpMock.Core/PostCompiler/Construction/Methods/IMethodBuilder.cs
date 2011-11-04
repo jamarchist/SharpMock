@@ -4,7 +4,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
     {
         IMethodBuilder Named(string methodName);
         IMethodBuilder WithParameters();
-        IMethodBuilder WithBody();
+        IMethodBuilder WithBody(VoidAction<ICodeBuilder> code);
         IMethodBuilder Returning<TReturnType>();
     }
 }

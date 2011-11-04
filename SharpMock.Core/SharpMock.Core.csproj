@@ -150,10 +150,14 @@
     <Compile Include="PostCompiler\Construction\Classes\IClassAccessiblityOptions.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassModifierOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\CodeBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\ICodeBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\IMethodAccessibilityOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\IMethodBodyBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\IMethodBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\IMethodModifierOptions.cs" />
     <Compile Include="PostCompiler\Construction\Methods\MethodAcessibilityOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\MethodBodyBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\MethodBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\MethodConfiguration.cs" />
     <Compile Include="PostCompiler\Construction\Methods\MethodModifierOptions.cs" />

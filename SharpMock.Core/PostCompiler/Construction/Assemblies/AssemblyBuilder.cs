@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Classes;
+using SharpMock.Core.PostCompiler.Construction.Methods;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 
 namespace SharpMock.Core.PostCompiler.Construction.Assemblies
@@ -86,9 +87,20 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
                         returnStatement.Expression = new CompileTimeConstant();
                     }
 
+                    if (methodConfiguration.MethodBody != null)
+                    {
+                        var codeBuilder = new CodeBuilder(host);
+                        methodConfiguration.MethodBody(codeBuilder);
+
+                        foreach (var statement in codeBuilder.Statements)
+                        {
+                            block.Statements.Add(statement);
+                        }
+                    }
+
                     // "Stack must be empty on return from a void method"
                     //returnStatement.Expression = new CompileTimeConstant();
-                    block.Statements.Add(returnStatement);
+                    //block.Statements.Add(returnStatement);
 
                     methodBody.Block = block;
 

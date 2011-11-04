@@ -20,9 +20,10 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             throw new System.NotImplementedException();
         }
 
-        public IMethodBuilder WithBody()
+        public IMethodBuilder WithBody(VoidAction<ICodeBuilder> code)
         {
-            throw new System.NotImplementedException();
+            config.MethodBody = code;
+            return this;
         }
 
         public IMethodBuilder Returning<TReturnType>()

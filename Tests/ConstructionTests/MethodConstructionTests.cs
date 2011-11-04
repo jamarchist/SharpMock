@@ -47,7 +47,14 @@ namespace ConstructionTests
         [Test]
         public void CanCreateEmptyStaticMethodReturningString()
         {
-            InStaticClass(createMethod => createMethod.Public.Static.Named("TestMethod").Returning<string>());
+            InStaticClass(createMethod => createMethod.Public.Static
+                .Named("TestMethod")
+                .Returning<string>()
+                .WithBody(code =>
+                              {
+                                  code.AddLine( x => x.Declare.Variable<string>("returnValue").As(x.Constant.Of("something")) );
+                                  code.AddLine( x => x.Return.Variable(x.Locals["returnValue"]) );
+                              }));
 
             var testMethod = GetMethodFromTestClass("TestMethod");
             Assert.IsNotNull(testMethod);
