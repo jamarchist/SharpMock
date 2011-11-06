@@ -34,7 +34,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
                 var parameterDefinition = new ParameterDefinition();
                 parameterDefinition.Index = (ushort) parameter.Position;
                 parameterDefinition.Type = reflector.Get(parameter.ParameterType);
-                parameterDefinition.Name = host.NameTable.GetNameFor("alterted" + parameter.Name);
+                parameterDefinition.Name = host.NameTable.GetNameFor("altered" + parameter.Name);
                 parameterDefinition.ContainingSignature = method;
 
                 method.Parameters.Add(parameterDefinition);

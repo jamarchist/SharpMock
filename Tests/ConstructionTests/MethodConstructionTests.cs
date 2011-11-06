@@ -106,8 +106,9 @@ namespace ConstructionTests
                         x.Anon.Of<Function<string, bool>>()
                             .WithBody(anonCode =>
                             {
-                                anonCode.AddLine(z => z.Declare.Variable<bool>("constantReturn").As(z.Constant.Of(false)));
-                                anonCode.AddLine(z => z.Return.Variable(z.Locals["constantReturn"]));
+                                anonCode.AddLine(z => z.Declare.Variable<bool>("originalReturn").As(
+                                    z.Call.StaticMethod("IsNullOrEmpty", typeof(string)).ThatReturns<bool>().WithArguments(z.Params["alteredarg"]).On<String>()));
+                                anonCode.AddLine(z => z.Return.Variable(z.Locals["originalReturn"]));
                             })));
                     code.AddLine( x => x.Declare.Variable<List<object>>("arguments").As(x.Create.New<List<object>>()) );
                     code.AddLine( x => x.Do(x.Call.VirtualMethod("Add", typeof(object))
