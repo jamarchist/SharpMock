@@ -4,5 +4,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
     {
         void Name(string assemblyName);
         ITypeOptions Type { get; }
+        IReferenceOptions ReferenceTo { get; }
     }
 }

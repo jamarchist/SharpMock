@@ -41,7 +41,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private void CreateDslContext()
         {
             Reflector = new UnitReflector(Context.Host);
-            Locals = new LocalVariableBindings();
+            Locals = new LocalVariableBindings(Reflector);
             Define = new DefinitionBuilder(Reflector, Locals, Context.Host.NameTable);
             Create = new InstanceCreator(Reflector);
             Declare = new DeclarationBuilder(Define);

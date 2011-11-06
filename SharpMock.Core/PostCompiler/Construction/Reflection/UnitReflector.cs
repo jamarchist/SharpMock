@@ -100,6 +100,12 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             return Get(typeof (TReflectionType));
         }
 
+        public ITypeReference GetGeneric(Type genericType, Type[] typeParameters)
+        {
+            var generic = Get(genericType) as INamespaceTypeReference;
+            return null;
+        }
+
         public ITypeDefinitionExtensions Extend(ITypeReference type)
         {
             return new TypeDefinitionExtensions(type.ResolvedType, nameTable, this);

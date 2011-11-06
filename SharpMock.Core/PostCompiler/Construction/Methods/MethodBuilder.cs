@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace SharpMock.Core.PostCompiler.Construction.Methods
 {
     internal class MethodBuilder : IMethodBuilder
@@ -15,9 +18,10 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             return this;
         }
 
-        public IMethodBuilder WithParameters()
+        public IMethodBuilder WithParameters(Dictionary<string, Type> parameters)
         {
-            throw new System.NotImplementedException();
+            foreach (var parameter in parameters) config.Parameters.Add(parameter);
+            return this;
         }
 
         public IMethodBuilder WithBody(VoidAction<ICodeBuilder> code)

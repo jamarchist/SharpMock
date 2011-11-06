@@ -40,11 +40,16 @@ namespace ConstructionTests
         [TearDown]
         public void DeleteTestFile()
         {
-            PeVerify.VerifyAssembly(AssemblyFileName);
-
-            if (File.Exists(AssemblyFileName))
+            try
             {
-                File.Delete(AssemblyFileName);
+                PeVerify.VerifyAssembly(AssemblyFileName);
+            }
+            finally
+            {
+                if (File.Exists(AssemblyFileName))
+                {
+                    File.Delete(AssemblyFileName);
+                }                
             }
         }
     }

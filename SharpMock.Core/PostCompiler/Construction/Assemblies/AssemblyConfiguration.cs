@@ -8,9 +8,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
         public AssemblyConfiguration()
         {
             Classes = new List<ClassConfiguration>();
+            ReferencePaths = new List<string>();
         }
 
         public string Name { get; set; }
         public IList<ClassConfiguration> Classes { get; private set; }
+        public IList<string> ReferencePaths { get; private set; } 
     }
 }

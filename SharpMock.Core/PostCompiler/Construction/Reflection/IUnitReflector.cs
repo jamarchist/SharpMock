@@ -8,6 +8,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
     {
         ITypeReference Get(Type type);
         ITypeReference Get<TReflectionType>();
+        ITypeReference GetGeneric(Type genericType, Type[] typeParameters);
         ITypeDefinitionExtensions Extend(ITypeReference type);
         ITypeDefinitionExtensions From<TReflectionType>();
         ITypeDefinitionExtensions From(ITypeReference type);

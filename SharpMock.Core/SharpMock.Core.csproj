@@ -140,7 +140,9 @@
     <Compile Include="PostCompiler\CciExtensions\NamespaceTypeDefinitionExtensions.cs" />
     <Compile Include="PostCompiler\Construction\Assemblies\AssemblyBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Assemblies\AssemblyConfiguration.cs" />
+    <Compile Include="PostCompiler\Construction\Assemblies\IReferenceOptions.cs" />
     <Compile Include="PostCompiler\Construction\Assemblies\ITypeOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Assemblies\ReferenceOptions.cs" />
     <Compile Include="PostCompiler\Construction\Classes\ClassAccessibilityOptions.cs" />
     <Compile Include="PostCompiler\Construction\Classes\ClassBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Classes\ClassConfiguration.cs" />
@@ -150,7 +152,11 @@
     <Compile Include="PostCompiler\Construction\Classes\IClassAccessiblityOptions.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassModifierOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\AnonymousMethodBodyBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\IAnonymousMethodTypeOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\AnonymousMethodTypeOptions.cs" />
     <Compile Include="PostCompiler\Construction\Methods\CodeBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\IAnonymousMethodBodyBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\ICodeBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\IMethodAccessibilityOptions.cs" />
     <Compile Include="PostCompiler\Construction\Methods\IMethodBodyBuilder.cs" />
@@ -181,9 +187,14 @@
     <Compile Include="PostCompiler\Construction\Definitions\IDefinitionBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Declarations\IDynamicDeclarationOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IInstanceCreator.cs" />
+    <Compile Include="PostCompiler\Construction\Methods\ParameterInfoExtensions.cs" />
     <Compile Include="PostCompiler\Construction\StatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\TypeOperatorBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\ArrayIndexerOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\ArrayVariableOptions.cs" />
     <Compile Include="PostCompiler\Construction\Variables\CompileTimeConstantBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\IArrayIndexerOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\IArrayVariableOptions.cs" />
     <Compile Include="PostCompiler\Construction\Variables\ICompileTimeConstantBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Variables\ILocalVariableBindings.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallArgumentOptions.cs" />
@@ -191,6 +202,8 @@
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IMethodCallReturnOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\InstanceCreator.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\IParameterBindings.cs" />
+    <Compile Include="PostCompiler\Construction\Variables\ParameterBindings.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />
     <Compile Include="PostCompiler\Construction\IReturnStatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\IStatementBuilder.cs" />

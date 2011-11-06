@@ -8,9 +8,9 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         private readonly IList<IStatement> statements = new List<IStatement>();
         private readonly IMethodBodyBuilder body;
 
-        public CodeBuilder(IMetadataHost host)
+        public CodeBuilder(IMetadataHost host, IEnumerable<IParameterDefinition> parameters)
         {
-            body = new MethodBodyBuilder(host);
+            body = new MethodBodyBuilder(host, parameters);
         }
 
         public void AddLine(Function<IMethodBodyBuilder, IStatement> x)
@@ -18,7 +18,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             statements.Add(x(body));
         }
 
-        public IList<IStatement> Statements
+        internal IList<IStatement> Statements
         {
             get { return statements; }
         } 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Cci;
 using SharpMock.Core.PostCompiler.Construction.ControlFlow;
 using SharpMock.Core.PostCompiler.Construction.Conversions;
@@ -22,11 +23,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         private readonly ICompileTimeConstantBuilder constant;
         private readonly IIfStatementBuilder @if;
         private readonly ICodeReturnStatementBuilder @return;
+        private readonly IAnonymousMethodTypeOptions anonymousMethod;
+        private readonly IStatementBuilder statement;
+        private readonly IParameterBindings @params;
 
-        public MethodBodyBuilder(IMetadataHost host)
+        public MethodBodyBuilder(IMetadataHost host, IEnumerable<IParameterDefinition> parameters)
         {
             reflector = new UnitReflector(host);
-            locals = new LocalVariableBindings();
+            locals = new LocalVariableBindings(reflector);
             define = new DefinitionBuilder(reflector, locals, host.NameTable);
             create = new InstanceCreator(reflector);
             declare = new DeclarationBuilder(define);
@@ -36,6 +40,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             constant = new CompileTimeConstantBuilder(reflector);
             @if = new IfStatementBuilder();
             @return = new CodeReturnStatementBuilder();
+            anonymousMethod = new AnonymousMethodTypeOptions(host, reflector);
+            statement = new StatementBuilder();
+            @params = new ParameterBindings();
+
+            foreach (var parameter in parameters)
+            {
+                @params.AddBinding(parameter);
+            }
         }
 
         public IUnitReflector Reflector
@@ -46,6 +58,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         public ILocalVariableBindings Locals
         {
             get { return locals; }
+        }
+
+        public IParameterBindings Params
+        {
+            get { return @params; }
         }
 
         public IDefinitionBuilder Define
@@ -91,6 +108,16 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         public ICodeReturnStatementBuilder Return
         {
             get { return @return; }
+        }
+
+        public IAnonymousMethodTypeOptions Anon
+        {
+            get { return anonymousMethod; }
+        }
+
+        public IStatement Do(IExpression expression)
+        {
+            return statement.Execute(expression);
         }
     }
 }

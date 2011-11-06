@@ -23,6 +23,15 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
             return createObjectInstance;
         }
 
+        public DefaultValue Default<TReflectionType>()
+        {
+            var defaultValue = new DefaultValue();
+            defaultValue.DefaultValueType = reflector.Get<TReflectionType>();
+            defaultValue.Type = defaultValue.DefaultValueType;
+
+            return defaultValue;
+        }
+
         public CreateArray NewArray<TReflectionType>(int size)
         {
             var createArray = new CreateArray();

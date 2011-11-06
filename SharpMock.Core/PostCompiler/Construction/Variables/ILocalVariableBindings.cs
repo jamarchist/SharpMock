@@ -6,5 +6,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Variables
     {
         void AddBinding(string localVariableName, ILocalDefinition definition, ITypeReference type);
         IBoundExpression this[string localVariableName] { get; }
+        IArrayVariableOptions<TElementType> Array<TElementType>(string arrayVariableName);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Cci;
@@ -16,7 +17,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
         {
             var host = new PeReader.DefaultHost();
             var core = host.LoadAssembly(host.CoreAssemblySymbolicIdentity);
-            
+
             var assembly = new Assembly();
             assembly.Name = host.NameTable.GetNameFor(assemblyName);
             assembly.ModuleName = host.NameTable.GetNameFor(assemblyName + ".dll");
@@ -24,6 +25,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
             assembly.PlatformType = host.PlatformType;
             assembly.TargetRuntimeVersion = core.TargetRuntimeVersion;
             assembly.AssemblyReferences.Add(core);
+
+            foreach (var referencePath in model.ReferencePaths)
+            {
+                assembly.AssemblyReferences.Add(host.LoadUnitFrom(referencePath) as IAssembly);
+            }
 
             var root = new RootUnitNamespace();
             root.Unit = assembly;
@@ -70,9 +76,22 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
                     newMethod.ContainingTypeDefinition = newClass;
                     newMethod.IsCil = true;
                     newMethod.InternFactory = host.InternFactory;
-                    newMethod.Parameters = new List<IParameterDefinition>();
                     newMethod.Visibility = TypeMemberVisibility.Public;
                     newMethod.Type = host.PlatformType.SystemVoid;
+
+                    var newMethodParameters = new List<IParameterDefinition>();
+                    foreach (var param in methodConfiguration.Parameters)
+                    {
+                        var newMethodParameter = new ParameterDefinition();
+                        newMethodParameter.ContainingSignature = newMethod;
+                        newMethodParameter.Index = (ushort)methodConfiguration.Parameters.IndexOf(param);
+                        newMethodParameter.Name = host.NameTable.GetNameFor(param.Key);
+                        newMethodParameter.Type = new UnitReflector(host).Get(param.Value);
+
+                        newMethodParameters.Add(newMethodParameter);
+                    }
+
+                    newMethod.Parameters = newMethodParameters;
 
                     var methodBody = new SourceMethodBody(host, null);
                     methodBody.MethodDefinition = newMethod;
@@ -89,7 +108,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
 
                     if (methodConfiguration.MethodBody != null)
                     {
-                        var codeBuilder = new CodeBuilder(host);
+                        var codeBuilder = new CodeBuilder(host, newMethod.Parameters);
                         methodConfiguration.MethodBody(codeBuilder);
 
                         foreach (var statement in codeBuilder.Statements)
@@ -139,5 +158,9 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
             }
         }
 
+        public IReferenceOptions ReferenceTo
+        {
+            get { return new ReferenceOptions(model); }
+        }
     }
 }

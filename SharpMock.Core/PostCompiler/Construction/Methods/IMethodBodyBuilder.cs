@@ -1,4 +1,5 @@
-﻿using SharpMock.Core.PostCompiler.Construction.ControlFlow;
+﻿using Microsoft.Cci;
+using SharpMock.Core.PostCompiler.Construction.ControlFlow;
 using SharpMock.Core.PostCompiler.Construction.Conversions;
 using SharpMock.Core.PostCompiler.Construction.Declarations;
 using SharpMock.Core.PostCompiler.Construction.Definitions;
@@ -12,6 +13,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
     {
         IUnitReflector Reflector { get; }
         ILocalVariableBindings Locals { get; }
+        IParameterBindings Params { get; }
         IDefinitionBuilder Define { get; }
         IInstanceCreator Create { get; }
         IDeclarationBuilder Declare { get; }
@@ -21,5 +23,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         ICompileTimeConstantBuilder Constant { get; }
         IIfStatementBuilder If { get; }
         ICodeReturnStatementBuilder Return { get; }
+        IAnonymousMethodTypeOptions Anon { get; }
+        IStatement Do(IExpression expression);
     }
 }
