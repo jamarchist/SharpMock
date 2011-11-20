@@ -3,7 +3,6 @@ using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Construction.Variables;
-using SharpMock.PostCompiler.Core.CodeConstruction;
 
 namespace SharpMock.Core.PostCompiler.Construction.Expressions
 {

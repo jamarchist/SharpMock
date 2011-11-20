@@ -17,30 +17,46 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
 
         public IAnonymousMethodBodyBuilder Of<TDelegateType>()
         {
-            var generic = new GenericTypeInstanceReference();
-            var closedGeneric = reflector.Get<TDelegateType>() as GenericTypeInstanceReference;
-            generic.GenericType = closedGeneric.GenericType;
+            //var generic = new GenericTypeInstanceReference();
+            //var closedGeneric = reflector.Get<TDelegateType>() as GenericTypeInstanceReference;
+            //generic.GenericType = closedGeneric.GenericType;
 
-            generic.InternFactory = host.InternFactory;
-            generic.TypeCode = PrimitiveTypeCode.NotPrimitive;
-            generic.PlatformType = host.PlatformType;
+            //generic.InternFactory = host.InternFactory;
+            //generic.TypeCode = PrimitiveTypeCode.NotPrimitive;
+            //generic.PlatformType = host.PlatformType;
 
-            var delegateType = typeof (TDelegateType);
+            var delegateType = typeof(TDelegateType);
             var invoke = delegateType.GetMethod("Invoke");
 
             var parameters = invoke.GetParameters();
             
-            foreach (var parameter in parameters)
+            //foreach (var parameter in parameters)
+            //{
+            //    generic.GenericArguments.Add(reflector.Get(parameter.ParameterType));
+            //}
+
+            //if (invoke.ReturnType != typeof(void))
+            //{
+            //    generic.GenericArguments.Add(reflector.Get(invoke.ReturnType));
+            //}
+
+            return new AnonymousMethodBodyBuilder(host, reflector, reflector.Get<TDelegateType>(), invoke.ReturnType, parameters);
+        }
+
+        private ITypeReference GetTypeReference<TDelegateType>()
+        {
+            var typeReference = reflector.Get<TDelegateType>();
+            if (typeReference is GenericTypeInstanceReference)
             {
-                generic.GenericArguments.Add(reflector.Get(parameter.ParameterType));
+                var generic = typeReference as GenericTypeInstanceReference;
+
+            }
+            else
+            {
+                
             }
 
-            if (invoke.ReturnType != typeof(void))
-            {
-                generic.GenericArguments.Add(reflector.Get(invoke.ReturnType));
-            }
-
-            return new AnonymousMethodBodyBuilder(host, reflector, generic, invoke.ReturnType, parameters);
+            return typeReference;
         }
     }
 }

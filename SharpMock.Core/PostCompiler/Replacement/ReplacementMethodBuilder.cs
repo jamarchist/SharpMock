@@ -234,7 +234,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             AddOriginalMethodCallStatement(anonymousMethodBody, anonymousMethodReturnStatement, originalMethodCall);
             anonymousMethodBody.Statements.Add(anonymousMethodReturnStatement);
 
-            var delegateDeclaration = Declare.Variable("local_0", closedGenericFunction).As(anonymousMethod);
+            var delegateDeclaration = Declare.Variable("local_0", func).As(anonymousMethod);
 
             //  ...
             //  var interceptor = new RegistryInterceptor();

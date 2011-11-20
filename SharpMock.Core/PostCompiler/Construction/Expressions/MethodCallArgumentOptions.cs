@@ -1,7 +1,6 @@
 ﻿using Microsoft.Cci;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Construction.Variables;
-using SharpMock.PostCompiler.Core.CodeConstruction;
 
 namespace SharpMock.Core.PostCompiler.Construction.Expressions
 {
@@ -22,7 +21,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
 
         public IMethodCallOptions ThatReturnsVoid()
         {
-            model.ReturnType = host.PlatformType.SystemVoid;
+            model.ReturnType = reflector.Get(typeof(void));
             return new MethodCallOptions(host, reflector, model, locals);
         }
 

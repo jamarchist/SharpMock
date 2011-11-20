@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Cci;
 using NUnit.Framework;
+using ScenarioDependencies;
 using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Interceptors;
@@ -12,12 +14,15 @@ namespace ConstructionTests
     [TestFixture]
     public class MethodConstructionTests : BaseConstructionTests
     {
+        private IModule Assembly { get; set; }
+
         private void InStaticClass(VoidAction<IMethodAccessibilityOptions> createMethod)
         {
-            AssemblyBuilder.CreateNewDll(with =>
+            Assembly = AssemblyBuilder.CreateNewDll(with =>
             {
                 with.Name(AssemblyName);
                 with.ReferenceTo.Assembly("SharpMock.Core.dll");
+                with.ReferenceTo.Assembly("ScenarioDependencies.dll");
                 with.Type.Class.Public.Static
                     .Named("TestClass")
                     .With(method => createMethod(method));
@@ -83,7 +88,67 @@ namespace ConstructionTests
         }
 
         [Test]
-        public void CanCreateMethodSimilarToReplacementMethod()
+        public void CanCreateMethodThatDeclaresVoidAction()
+        {
+            InStaticClass(createMethod => createMethod.Public.Static
+                .Named("TestMethod")
+                .WithBody(code =>
+                {
+                    code.AddLine(x => x.Declare.Variable<VoidAction>("anonymous").As(x.Anon.Of<VoidAction>().WithBody(
+                        anon =>
+                            {
+                                anon.AddLine(z => z.Declare.Variable<VoidAction>("anonymous").As(z.Call.StaticMethod("VoidReturnNoParameters", typeof (StaticClass)).ThatReturnsVoid().WithNoArguments().On(typeof (StaticClass))));
+                                anon.AddLine(z => z.Return.Void());
+                            })));
+                    code.AddLine(x => x.Return.Void());
+                })
+            );
+
+            var testMethod = GetMethodFromTestClass("TestMethod");
+            Assert.IsNotNull(testMethod);
+        }
+
+        [Test]
+        public void CanCreateActionSimilarToReplacementAction()
+        {
+            InStaticClass(createMethod => createMethod.Public.Static
+                .Named("VoidReturnNoParameters")
+                .WithBody(code =>
+                {
+                    code.AddLine(x => x.Declare.Variable<RegistryInterceptor>("interceptor").As(x.Create.New<RegistryInterceptor>()));
+                    code.AddLine(x => x.Declare.Variable<Invocation>("invocation").As(x.Create.New<Invocation>()));
+                    code.AddLine(x => x.Declare.Variable<Type>("interceptedType").As(x.Operators.TypeOf(x.Reflector.Get(typeof(StaticClass)))));
+                    code.AddLine(x => x.Declare.Variable<Type[]>("parameterTypes").As(x.Create.NewArray<Type>(0)));
+                    code.AddLine(x => x.Locals.Array<Type>("parameterTypes")[0].Assign("interceptedType"));
+                    code.AddLine(x => x.Declare.Variable<MethodInfo>("interceptedMethod").As(
+                        x.Call.VirtualMethod("GetMethod", typeof(string), typeof(Type[]))
+                            .ThatReturns<MethodInfo>()
+                            .WithArguments(x.Constant.Of<string>("VoidReturnNoParameters"), x.Locals["parameterTypes"])
+                            .On("interceptedType")));
+                    code.AddLine(x =>
+                        x.Declare.Variable<VoidAction>("anonymous").As(
+                        x.Anon.Of<VoidAction>()
+                            .WithBody(anonCode =>
+                            {
+                                anonCode.AddLine(z => z.Do(
+                                    z.Call.StaticMethod("VoidReturnNoParameters", typeof(StaticClass)).ThatReturnsVoid().WithNoArguments().On(typeof(StaticClass))));
+                                anonCode.AddLine(z => z.Return.Void());
+                            })));
+                    code.AddLine(x => x.Declare.Variable<List<object>>("arguments").As(x.Create.New<List<object>>()));
+                    code.AddLine(x => x.Do(x.Call.PropertySetter<Delegate>("OriginalCall").WithArguments("anonymous").On("invocation")));
+                    code.AddLine(x => x.Do(x.Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation")));
+                    code.AddLine(x => x.Do(x.Call.PropertySetter<object>("Target").WithArguments(x.Constant.Of<object>(null)).On("invocation")));
+                    code.AddLine(x => x.Declare.Variable<bool>("shouldIntercept").As(x.Call.VirtualMethod("ShouldIntercept", typeof(MethodInfo), typeof(IList<object>)).ThatReturns<bool>().WithArguments("interceptedMethod", "arguments").On("interceptor")));
+                    code.AddLine(x => x.Do(x.Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor")));
+                    code.AddLine(x => x.Return.Void());
+                }));
+
+            var testMethod = GetMethodFromTestClass("VoidReturnNoParameters");
+            Assert.IsNotNull(testMethod);
+        }
+
+        [Test]
+        public void CanCreateFunctionSimilarToReplacementFunction()
         {
             InStaticClass(createMethod => createMethod.Public.Static
                 .Named("IsNullOrEmpty")
@@ -102,8 +167,8 @@ namespace ConstructionTests
                             .WithArguments(x.Constant.Of<string>("IsNullOrEmpty"), x.Locals["parameterTypes"])
                             .On("interceptedType")));
                     code.AddLine( x => 
-                        x.Declare.Variable<Function<string, bool>>("anonymous").As(
-                        x.Anon.Of<Function<string, bool>>()
+                        x.Declare.Variable<SharpMock.Core.Function<string, bool>>("anonymous").As(
+                        x.Anon.Of<SharpMock.Core.Function<string, bool>>()
                             .WithBody(anonCode =>
                             {
                                 anonCode.AddLine(z => z.Declare.Variable<bool>("originalReturn").As(

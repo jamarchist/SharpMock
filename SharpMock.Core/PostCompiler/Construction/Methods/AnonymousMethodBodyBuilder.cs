@@ -10,15 +10,15 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
     {
         private readonly IMetadataHost host;
         private readonly IUnitReflector reflector;
-        private readonly GenericTypeInstanceReference generic;
+        private readonly ITypeReference delegateType;
         private readonly Type returnType;
         private readonly ParameterInfo[] parameters;
 
-        public AnonymousMethodBodyBuilder(IMetadataHost host, IUnitReflector reflector, GenericTypeInstanceReference generic, Type returnType, ParameterInfo[] parameters)
+        public AnonymousMethodBodyBuilder(IMetadataHost host, IUnitReflector reflector, ITypeReference delegateType, Type returnType, ParameterInfo[] parameters)
         {
             this.host = host;
             this.reflector = reflector;
-            this.generic = generic;
+            this.delegateType = delegateType;
             this.returnType = returnType;
             this.parameters = parameters;
         }
@@ -26,7 +26,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         public IExpression WithBody(VoidAction<ICodeBuilder> code)
         {
             var method = new AnonymousDelegate();
-            method.Type = generic;
+            method.Type = delegateType;
             method.CallingConvention = CallingConvention.HasThis;
 
             foreach (var parameter in parameters)

@@ -1,7 +1,9 @@
-﻿namespace SharpMock.Core.PostCompiler.Construction.Assemblies
+﻿using Microsoft.Cci;
+
+namespace SharpMock.Core.PostCompiler.Construction.Assemblies
 {
     public interface IAssemblyBuilder
     {
-        void CreateNewDll(VoidAction<IAssemblyConstructionOptions> with);
+        IModule CreateNewDll(VoidAction<IAssemblyConstructionOptions> with);
     }
 }

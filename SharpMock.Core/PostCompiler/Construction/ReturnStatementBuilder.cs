@@ -58,7 +58,7 @@ namespace SharpMock.Core.PostCompiler.Construction
 
         public IStatement Void()
         {
-            throw new System.NotImplementedException();
+            return @return;
         }
     }
 }

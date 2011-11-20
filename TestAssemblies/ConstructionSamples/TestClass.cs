@@ -1,4 +1,6 @@
 ﻿using System;
+using ScenarioDependencies;
+using SharpMock.Core;
 
 namespace ConstructionSamples
 {
@@ -15,6 +17,23 @@ namespace ConstructionSamples
             var stringType = typeof (string);
             paramterTypes[0] = stringType;
             var isNullOrEmptyMethod = stringType.GetMethod("IsNullOrEmpty", paramterTypes);
+        }
+
+        public static void VoidActionTest()
+        {
+            VoidAction x = () =>
+                           {
+                               StaticClass.VoidReturnNoParameters();
+                           };
+        }
+
+        public static void FunctionTest()
+        {
+            Function<bool> x = () =>
+                                   {
+                                       var s = StaticClass.StringReturnNoParameters();
+                                       return String.IsNullOrEmpty(s);
+                                   };
         }
     }
 }

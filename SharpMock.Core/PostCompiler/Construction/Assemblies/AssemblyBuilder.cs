@@ -13,7 +13,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
     {
         private readonly AssemblyConfiguration model = new AssemblyConfiguration();
 
-        private void CreateNewDll(string assemblyName)
+        private IModule CreateNewDll(string assemblyName)
         {
             var host = new PeReader.DefaultHost();
             var core = host.LoadAssembly(host.CoreAssemblySymbolicIdentity);
@@ -75,6 +75,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
                     newMethod.IsStatic = methodConfiguration.IsStatic;
                     newMethod.ContainingTypeDefinition = newClass;
                     newMethod.IsCil = true;
+                    newMethod.IsHiddenBySignature = true;
                     newMethod.InternFactory = host.InternFactory;
                     newMethod.Visibility = TypeMemberVisibility.Public;
                     newMethod.Type = host.PlatformType.SystemVoid;
@@ -135,12 +136,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
             {
                 PeWriter.WritePeToStream(assembly, host, dll);
             }
+
+            return assembly;
         }
 
-        public void CreateNewDll(VoidAction<IAssemblyConstructionOptions> with)
+        public IModule CreateNewDll(VoidAction<IAssemblyConstructionOptions> with)
         {
             with(this);
-            CreateNewDll(model.Name);
+            return CreateNewDll(model.Name);
         }
 
         public void Name(string assemblyName)

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Cci;
-using Microsoft.Cci.ILToCodeModel;
 using NUnit.Framework;
 
 namespace DecompilerHelper
@@ -13,7 +12,10 @@ namespace DecompilerHelper
             var host = new PeReader.DefaultHost();
             var assembly = host.LoadUnitFrom("ConstructionSamples.dll") as IAssembly;
 
-            var mutable = Decompiler.GetCodeModelFromMetadataModel(host, assembly, null);
+            var mutable = Microsoft.Cci.ILToCodeModel.Decompiler.GetCodeModelFromMetadataModel(host, assembly, null);
+
+            var codePrinter = new CodePrinter();
+            codePrinter.Visit(mutable);
 
             Assert.Ignore("This is not a test.");
         }
