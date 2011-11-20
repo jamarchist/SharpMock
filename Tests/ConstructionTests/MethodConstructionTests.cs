@@ -94,10 +94,10 @@ namespace ConstructionTests
                 .Named("TestMethod")
                 .WithBody(code =>
                 {
-                    code.AddLine(x => x.Declare.Variable<VoidAction>("anonymous").As(x.Anon.Of<VoidAction>().WithBody(
+                    code.AddLine(x => x.Declare.Variable<VoidAction>("local_0").As(x.Anon.Of<VoidAction>().WithBody(
                         anon =>
                             {
-                                anon.AddLine(z => z.Declare.Variable<VoidAction>("anonymous").As(z.Call.StaticMethod("VoidReturnNoParameters", typeof (StaticClass)).ThatReturnsVoid().WithNoArguments().On(typeof (StaticClass))));
+                                anon.AddLine(z => z.Do(z.Call.StaticMethod("VoidReturnNoParameters").ThatReturnsVoid().WithNoArguments().On(typeof (StaticClass))));
                                 anon.AddLine(z => z.Return.Void());
                             })));
                     code.AddLine(x => x.Return.Void());
@@ -131,7 +131,7 @@ namespace ConstructionTests
                             .WithBody(anonCode =>
                             {
                                 anonCode.AddLine(z => z.Do(
-                                    z.Call.StaticMethod("VoidReturnNoParameters", typeof(StaticClass)).ThatReturnsVoid().WithNoArguments().On(typeof(StaticClass))));
+                                    z.Call.StaticMethod("VoidReturnNoParameters").ThatReturnsVoid().WithNoArguments().On(typeof(StaticClass))));
                                 anonCode.AddLine(z => z.Return.Void());
                             })));
                     code.AddLine(x => x.Declare.Variable<List<object>>("arguments").As(x.Create.New<List<object>>()));
