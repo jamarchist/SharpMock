@@ -1,3 +1,4 @@
+using SharpMock.Core.PostCompiler.Construction.Fields;
 using SharpMock.Core.PostCompiler.Construction.Methods;
 
 namespace SharpMock.Core.PostCompiler.Construction.Classes
@@ -22,6 +23,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Classes
             var newMethod = new MethodConfiguration();
             config.Methods.Add(newMethod);
             method(new MethodAcessibilityOptions(newMethod));
+            return this;
+        }
+
+        public IClassBuilder WithField(VoidAction<IFieldAccessibilityOptions> field)
+        {
+            var newField = new FieldConfiguration();
+            config.Fields.Add(newField);
+            field(new FieldAccessibilityOptions(newField));
             return this;
         }
     }

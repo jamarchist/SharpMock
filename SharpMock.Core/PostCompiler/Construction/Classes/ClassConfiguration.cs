@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SharpMock.Core.PostCompiler.Construction.Fields;
 using SharpMock.Core.PostCompiler.Construction.Methods;
 
 namespace SharpMock.Core.PostCompiler.Construction.Classes
@@ -8,6 +9,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Classes
         public ClassConfiguration()
         {
             Methods = new List<MethodConfiguration>();
+            Fields = new List<FieldConfiguration>();
         }
 
         public bool IsStatic { get; set; }
@@ -15,5 +17,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Classes
         public string Modifier { get; set; }
         public string Name { get; set; }
         public IList<MethodConfiguration> Methods { get; private set; }
+        public IList<FieldConfiguration> Fields { get; private set; } 
     }
 }

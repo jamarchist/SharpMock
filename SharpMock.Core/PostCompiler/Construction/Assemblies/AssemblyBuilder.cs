@@ -67,6 +67,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
                 newClass.InternFactory = host.InternFactory;
                 newClass.Name = host.NameTable.GetNameFor(classConfiguration.Name);
                 newClass.Methods = new List<IMethodDefinition>(classConfiguration.Methods.Count);
+                newClass.Fields = new List<IFieldDefinition>(classConfiguration.Fields.Count);
 
                 foreach (var methodConfiguration in classConfiguration.Methods)
                 {
@@ -127,6 +128,20 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
                     newMethod.Body = methodBody;
 
                     newClass.Methods.Add(newMethod);
+                }
+
+                foreach (var field in classConfiguration.Fields)
+                {
+                    var fieldDefinition = new FieldDefinition();
+                    fieldDefinition.ContainingTypeDefinition = newClass;
+                    fieldDefinition.InternFactory = host.InternFactory;
+                    fieldDefinition.IsReadOnly = field.IsReadonly;
+                    fieldDefinition.IsStatic = field.IsStatic;
+                    fieldDefinition.Name = host.NameTable.GetNameFor(field.Name);
+                    fieldDefinition.Type = new UnitReflector(host).Get(field.FieldType);
+                    fieldDefinition.Visibility = field.Accessibility.ToTypeMemberVisibility();
+
+                    newClass.Fields.Add(fieldDefinition);
                 }
                 
                 assembly.AllTypes.Add(newClass);

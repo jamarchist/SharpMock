@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="BaseConstructionTests.cs" />
     <Compile Include="ClassConstructionTests.cs" />
+    <Compile Include="EnumConstructionTests.cs" />
     <Compile Include="MethodConstructionTests.cs" />
     <Compile Include="ModuleConstructionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

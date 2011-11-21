@@ -48,5 +48,20 @@ namespace ConstructionTests
             Assert.IsTrue(staticClass.IsSealed);
             Assert.IsTrue(staticClass.IsAbstract);
         }
+
+        [Test]
+        public void CanCreateClassWithField()
+        {
+            InAssembly(create => create
+                .Class.Public.Concrete.Named("ClassWithField")
+                    .WithField(createField => 
+                        createField.Public.Instance.Named("helloField").OfType<string>()));
+
+            var field = GetFieldFromClass("ClassWithField", "helloField");
+            Assert.IsNotNull(field);
+            Assert.AreEqual(typeof(string), field.FieldType);
+            Assert.IsTrue(field.IsPublic);
+            Assert.IsFalse(field.IsStatic);
+        }
     }
 }

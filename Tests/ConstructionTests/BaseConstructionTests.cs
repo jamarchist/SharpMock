@@ -29,6 +29,13 @@ namespace ConstructionTests
             return assembly.GetType(String.Format("{0}.{1}", AssemblyName, typeName));
         }
 
+        protected FieldInfo GetFieldFromClass(string className, string fieldName)
+        {
+            var @class = GetTypeFromAssembly(className);
+            return @class.GetField(fieldName, 
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        }
+
         [SetUp]
         public void CreateAssemblyBuilder()
         {

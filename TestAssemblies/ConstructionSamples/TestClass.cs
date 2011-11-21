@@ -36,4 +36,34 @@ namespace ConstructionSamples
                                    };
         }
     }
+
+    public enum AnEnumeration
+    {
+        Value1,
+        Value2,
+        Value3
+    }
+
+    public enum AnotherEnumeration : long
+    {
+        Value1,
+        Value2,
+        Value3
+    }
+
+    public enum YetAnotherEnumeration
+    {
+        Value1 = 5,
+        Value2 = 10,
+        Value3 = 15
+    }
+
+    [Flags]
+    public enum FlagsEnumeration
+    {
+        Value1 = 1,
+        Value2 = 2,
+        Value3 = 4,
+        Value4 = 8
+    }
 }

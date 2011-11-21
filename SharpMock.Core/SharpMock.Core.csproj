@@ -138,6 +138,8 @@
     <Compile Include="PostCompiler\CciExtensions\ModuleExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\NamespaceExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\NamespaceTypeDefinitionExtensions.cs" />
+    <Compile Include="PostCompiler\Construction\Accessibility.cs" />
+    <Compile Include="PostCompiler\Construction\AccessibilityExtensions.cs" />
     <Compile Include="PostCompiler\Construction\Assemblies\AssemblyBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Assemblies\AssemblyConfiguration.cs" />
     <Compile Include="PostCompiler\Construction\Assemblies\IReferenceOptions.cs" />
@@ -152,6 +154,14 @@
     <Compile Include="PostCompiler\Construction\Classes\IClassAccessiblityOptions.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassModifierOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Enums\IEnumAccessibilityOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\FieldAccessibilityOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\FieldBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\FieldConfiguration.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\FieldModifierOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\IFieldAccessibilityOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\IFieldBuilder.cs" />
+    <Compile Include="PostCompiler\Construction\Fields\IFieldModifierOptions.cs" />
     <Compile Include="PostCompiler\Construction\Methods\AnonymousMethodBodyBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Methods\IAnonymousMethodTypeOptions.cs" />
     <Compile Include="PostCompiler\Construction\Methods\AnonymousMethodTypeOptions.cs" />
