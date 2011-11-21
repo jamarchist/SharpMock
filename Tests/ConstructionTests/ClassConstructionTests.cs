@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SharpMock.Core;
 using SharpMock.Core.PostCompiler.Construction.Assemblies;
 
