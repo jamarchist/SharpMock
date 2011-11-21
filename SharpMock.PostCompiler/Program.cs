@@ -8,7 +8,7 @@ namespace SharpMock.PostCompiler
 		static void Main(string[] args)
 		{
 			var postCompilerArgs = new PostCompilerArgs(args);
-			var postCompiler = new Core.PostCompiler(postCompilerArgs);
+			var postCompiler = new SharpMock.Core.PostCompiler.PostCompiler(postCompilerArgs);
 
             postCompiler.InterceptAllStaticMethodCalls();
 

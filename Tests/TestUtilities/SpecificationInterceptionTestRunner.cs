@@ -1,4 +1,4 @@
-using SharpMock.PostCompiler.Core;
+using SharpMock.Core.PostCompiler;
 
 namespace TestUtilities
 {

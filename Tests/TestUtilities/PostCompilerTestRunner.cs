@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SharpMock.Core.PostCompiler;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 
