@@ -79,6 +79,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             var allKeys = new List<IMethodReference>(inner.Keys);
             return allKeys.Find(mr => mr.ResolvedMethod.Equals(key.ResolvedMethod));
+            //return allKeys.Find(mr => MemberHelper.MethodsAreEquivalent(key.ResolvedMethod, mr.ResolvedMethod) &&
+            //    TypeHelper.TypesAreEquivalent(mr.ResolvedMethod.ContainingTypeDefinition, key.ResolvedMethod.ContainingTypeDefinition));
         }
 
         public void Add(IMethodReference key, IMethodReference value)

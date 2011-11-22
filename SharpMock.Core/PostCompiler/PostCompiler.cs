@@ -17,69 +17,63 @@ namespace SharpMock.Core.PostCompiler
 	public class PostCompiler
 	{
 		private readonly PostCompilerArgs postCompilerArgs;
+	    private readonly IMetadataHost host;
+	    private readonly IAssembly sharpMockDelegateTypes;
+	    private readonly IUnit sharpMockCore;
 
 		public PostCompiler(PostCompilerArgs postCompilerArgs)
 		{
-			this.postCompilerArgs = postCompilerArgs;
-		}
-
-        public void InterceptSpecifications()
-        {
             if (postCompilerArgs.AreValid())
             {
                 var nameTable = new NameTable();
-                var host = new PeReader.DefaultHost(nameTable);
+                host = new PeReader.DefaultHost(nameTable);
 
-                host.Errors += host_Errors;
+                sharpMockCore = host.LoadUnitFrom(
+                            System.Reflection.Assembly.GetExecutingAssembly().Location
+                        );
+                sharpMockDelegateTypes = sharpMockCore as IAssembly;
 
-                var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
-                var sharpMockCore = host.LoadUnitFrom(
-                        System.Reflection.Assembly.GetExecutingAssembly().Location
-                    );
-                var sharpMockDelegateTypes = sharpMockCore as IAssembly;
+                host.Errors += host_Errors;            
+            }
 
-                mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
+			this.postCompilerArgs = postCompilerArgs;
+        }
 
-                LoadReferencedAssemblies(mutableAssembly, host);
+        public void InterceptSpecifications()
+        {
+            var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
+            mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
 
-                ScanForInterceptionSpecifications(mutableAssembly, host);
-                AddInterceptionTargets(mutableAssembly, host);
-                var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
+            LoadReferencedAssemblies(mutableAssembly, host);
 
-                SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
-            }            
+            ScanForInterceptionSpecifications(mutableAssembly, host);
+            AddInterceptionTargets(mutableAssembly, host);
+            var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
+
+            SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
+                     
         }
 
         public void InterceptAllStaticMethodCalls()
         {
-            if (postCompilerArgs.AreValid())
-            {
-                var nameTable = new NameTable();
-                var host = new PeReader.DefaultHost(nameTable);
+            var mutableAssembly = GetMutableAssembly(postCompilerArgs.ReferencedAssemblyPath, host);       
+            mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
 
-                host.Errors += host_Errors;
+            LoadReferencedAssemblies(mutableAssembly, host);
 
-                var mutableAssembly = GetMutableAssembly(postCompilerArgs.ReferencedAssemblyPath, host);
-                var sharpMockCore = host.LoadUnitFrom(
-                        System.Reflection.Assembly.GetExecutingAssembly().Location
-                    );
-                var sharpMockDelegateTypes = sharpMockCore as IAssembly;
+            ScanForStaticMethodCalls(mutableAssembly, host);
+            AddInterceptionTargets(mutableAssembly, host);
 
-                mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
-
-                LoadReferencedAssemblies(mutableAssembly, host);
-
-                ScanForStaticMethodCalls(mutableAssembly, host);
-                AddInterceptionTargets(mutableAssembly, host);
-                var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
-
-                SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, mutableAssembly, host);
-            }
+            var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
+            SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, mutableAssembly, host);
         }
 
         private static void host_Errors(object sender, Microsoft.Cci.ErrorEventArgs e)
         {
-            Console.WriteLine("Error...");
+            foreach (var error in e.Errors)
+            {
+                Console.WriteLine(error.Message);
+            }
         }
 
         private static Assembly GetMutableAssembly(string startingAssembly, IMetadataHost host)

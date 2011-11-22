@@ -1,8 +1,5 @@
 using Microsoft.Cci;
-using Microsoft.Cci.MutableCodeModel;
-using SharpMock.Core.Interception.Helpers;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
-using SharpMock.Core.Syntax;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -17,7 +14,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public override void Visit(IMethodCall methodCall)
         {
-            if (methodCall.IsStaticCall || methodCall.ThisArgument.Type.ResolvedType.IsSealed)
+            var matchers = new CompositeReplacementMatcher(
+                //new RegisteredMethodMatcher()
+                new StaticMethodMatcher(),
+                new MethodInSealedClassMatcher(),
+                new ConstructorMatcher(),
+                new DelegateConstructorMatcher()
+            );
+
+            //new RegisteredMethodMatcher().ShouldReplace(methodCall);
+
+            if (matchers.ShouldReplace(methodCall))
             {
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
             }
@@ -25,9 +32,73 @@ namespace SharpMock.Core.PostCompiler.Replacement
             base.Visit(methodCall);
         }
 
-        //public override IBlockStatement Visit(BlockStatement blockStatement)
-        //{
-        //    return base.Visit(blockStatement);
-        //}
+        private interface IReplacementMatcher
+        {
+            bool ShouldReplace(IMethodCall methodCall);
+        }
+
+        private class CompositeReplacementMatcher : IReplacementMatcher
+        {
+            private readonly IReplacementMatcher[] matchers;
+
+            public CompositeReplacementMatcher(params IReplacementMatcher[] matchers)
+            {
+                this.matchers = matchers;
+            }
+
+            public bool ShouldReplace(IMethodCall methodCall)
+            {
+                foreach (var matcher in matchers)
+                {
+                    if (matcher.ShouldReplace(methodCall))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        private class StaticMethodMatcher : IReplacementMatcher
+        {
+            public bool ShouldReplace(IMethodCall methodCall)
+            {
+                return methodCall.IsStaticCall;
+            }
+        }
+
+        private class MethodInSealedClassMatcher : IReplacementMatcher
+        {
+            public bool ShouldReplace(IMethodCall methodCall)
+            {
+                return methodCall.ThisArgument.Type.ResolvedType.IsSealed;
+            }
+        }
+
+        private class ConstructorMatcher : IReplacementMatcher
+        {
+            public bool ShouldReplace(IMethodCall methodCall)
+            {
+                return !methodCall.MethodToCall.ResolvedMethod.IsConstructor;
+            }
+        }
+
+        private class DelegateConstructorMatcher : IReplacementMatcher
+        {
+            public bool ShouldReplace(IMethodCall methodCall)
+            {
+                return methodCall.MethodToCall.ResolvedMethod.ContainingTypeDefinition.IsDelegate &&
+                       new ConstructorMatcher().ShouldReplace(methodCall);
+            }
+        }
+
+        private class RegisteredMethodMatcher : IReplacementMatcher
+        {
+            public bool ShouldReplace(IMethodCall methodCall)
+            {
+                return MethodReferenceReplacementRegistry.HasReplacementFor(methodCall.MethodToCall);
+            }
+        }
     }
 }

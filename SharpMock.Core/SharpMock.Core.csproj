@@ -257,7 +257,6 @@
     <Compile Include="PostCompiler\Construction\Reflection\SharpMockTypes.cs" />
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallReplacer.cs" />
-    <Compile Include="PostCompiler\Replacement\StaticMethodCallAnalyzer.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallReplacer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

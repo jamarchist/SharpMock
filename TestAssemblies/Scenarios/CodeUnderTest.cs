@@ -54,6 +54,17 @@ namespace Scenarios
             s.VoidReturnNoParameters();
         }
 
+        public string CallsSealedMethodWithParameter(int parameterValue)
+        {
+            var s = new SealedClass();
+            return s.StringReturnOneParameter(parameterValue);
+        }
+
+        public void CallsSomeInterfaceMethod(SomeConcreteClass someInstance)
+        {
+            someInstance.SomeMethod();
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{
