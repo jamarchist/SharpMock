@@ -42,7 +42,7 @@ namespace IntegrationTests
             Assert.AreEqual("Fake return value.", result);
         }
 
-        [Test]
+        [Test, Ignore]
         public void InterceptsInterfaceMethodCalls()
         {
             var fake = new Faker();

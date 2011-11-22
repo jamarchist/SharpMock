@@ -10,7 +10,7 @@ namespace TestUtilities
 
         protected override void Intercept(PostCompiler postCompiler)
         {
-            postCompiler.InterceptSpecifications();
+
         }
     }
 }
