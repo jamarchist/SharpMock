@@ -17,8 +17,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             var mutableMethodCall = methodCall as MethodCall;
 
-            if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall)
-                && MethodReferenceReplacementRegistry.IsSpecified(mutableMethodCall.MethodToCall))
+            if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall))
             {
                 var replacementCall =
                     MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);
