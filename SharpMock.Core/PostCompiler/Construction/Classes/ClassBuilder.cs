@@ -18,6 +18,12 @@ namespace SharpMock.Core.PostCompiler.Construction.Classes
             return this;
         }
 
+        public IClassBuilder InNamespace(string namespaceName)
+        {
+            config.Namespace = namespaceName;
+            return this;
+        }
+
         public IClassBuilder With(VoidAction<IMethodAccessibilityOptions> method)
         {
             var newMethod = new MethodConfiguration();

@@ -63,7 +63,36 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
                     newClass.IsSealed = true;
                 }
                 
-                newClass.ContainingUnitNamespace = rootTypeNamespace;
+                if (!String.IsNullOrEmpty(classConfiguration.Namespace))
+                {
+                    NestedUnitNamespace classContainer = rootTypeNamespace;
+                    var namespaceNames = classConfiguration.Namespace.Split('.');
+                    foreach (var namespaceName in namespaceNames)
+                    {
+                        var existingMembers = classContainer.GetMembersNamed(host.NameTable.GetNameFor(namespaceName), false);
+                        var nestedNamespace = new NestedUnitNamespace();
+                        foreach (var existing in existingMembers)
+                        {
+                            if (existing as NestedUnitNamespace != null)
+                            {
+                                nestedNamespace = existing as NestedUnitNamespace;
+                                break;
+                            }
+                        }
+
+                        nestedNamespace.Name = host.NameTable.GetNameFor(namespaceName);
+                        nestedNamespace.ContainingUnitNamespace = classContainer;
+                        classContainer.Members.Add(nestedNamespace);
+                        classContainer = nestedNamespace;
+                    }
+
+                    newClass.ContainingUnitNamespace = classContainer;
+                }
+                else
+                {
+                    newClass.ContainingUnitNamespace = rootTypeNamespace;    
+                }
+
                 newClass.InternFactory = host.InternFactory;
                 newClass.Name = host.NameTable.GetNameFor(classConfiguration.Name);
                 newClass.Methods = new List<IMethodDefinition>(classConfiguration.Methods.Count);

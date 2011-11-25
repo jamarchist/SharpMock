@@ -47,7 +47,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 }
 
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
-                MethodReferenceReplacementRegistry.AddSpecification(firstMethodCall.MethodToCall);
+                //MethodReferenceReplacementRegistry.AddSpecification(firstMethodCall.MethodToCall);
             }
             base.Visit(methodCall);
         }

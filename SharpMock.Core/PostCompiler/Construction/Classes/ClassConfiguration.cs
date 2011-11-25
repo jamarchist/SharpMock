@@ -12,6 +12,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Classes
             Fields = new List<FieldConfiguration>();
         }
 
+        public string Namespace { get; set; }
         public bool IsStatic { get; set; }
         public bool IsAbstract { get; set; }
         public string Modifier { get; set; }

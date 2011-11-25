@@ -5,6 +5,7 @@ using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.CciExtensions;
+using SharpMock.Core.PostCompiler.Construction.Assemblies;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 using SharpMock.PostCompiler.Core.CciExtensions;
@@ -132,7 +133,24 @@ namespace SharpMock.Core.PostCompiler
         private static IList<INamespaceTypeDefinition> nestedClasses = new List<INamespaceTypeDefinition>();
 
         private static void AddInterceptionTargets(Module mutableAssembly, IMetadataHost host)
-		{
+        {
+            //var newAssemblyPath = mutableAssembly.Location;
+            //var referencePaths = new List<string>();
+            //foreach (var assemblyReference in mutableAssembly.AssemblyReferences)
+            //{
+            //    referencePaths.Add(assemblyReference.ResolvedAssembly.Location);
+            //}
+
+            //var newAssembly = new AssemblyBuilder().CreateNewDll(with =>
+            //                                                         {
+            //                                                             with.Name(mutableAssembly.Name.Value + ".Fakes");
+            //                                                             foreach (var rp in referencePaths)
+            //                                                             {
+            //                                                                 with.ReferenceTo.Assembly(rp);
+            //                                                             }
+            //                                                             with.Type.Class.Public.Static.
+            //                                                         })
+
 		    var createdPaths = new Dictionary<QualifiedMethodPath, NamespaceTypeDefinition>();
 
 			var coreAssembly = host.LoadUnit(host.CoreAssemblySymbolicIdentity);

@@ -17,9 +17,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var matchers = new CompositeReplacementMatcher(
                 //new RegisteredMethodMatcher()
                 new StaticMethodMatcher(),
-                new MethodInSealedClassMatcher(),
-                new ConstructorMatcher(),
-                new DelegateConstructorMatcher()
+                new MethodInSealedClassMatcher()
+                //new ConstructorMatcher(),
+                //new DelegateConstructorMatcher()
             );
 
             //new RegisteredMethodMatcher().ShouldReplace(methodCall);

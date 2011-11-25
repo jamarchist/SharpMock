@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using Microsoft.Cci;
+using NUnit.Framework;
 using SharpMock.Core;
 using SharpMock.Core.PostCompiler.Construction.Assemblies;
 
@@ -7,12 +9,23 @@ namespace ConstructionTests
     [TestFixture]
     public class ClassConstructionTests : BaseConstructionTests
     {
+        private IModule Assembly { get; set; }
+
         private void InAssembly(VoidAction<ITypeOptions> create)
         {
-            AssemblyBuilder.CreateNewDll(with =>
+            Assembly = AssemblyBuilder.CreateNewDll(with =>
             {
                 with.Name(AssemblyName);
                 create(with.Type);
+            });
+        }
+
+        private void InAssembly(VoidAction<IAssemblyConstructionOptions> create)
+        {
+            Assembly = AssemblyBuilder.CreateNewDll(with =>
+            {
+                with.Name(AssemblyName);
+                create(with);
             });
         }
 
@@ -59,6 +72,64 @@ namespace ConstructionTests
             Assert.AreEqual(typeof(string), field.FieldType);
             Assert.IsTrue(field.IsPublic);
             Assert.IsFalse(field.IsStatic);
+        }
+
+        [Test]
+        public void CanCreateClassInNamespace()
+        {
+            InAssembly(create => create.Class.Public.Concrete.Named("ClassInNamespace")
+                .InNamespace("A"));
+
+            var @class = GetTypeFromAssembly("A.ClassInNamespace");
+            Assert.IsNotNull(@class);
+            Assert.AreEqual(String.Format("{0}.{1}", AssemblyName, "A"), @class.Namespace);
+        }
+
+        [Test]
+        public void CanCreateClassInNestedNamespace()
+        {
+            InAssembly(create => create.Class.Public.Concrete.Named("ClassInNestedNamespace")
+                .InNamespace("A.B"));
+
+            var @class = GetTypeFromAssembly("A.B.ClassInNestedNamespace");
+            Assert.IsNotNull(@class);
+            Assert.AreEqual(String.Format("{0}.{1}", AssemblyName, "A.B"), @class.Namespace);
+        }
+
+        [Test]
+        public void CanCreateMultipleClassesInNamespace()
+        {
+            InAssembly(create =>
+            {
+                create.Type.Class.Public.Concrete.Named("ClassA").InNamespace("Z");
+                create.Type.Class.Public.Concrete.Named("ClassB").InNamespace("Z");
+            });
+
+            var classA = GetTypeFromAssembly("Z.ClassA");
+            var classB = GetTypeFromAssembly("Z.ClassB");
+
+            Assert.IsNotNull(classA);
+            Assert.IsNotNull(classB);
+
+            var namespaceName = String.Format("{0}.{1}", AssemblyName, "Z");
+            Assert.AreEqual(namespaceName, classA.Namespace);
+            Assert.AreEqual(namespaceName, classB.Namespace);
+        }
+
+        [Test]
+        public void CanCreateMultipleClasses()
+        {
+            InAssembly(create =>
+            {
+                create.Type.Class.Public.Concrete.Named("ClassA");
+                create.Type.Class.Public.Concrete.Named("ClassB");
+            });
+
+            var classA = GetTypeFromAssembly("ClassA");
+            var classB = GetTypeFromAssembly("ClassB");
+
+            Assert.IsNotNull(classA);
+            Assert.IsNotNull(classB);
         }
     }
 }
