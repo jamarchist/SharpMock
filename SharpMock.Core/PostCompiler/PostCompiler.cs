@@ -130,9 +130,7 @@ namespace SharpMock.Core.PostCompiler
             assemblyStream.Close();
         }
 
-        private static IList<INamespaceTypeDefinition> nestedClasses = new List<INamespaceTypeDefinition>();
-
-        private static void AddInterceptionTargets(Module mutableAssembly, IMetadataHost host)
+	    private static void AddInterceptionTargets(Module mutableAssembly, IMetadataHost host)
         {
             //var newAssemblyPath = mutableAssembly.Location;
             //var referencePaths = new List<string>();

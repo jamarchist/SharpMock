@@ -115,6 +115,27 @@ namespace MethodInterceptionTests
             Assert.AreEqual("Intercepted: 4444", result);
         }
 
+        [Test]
+        public void InterceptsMethodAndAllowsCallingOriginal()
+        {
+            VoidAction<IInvocation> interceptor = i =>
+            {
+                var numberTimesTwo = (int)i.Arguments[0] * 2;
+                var originalResult = i.OriginalCall.DynamicInvoke(numberTimesTwo);
+                i.Return = String.Format("Intercepted: {0}", originalResult);
+            };
 
+            var compoundInterceptor = new CompoundInterceptor(
+                new AlwaysMatches(),
+                new InvokeWithInvocation(() => interceptor)
+            );
+
+            InterceptorRegistry.AddInterceptor(compoundInterceptor);
+
+            var mocked = new CodeUnderTest();
+            var result = mocked.CallsStringReturnOneParameter();
+
+            Assert.AreEqual("Intercepted: || Original method return value when passed '1998'. ||", result);
+        }
 	}
 }
