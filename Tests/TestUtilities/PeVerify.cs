@@ -96,6 +96,22 @@ public class PeVerify
                     }
                 }
                 if (_peVerify == null)
+                {
+                    sdk = new DirectoryInfo(sdk.FullName.Replace("Program Files", "Program Files (x86)"));
+                    if (sdk.Exists)
+                    {
+                        foreach (var sdkVersion in sdk.GetDirectories())
+                        {
+                            var peverify = Path.Combine(Path.Combine(sdkVersion.FullName, "bin\\NETFX 4.0 Tools"), "peverify.exe");
+                            if (File.Exists(peverify))
+                            {
+                                _peVerify = peverify;
+                                break;
+                            }                            
+                        }
+                    }
+                }
+                if (_peVerify == null)
                     throw new FileNotFoundException(@"could not find peverify.exe under %programfiles%\Microsoft SDKs\Windows\...");
             }
 
