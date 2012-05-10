@@ -27,7 +27,7 @@ namespace TestUtilities
 
         public string NUnitConsoleRunnerPath
         {
-            get { return @"C:\Projects\github\SharpMock\packages\NUnit.2.5.7.10213\Tools\nunit-console.exe"; }
+            get { return @"C:\Projects\github\SharpMock\packages\NUnit.Runners.2.6.0.12051\tools\nunit-console.exe"; }
         }
 
         

@@ -6,6 +6,7 @@ using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Construction.Assemblies;
+using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 using SharpMock.PostCompiler.Core.CciExtensions;
@@ -193,6 +194,10 @@ namespace SharpMock.Core.PostCompiler
 				    fakeMethod.AddParameter((ushort)(parameter.Index + extraParameters), "p" + parameter.Index, parameter.Type, host);
                 }
 
+			    var customAttribute = new CustomAttribute();
+			    customAttribute.Constructor = new UnitReflector(host).From<SharpMockGeneratedAttribute>().GetConstructor();
+			    fakeMethod.Attributes = new List<ICustomAttribute>();
+                fakeMethod.Attributes.Add(customAttribute);
 				fakeMethod.Body = GetBody(host, fakeMethod, method);
 
 			    var parameterTypes = new List<ITypeDefinition>();

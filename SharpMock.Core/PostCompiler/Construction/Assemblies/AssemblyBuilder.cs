@@ -179,6 +179,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
             using (var dll = File.Create(assemblyName + ".dll"))
             {
                 PeWriter.WritePeToStream(assembly, host, dll);
+                dll.Close();
             }
 
             return assembly;

@@ -15,5 +15,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Assemblies
         {
             get { return new ClassAccessibilityOptions(config); }
         }
+
+        public IClassAccessiblityOptions Enum
+        {
+            get
+            {
+                config.IsEnum = true;
+                return new ClassAccessibilityOptions(config);
+            }
+        }
     }
 }

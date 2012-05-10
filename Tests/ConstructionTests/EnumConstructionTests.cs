@@ -19,10 +19,9 @@ namespace ConstructionTests
             });
         }
 
-        [Test]
+        [Test, Ignore("Create enum functionality is not implemented yet.")]
         public void CanCreateEnum()
         {
-              
         }
     }
 }

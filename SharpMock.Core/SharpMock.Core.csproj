@@ -260,6 +260,7 @@
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallReplacer.cs" />
+    <Compile Include="PostCompiler\SharpMockGeneratedAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Syntax\Faker.cs" />
     <Compile Include="Syntax\FakerOptions.cs" />

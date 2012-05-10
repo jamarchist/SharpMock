@@ -42,7 +42,7 @@ namespace IntegrationTests
             Assert.AreEqual("Fake return value.", result);
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Intercepting methods on concrete types is not implemented yet.")]
         public void InterceptsInterfaceMethodCalls()
         {
             var fake = new Faker();
