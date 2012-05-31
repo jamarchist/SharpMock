@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Cci;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 
@@ -24,6 +25,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             //new RegisteredMethodMatcher().ShouldReplace(methodCall);
 
+            //var methodAttributes = new List<ICustomAttribute>(methodCall.MethodToCall.Attributes) ?? new List<ICustomAttribute>();
             if (matchers.ShouldReplace(methodCall))
             {
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);

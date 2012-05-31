@@ -1,16 +1,20 @@
 ﻿<Project ToolsVersion="4.0" DefaultTargets="CopyDlls" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <CciRootDirectory>C:\Open Source\Microsoft CCI</CciRootDirectory>
-    <SharpMockThirdPartyDirectory>C:\Projects\github\SharpMock\ThirdParty</SharpMockThirdPartyDirectory>
+    <CciRootDirectory>.\Microsoft.Cci</CciRootDirectory>
+    <SharpMockThirdPartyDirectory>.\ThirdParty</SharpMockThirdPartyDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <CciDlls Include="$(CciRootDirectory)\bin\Debug\*.dll" />
+    <CciDlls Include="$(CciRootDirectory)\**\*.dll" />
   </ItemGroup>
   <Target Name="CopyDlls">
     <!-- Get latest -->
     <!-- TODO: Add this svn task -->
     <!-- Build -->
-    <MSBuild Projects="$(CciRootDirectory)\Ast.sln" Targets="Rebuild" Properties="Configuration=Debug;Platform=x86" />
+    <MSBuild 
+		Projects="$(CciRootDirectory)\Ast.sln" 
+		Targets="Rebuild" 
+		Properties="Configuration=Debug;Platform=Any CPU"
+		ContinueOnError="true" />
     <!-- Deploy -->
     <Copy 
       SourceFiles="@(CciDlls)" 
