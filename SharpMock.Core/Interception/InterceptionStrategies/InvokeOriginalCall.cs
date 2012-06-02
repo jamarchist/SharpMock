@@ -4,7 +4,7 @@
     {
         public void Intercept(IInvocation invocation)
         {
-            new InvokeCall(() => invocation.OriginalCall).Intercept(invocation);
+            new InsteadOfCall(() => invocation.OriginalCall).Intercept(invocation);
         }
     }
 }

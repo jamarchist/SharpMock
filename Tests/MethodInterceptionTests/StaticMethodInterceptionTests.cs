@@ -38,7 +38,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new InvokeCall(() => replacement)));
+                    new InsteadOfCall(() => replacement)));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
@@ -53,7 +53,7 @@ namespace MethodInterceptionTests
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
-                    new InvokeCall(() => replacement)
+                    new InsteadOfCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -104,7 +104,7 @@ namespace MethodInterceptionTests
 
             var compoundInterceptor = new CompoundInterceptor(new AlwaysMatches(),
                     new ReplaceArguments(() =>replaceArgs),
-                    new InvokeCall(() => replacementMethod)
+                    new InsteadOfCall(() => replacementMethod)
                 );
 
             InterceptorRegistry.AddInterceptor(compoundInterceptor);
@@ -136,6 +136,42 @@ namespace MethodInterceptionTests
             var result = mocked.CallsStringReturnOneParameter();
 
             Assert.AreEqual("Intercepted: || Original method return value when passed '1998'. ||", result);
+        }
+
+        [Test]
+        public void InterceptsCallAndInsertsLogicBefore()
+        {
+            VoidAction<IInvocation> interceptor = i => Console.WriteLine("BEFORE " + i.OriginalCall.Method.Name);
+
+            var compoundInterceptor = 
+                new CompoundInterceptor(new AlwaysMatches(), new BeforeCall(() => interceptor));
+        
+            InterceptorRegistry.AddInterceptor(compoundInterceptor);
+
+            var mocked = new CodeUnderTest();
+            var result = mocked.CallsStringReturnOneParameter();
+
+            Assert.AreEqual("|| Original method return value when passed '999'. ||", result);
+        }
+
+        [Test]
+        public void InterceptsCallAndInsertsLogicAfter()
+        {
+            VoidAction<IInvocation> interceptor = i =>
+            {
+                Console.WriteLine("AFTER " + i.OriginalCall.Method.Name);
+                Console.WriteLine("METHOD RETURNED: {0}", i.Return);
+            };
+
+            var compoundInterceptor =
+                new CompoundInterceptor(new AlwaysMatches(), new AfterCall(() => interceptor));
+
+            InterceptorRegistry.AddInterceptor(compoundInterceptor);
+
+            var mocked = new CodeUnderTest();
+            var result = mocked.CallsStringReturnOneParameter();
+
+            Assert.AreEqual("|| Original method return value when passed '999'. ||", result);            
         }
 	}
 }

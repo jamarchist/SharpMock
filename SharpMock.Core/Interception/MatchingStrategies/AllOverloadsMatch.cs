@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace SharpMock.Core.Interception.MatchingStrategies
 {
@@ -14,6 +13,18 @@ namespace SharpMock.Core.Interception.MatchingStrategies
         {
             this.declaringType = declaringType;
             this.methodName = methodName;
+        }
+
+        public AllOverloadsMatch(Type declaringType, MethodInfo method)
+        {
+            this.declaringType = declaringType;
+            methodName = method.Name;
+        }
+
+        public AllOverloadsMatch(MethodInfo method)
+        {
+            declaringType = method.DeclaringType;
+            methodName = method.Name;
         }
 
         public bool Matches(MethodInfo calledMethod, IList<object> arguments)

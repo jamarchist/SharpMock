@@ -8,11 +8,11 @@ namespace SharpMock.Core.Interception.InterceptionStrategies
     /// Invokes a call using the current argument list
     /// and sets the current return value to the result
     /// </summary>
-    public class InvokeCall : IInterceptionStrategy
+    public class InsteadOfCall : IInterceptionStrategy
     {
         private readonly Function<Delegate> callBinder;
 
-        public InvokeCall(Function<Delegate> callBinder)
+        public InsteadOfCall(Function<Delegate> callBinder)
         {
             this.callBinder = callBinder;
         }

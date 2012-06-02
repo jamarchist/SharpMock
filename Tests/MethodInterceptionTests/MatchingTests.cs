@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Reflection;
 using NUnit.Framework;
 using Scenarios;
+using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
@@ -28,7 +30,7 @@ namespace MethodInterceptionTests
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
-                    new InvokeCall(() => replacement)
+                    new InsteadOfCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -41,12 +43,11 @@ namespace MethodInterceptionTests
         public void DoesNotInterceptWhenMethodCallsDoNotMatchExactly()
         {
             Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
-            var console = typeof(Console);
-            var writeLineWithFormatString = console.GetMethod("WriteLine", new[] { typeof(string), typeof(string) });
+            var writeLineWithFormatString = MethodOf<string, string>(Console.WriteLine);
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
-                    new InvokeCall(() => replacement)
+                    new InsteadOfCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -59,10 +60,9 @@ namespace MethodInterceptionTests
         public void InterceptsMethodWithMatchingOverload()
         {
             Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
-            var console = typeof(Console);
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new AllOverloadsMatch(console, "WriteLine"),
+                new CompoundInterceptor(new AllOverloadsMatch(MethodOf(Console.WriteLine)),
                     new InvokeCallSafe(() => replacement)
                 ));
 
@@ -83,7 +83,7 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly(arg)),
-                    new InvokeCall(() => replacement)
+                    new InsteadOfCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
@@ -102,13 +102,23 @@ namespace MethodInterceptionTests
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(
                     new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly("Something that doesn't match.")),
-                    new InvokeCall(() => replacement)
+                    new InsteadOfCall(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineNotIntercepted();
 
             Assert.AreNotEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);
+        }
+
+        private MethodInfo MethodOf<T1, T2>(VoidAction<T1, T2> methodCall)
+        {
+            return methodCall.Method;
+        }
+
+        private MethodInfo MethodOf(VoidAction methodCall)
+        {
+            return methodCall.Method;
         }
     }
 }

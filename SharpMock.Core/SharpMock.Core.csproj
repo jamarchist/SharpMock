@@ -116,8 +116,10 @@
     <Compile Include="Interception\Helpers\InvocationHelper.cs" />
     <Compile Include="Interception\Helpers\MatchingHelper.cs" />
     <Compile Include="Interception\IInterceptionStrategy.cs" />
+    <Compile Include="Interception\InterceptionStrategies\AfterCall.cs" />
     <Compile Include="Interception\InterceptionStrategies\Assert.cs" />
-    <Compile Include="Interception\InterceptionStrategies\InvokeCall.cs" />
+    <Compile Include="Interception\InterceptionStrategies\BeforeCall.cs" />
+    <Compile Include="Interception\InterceptionStrategies\InsteadOfCall.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeCallSafe.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeOriginalCallSafe.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeWithInvocation.cs" />

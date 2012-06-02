@@ -36,7 +36,7 @@ namespace SharpMock.Core.Syntax
             var interceptor = new CompoundInterceptor(
                 new EquivalentCallsMatch(expectations.Method),
                 new Assert(() => expectations.Assertions),
-                new InvokeCall(() => expectations.Replacement)
+                new InsteadOfCall(() => expectations.Replacement)
             );
 
             InterceptorRegistry.AddInterceptor(interceptor);
@@ -57,7 +57,7 @@ namespace SharpMock.Core.Syntax
 
         //    var interceptor = new CompoundInterceptor(
         //        new EquivalentCallsMatch(expectations.Method),
-        //        new ReplaceCall(expectations.Replacement), new InvokeCall()
+        //        new ReplaceCall(expectations.Replacement), new InsteadOfCall()
         //        );
 
         //    InterceptorRegistry.AddInterceptor(interceptor);

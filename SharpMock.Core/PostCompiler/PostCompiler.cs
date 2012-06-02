@@ -152,7 +152,7 @@ namespace SharpMock.Core.PostCompiler
 
 		    var createdPaths = new Dictionary<QualifiedMethodPath, NamespaceTypeDefinition>();
 
-			var coreAssembly = host.LoadUnit(host.CoreAssemblySymbolicIdentity);
+			host.LoadUnit(host.CoreAssemblySymbolicIdentity);
 
             var fakeNamespace = mutableAssembly.UnitNamespaceRoot.AddNestedNamespace("Fake", host);
 
