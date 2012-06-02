@@ -7,6 +7,7 @@ using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
+using TestUtilities;
 using Assert = NUnit.Framework.Assert;
 using AssertAction = SharpMock.Core.Interception.InterceptionStrategies.Assert;
 
@@ -15,16 +16,13 @@ namespace MethodInterceptionTests
 	[TestFixture]
 	public class StaticMethodInterceptionTests
 	{
-        public static class Replacement
+        [SetUp]
+        public void ClearRegistryFirst()
         {
-            public static object ReplacementArg1 { get; private set; }
-            public static void Call(object replacementArg)
-            {
-                ReplacementArg1 = replacementArg;
-            }
+            ClearRegistry();
         }
 
-        [TearDown]
+	    [TearDown]
         public void ClearRegistry()
         {
             InterceptorRegistry.Clear();
@@ -49,7 +47,7 @@ namespace MethodInterceptionTests
         [Test]
         public void ReplacesConsoleWriteLineCall()
         {
-            Action<string> replacement = s => Replacement.Call("Intercepted.");
+            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
@@ -59,7 +57,7 @@ namespace MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
 
-            Assert.AreEqual("Intercepted.", Replacement.ReplacementArg1);
+            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);
         }
 
         [Test]

@@ -85,6 +85,15 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <UsingTask
+    TaskName="InterceptSpecifications"
+    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
+  <Target Name="AfterBuild">
+    <InterceptSpecifications
+      SearchLocation="$(OutputPath)"
+      SpecificationAssembly="SyntaxTests.dll"
+      />
+  </Target>  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

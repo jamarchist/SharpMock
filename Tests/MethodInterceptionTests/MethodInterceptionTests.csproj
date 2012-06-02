@@ -76,8 +76,10 @@
     <Compile Include="InstanceMethodInterceptionTests.cs" />
     <Compile Include="MatchingTests.cs" />
     <Compile Include="PeVerifyTests.cs" />
+    <Compile Include="RegisteredInterceptionTests.cs" />
     <Compile Include="StaticMethodInterceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestSpecification.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SharpMock.Core\SharpMock.Core.csproj">
@@ -97,6 +99,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <UsingTask
+    TaskName="InterceptAllStaticMethods"
+    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
+  <Target Name="AfterBuild">
+    <InterceptAllStaticMethods
+      SearchLocation="$(OutputPath)"
+      TargetAssembly="Scenarios.dll" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

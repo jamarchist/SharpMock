@@ -1,20 +1,25 @@
 ﻿using System;
-using System.Reflection;
 using NUnit.Framework;
 using Scenarios;
-using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
+using SharpMock.Core.StaticReflection;
+using TestUtilities;
 using Assert = NUnit.Framework.Assert;
-using AssertAction = SharpMock.Core.Interception.InterceptionStrategies.Assert;
 
 namespace MethodInterceptionTests
 {
     [TestFixture]
     public class MatchingTests
     {
+        [SetUp]
+        public void ClearRegistryFirst()
+        {
+            ClearRegistry();
+        }
+
         [TearDown]
         public void ClearRegistry()
         {
@@ -24,7 +29,7 @@ namespace MethodInterceptionTests
         [Test]
         public void InterceptsWhenMethodCallsMatchExactly()
         {
-            Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
+            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
             var console = typeof(Console);
             var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
 
@@ -36,14 +41,14 @@ namespace MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
 
-            Assert.AreEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);
+            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);
         }
 
         [Test]
         public void DoesNotInterceptWhenMethodCallsDoNotMatchExactly()
         {
-            Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
-            var writeLineWithFormatString = MethodOf<string, string>(Console.WriteLine);
+            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            var writeLineWithFormatString = VoidMethod.Of<string, string>(Console.WriteLine);
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
@@ -53,30 +58,30 @@ namespace MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineNotIntercepted();
 
-            Assert.AreNotEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);
+            Assert.AreNotEqual("Intercepted.", MethodReplacement.ReplacementArg1);
         }
 
         [Test]
         public void InterceptsMethodWithMatchingOverload()
         {
-            Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
+            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new AllOverloadsMatch(MethodOf(Console.WriteLine)),
+                new CompoundInterceptor(new AllOverloadsMatch(VoidMethod.Of(Console.WriteLine)),
                     new InvokeCallSafe(() => replacement)
                 ));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineFormatStingOverload();
 
-            Assert.AreEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);            
+            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);            
         }
 
         [Test]
         public void InterceptsMethodWithMatchingArguments()
         {
             var arg = "This should not appear.";
-            Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
+            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
             var console = typeof(Console);
             var writeLine = console.GetMethod("WriteLine", new[] {typeof (string)});
 
@@ -89,13 +94,13 @@ namespace MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
 
-            Assert.AreEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);             
+            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);             
         }
 
         [Test]
         public void DoesNotIntercepMethodWithNonMatchingArguments()
         {
-            Action<string> replacement = s => StaticMethodInterceptionTests.Replacement.Call("Intercepted.");
+            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
             var console = typeof(Console);
             var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
 
@@ -108,17 +113,7 @@ namespace MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineNotIntercepted();
 
-            Assert.AreNotEqual("Intercepted.", StaticMethodInterceptionTests.Replacement.ReplacementArg1);
-        }
-
-        private MethodInfo MethodOf<T1, T2>(VoidAction<T1, T2> methodCall)
-        {
-            return methodCall.Method;
-        }
-
-        private MethodInfo MethodOf(VoidAction methodCall)
-        {
-            return methodCall.Method;
+            Assert.AreNotEqual("Intercepted.", MethodReplacement.ReplacementArg1);
         }
     }
 }

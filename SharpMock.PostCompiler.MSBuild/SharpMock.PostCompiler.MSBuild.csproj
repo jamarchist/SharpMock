@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}</ProjectGuid>
+    <ProjectGuid>{7CE4EC1C-5EBE-4786-83EE-BC435881264B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestUtilities</RootNamespace>
-    <AssemblyName>TestUtilities</AssemblyName>
+    <RootNamespace>SharpMock.PostCompiler.MSBuild</RootNamespace>
+    <AssemblyName>SharpMock.PostCompiler.MSBuild</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -32,21 +32,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyLocations.cs" />
-    <Compile Include="MethodReplacement.cs" />
-    <Compile Include="PostCompilerTestRunner.cs" />
-    <Compile Include="PeVerify.cs" />
+    <Compile Include="InterceptAllStaticMethods.cs" />
+    <Compile Include="InterceptSpecifications.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpecificationInterceptionTestRunner.cs" />
-    <Compile Include="StaticMethodCallInterceptionTestRunner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SharpMock.Core\SharpMock.Core.csproj">
+    <ProjectReference Include="..\SharpMock.Core\SharpMock.Core.csproj">
       <Project>{3EE922DC-0821-4630-B51C-23EA4C4EF851}</Project>
       <Name>SharpMock.Core</Name>
     </ProjectReference>

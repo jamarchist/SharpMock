@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Construction.Assemblies;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
@@ -53,7 +54,6 @@ namespace SharpMock.Core.PostCompiler
             var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
 
             SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
-                     
         }
 
         public void InterceptAllStaticMethodCalls()
@@ -129,6 +129,7 @@ namespace SharpMock.Core.PostCompiler
 			var assemblyStream = File.OpenWrite(assemblyName);
 			PeWriter.WritePeToStream(mutableAssembly, host, assemblyStream);       
             assemblyStream.Close();
+            assemblyStream.Dispose();
         }
 
 	    private static void AddInterceptionTargets(Module mutableAssembly, IMetadataHost host)

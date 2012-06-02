@@ -18,7 +18,7 @@ namespace MethodInterceptionTests
         {
             var result = PeVerify.VerifyAssembly(@"C:\Projects\github\SharpMock\Tests\MethodInterceptionTests\bin\Debug\Scenarios.dll");
             Assert.AreEqual(0, result.Errors.Count);
-            Assert.AreEqual(0, result.Errors.Count);
+            Assert.AreEqual(0, result.MetaDataErrors.Count);
         }
     }
 }

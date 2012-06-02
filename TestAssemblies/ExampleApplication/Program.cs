@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace ExampleApplication
 {
@@ -7,6 +6,8 @@ namespace ExampleApplication
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Starting app...");
+
             if (args.Length != 1) throw new ArgumentException("A name must be supplied.");
 
             var name = args[0];
@@ -17,34 +18,10 @@ namespace ExampleApplication
             insert.Arg = newModel;
             insert.Execute();
 
-            Console.WriteLine("Press any key to exit..");
-            Console.ReadKey();
+            var insertedId = insert.Arg.Id;
+            Console.WriteLine("Model id is {0}", insertedId);
+
+            Console.WriteLine("Stopping app...");
         }
-    }
-
-    public static class Dao
-    {
-        private static int idSeed = 0;
-
-        public static int Insert(Model newModel)
-        {
-            Console.WriteLine("Inserting '{0}'", newModel.Name);
-            return ++idSeed;
-        }
-    }
-
-    public class InsertCommand
-    {
-        public Model Arg { get; set; }
-
-        public void Execute()
-        {
-            Dao.Insert(Arg);
-        }
-    }
-
-    public class Model
-    {
-        internal string Name { get; set; }
     }
 }
