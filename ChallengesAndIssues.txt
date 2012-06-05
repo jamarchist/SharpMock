@@ -1,0 +1,2 @@
+- MSBuild task locked by VisualStudio
+- Something else is locking files as well
