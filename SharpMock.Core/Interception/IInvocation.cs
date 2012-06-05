@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace SharpMock.Core.Interception
 {
@@ -9,5 +10,6 @@ namespace SharpMock.Core.Interception
         object Return { get; set; }
         object Target { get; set; }
         Delegate OriginalCall { get; set; }
+        MethodInfo OriginalCallInfo { get; set; }
     }
 }

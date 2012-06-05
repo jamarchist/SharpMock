@@ -11,6 +11,12 @@ namespace IntegrationTests
     [TestFixture]
     public class MscorlibDependencyTests
     {
+        [SetUp]
+        public void ClearRegistryFirst()
+        {
+            ClearRegistry();
+        }
+
         [TearDown]
         public void ClearRegistry()
         {
@@ -20,11 +26,11 @@ namespace IntegrationTests
         [Test]
         public void InterceptsPrimitiveParsing()
         {
-            var faker = new Faker();
+            var fake = new Faker();
 
-            faker.CallsTo(() => bool.Parse("")).ByReplacingWith((string x) => false);
-            faker.CallsTo(() => int.Parse("")).ByReplacingWith((string x) => 4);
-            faker.CallsTo(() => decimal.Parse("")).ByReplacingWith((string x) => 3.14M);
+            fake.CallsTo(() => bool.Parse("")).ByReplacingWith((string x) => false);
+            fake.CallsTo(() => int.Parse("")).ByReplacingWith((string x) => 4);
+            fake.CallsTo(() => decimal.Parse("")).ByReplacingWith((string x) => 3.14M);
 
             var code = new CodeWithMscorlibDependencies();
             var result = code.ParsesHardCodedStrings();

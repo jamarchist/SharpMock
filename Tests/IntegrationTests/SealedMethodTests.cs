@@ -1,6 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
+using SharpMock.Core.Interception;
+using SharpMock.Core.Interception.Registration;
+using SharpMock.Core.StaticReflection;
 using SharpMock.Core.Syntax;
 
 namespace IntegrationTests
@@ -8,6 +13,18 @@ namespace IntegrationTests
     [TestFixture]
     public class SealedMethodTests
     {
+        [SetUp]
+        public void ClearRegistry()
+        {
+            InterceptorRegistry.Clear();
+        }
+
+        [TearDown]
+        public void ClearRegistryAfter()
+        {
+            InterceptorRegistry.Clear();
+        }
+
         [Test]
         public void InterceptsSealedSpecification()
         {
@@ -42,18 +59,33 @@ namespace IntegrationTests
             Assert.AreEqual("Fake return value.", result);
         }
 
-        [Test, Ignore("Intercepting methods on concrete types is not implemented yet.")]
-        public void InterceptsInterfaceMethodCalls()
+        [Test]
+        //[Ignore("Intercepting methods on concrete types is not implemented yet.")]
+        public void InterceptsConcreteClassCalls()
         {
             var fake = new Faker();
             var wasCalled = false;
 
-            fake.CallsTo((SomeConcreteClass i) => i.SomeMethod()).ByReplacingWith(() => { wasCalled = true; });
+            fake.CallsTo((SomeConcreteClass i) => i.SomeMethod())
+                .ByReplacingWith(() => { wasCalled = true; });
 
             var code = new CodeUnderTest();
-            code.CallsSomeInterfaceMethod(null);
+            code.CallsSomeConcreteClassMethod(null);
 
             Assert.IsTrue(wasCalled);
+        }
+    }
+
+    public class InterceptConcreteClassMethodSpecification : IReplacementSpecification
+    {
+        public IList<ReplaceableMethodInfo> GetMethodsToReplace()
+        {
+            var type = typeof(SomeConcreteClass);
+            var method = type.GetMethod("SomeMethod");
+
+            var replaceable = method.AsReplaceable();
+            
+            return new List<ReplaceableMethodInfo>{ replaceable };
         }
     }
 }

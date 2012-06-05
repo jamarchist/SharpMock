@@ -60,7 +60,7 @@ namespace Scenarios
             return s.StringReturnOneParameter(parameterValue);
         }
 
-        public void CallsSomeInterfaceMethod(SomeConcreteClass someInstance)
+        public void CallsSomeConcreteClassMethod(SomeConcreteClass someInstance)
         {
             someInstance.SomeMethod();
         }

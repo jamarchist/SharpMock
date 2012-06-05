@@ -116,6 +116,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             return Extend(Get(typeof (TReflectionType)));
         }
 
+        public ITypeDefinitionExtensions From(Type reflectionType)
+        {
+            return Extend(Get(reflectionType));
+        }
+
         public ITypeDefinitionExtensions From(ITypeReference type)
         {
             return Extend(type);

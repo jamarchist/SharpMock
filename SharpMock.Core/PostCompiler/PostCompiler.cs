@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
 using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
@@ -11,7 +14,9 @@ using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 using SharpMock.PostCompiler.Core.CciExtensions;
+using Assembly = Microsoft.Cci.MutableCodeModel.Assembly;
 using MethodReference = Microsoft.Cci.MethodReference;
+using Module = Microsoft.Cci.MutableCodeModel.Module;
 using QualifiedMethodPath = SharpMock.Core.PostCompiler.Replacement.QualifiedMethodPath;
 using SourceMethodBody = Microsoft.Cci.MutableCodeModel.SourceMethodBody;
 
@@ -41,9 +46,11 @@ namespace SharpMock.Core.PostCompiler
 
 			this.postCompilerArgs = postCompilerArgs;
         }
-
+        
         public void InterceptSpecifications()
         {
+            System.Diagnostics.Debugger.Launch();
+
             var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
             mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
 
@@ -54,6 +61,34 @@ namespace SharpMock.Core.PostCompiler
             var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
 
             SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
+
+            SerializeExplicitSpecifications(postCompilerArgs.TestAssemblyPath);
+        }
+
+        private void SerializeExplicitSpecifications(string specAssembly)
+        {
+            var assembly = System.Reflection.Assembly.LoadFrom(specAssembly);
+            var specs = new List<Type>(assembly.GetTypes())
+                .FindAll(t => typeof(IReplacementSpecification).IsAssignableFrom(t));
+
+            var specifiedMethods = new List<ReplaceableMethodInfo>();
+
+            foreach (var specType in specs)
+            {
+                var spec = Activator.CreateInstance(specType) as IReplacementSpecification;
+                specifiedMethods.AddRange(spec.GetMethodsToReplace());
+            }
+
+            var specPath = Path.GetDirectoryName(specAssembly);
+            var specAssemblyName = Path.GetFileNameWithoutExtension(specAssembly);
+            var serializedSpecName = String.Format("{0}.SharpMock.SerializedSpecifications.xml", specAssemblyName);
+            var serializer = new XmlSerializer(typeof(List<ReplaceableMethodInfo>));
+            var fullSpecPath = Path.Combine(specPath, serializedSpecName);
+            using (var binFile = File.Create(fullSpecPath))
+            {
+                serializer.Serialize(binFile, specifiedMethods);
+                binFile.Close();
+            }
         }
 
         public void InterceptAllStaticMethodCalls()
@@ -67,7 +102,7 @@ namespace SharpMock.Core.PostCompiler
             AddInterceptionTargets(mutableAssembly, host);
 
             var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
-            SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, mutableAssembly, host);
+            SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, modifiedAssembly, host);
         }
 
         private static void host_Errors(object sender, Microsoft.Cci.ErrorEventArgs e)
@@ -105,7 +140,7 @@ namespace SharpMock.Core.PostCompiler
 
         private static IAssembly ScanForStaticMethodCalls(IAssembly assembly, IMetadataHost host)
         {
-            var registrar = new StaticMethodCallRegistrar(host);
+            var registrar = new StaticMethodCallRegistrar(host, assembly.Location);
             registrar.Visit(assembly);
             return assembly;
         }

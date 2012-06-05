@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.Cci;
 
 namespace SharpMock.Core.PostCompiler.Construction.Reflection
@@ -67,6 +68,20 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             }
 
             return method;
+        }
+
+        public IMethodDefinition GetMethod(MethodInfo methodInfo)
+        {
+            var name = methodInfo.Name;
+            var parameters = methodInfo.GetParameters();
+            var arguments = new Type[parameters.Length];
+
+            for (int index = 0; index < parameters.Length; index++)
+            {
+                arguments[index] = parameters[index].ParameterType;
+            }
+
+            return GetMethod(name, arguments);
         }
 
         public IMethodDefinition GetMethod(IMethodReference method)

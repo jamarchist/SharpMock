@@ -98,10 +98,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask
     TaskName="InterceptSpecifications"
-    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
+    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Debug\SharpMock.PostCompiler.MSBuild.dll" />
   <UsingTask
     TaskName="InterceptAllStaticMethods"
-    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
+    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Debug\SharpMock.PostCompiler.MSBuild.dll" />
   <Target Name="AfterBuild">
     <InterceptSpecifications
       SearchLocation="$(OutputPath)"

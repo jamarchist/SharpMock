@@ -275,6 +275,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
 
             // ...
+            // invocation.OriginalCallInfo = interceptedMethod;
+            // ...
+            var setOriginalCallInfoStatement = Statements.Execute(
+                    Call.PropertySetter<MethodInfo>("OriginalCallInfo").WithArguments("interceptedMethod").On("invocation"));
+
+            // ...
             // invocation.Arguments = arguments;
             // ...
             var setArgumentsStatement = Statements.Execute(
@@ -324,6 +330,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             Context.Block.Statements.Add(setArgumentsStatement);
             //WriteOut("argument set");
             Context.Block.Statements.Add(setTargetStatement);
+            Context.Block.Statements.Add(setOriginalCallInfoStatement);
 
             Context.Block.Statements.Add(shouldInterceptCall);
             //WriteOut("shouldintercept called");

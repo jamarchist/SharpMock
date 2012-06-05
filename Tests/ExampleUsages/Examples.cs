@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using ExampleApplication;
 using NUnit.Framework;
 using SharpMock.Core;
@@ -61,15 +62,50 @@ namespace ExampleUsages
             public void SpecifyInterceptors(ISpecificationRegistry registry)
             {
                 var matchDaoInsert = new AllOverloadsMatch(Method.Of<Model, int>(Dao.Insert));
-                VoidAction<IInvocation> before = i => Console.WriteLine("<< Entering Dao.Insert >>");
-                VoidAction<IInvocation> after = i => Console.WriteLine("<< Exiting Dao.Insert >>");
-
                 var surround = new CompoundInterceptor(matchDaoInsert,
-                    new InvokeWithInvocation(() => before),
+                    new TraceEntry(),
                     new InvokeOriginalCall(),
-                    new InvokeWithInvocation(() => after));
+                    new TraceExit());
 
                 registry.AddInterceptor(surround);
+            }
+        }
+
+        private class TraceEntry : IInterceptionStrategy
+        {
+            public void Intercept(IInvocation invocation)
+            {
+                VoidAction<IInvocation> before = i =>
+                {
+                    var arguments = new StringBuilder();
+                    for (int index = 0; index < invocation.Arguments.Count; index++)
+                    {
+                        if (index > 0) arguments.Append(", ");
+                        var argumentString = invocation.Arguments[index] == null ? 
+                            "<null>" : invocation.Arguments[index].ToString();
+                        arguments.Append(argumentString);
+                    }
+
+                    Console.WriteLine("<< Entering {0}.{1}({2}) >>", 
+                        i.OriginalCallInfo.DeclaringType.Name, i.OriginalCallInfo.Name, arguments);
+                };
+
+                new InvokeWithInvocation(() => before).Intercept(invocation);
+            }
+        }
+
+        private class TraceExit : IInterceptionStrategy
+        {
+            public void Intercept(IInvocation invocation)
+            {
+                VoidAction<IInvocation> after = i =>
+                {
+                    var returnValue = i.Return == null ? "<null>" : i.Return.ToString();
+                    Console.WriteLine("<< Exiting {0}.{1} with value {2} >>", 
+                        i.OriginalCallInfo.DeclaringType.Name, i.OriginalCallInfo.Name, returnValue);
+                };
+
+                new InvokeWithInvocation(() => after).Intercept(invocation);
             }
         }
     }

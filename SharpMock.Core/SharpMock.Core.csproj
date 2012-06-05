@@ -137,8 +137,14 @@
     <Compile Include="Interception\Interceptors\RegistryInterceptor.cs" />
     <Compile Include="Interception\MatchingStrategies\IArgumentMatcher.cs" />
     <Compile Include="Interception\MatchingStrategies\MatchesExactly.cs" />
+    <Compile Include="Interception\Registration\IReplacementSpecification.cs" />
     <Compile Include="Interception\Registration\IInterceptionSpecification.cs" />
     <Compile Include="Interception\Registration\ISpecificationRegistry.cs" />
+    <Compile Include="Interception\Registration\ReplaceableAssemblyInfo.cs" />
+    <Compile Include="Interception\Registration\ReplaceableMethod.cs" />
+    <Compile Include="Interception\Registration\ReplaceableParameterInfo.cs" />
+    <Compile Include="Interception\Registration\ReplaceableTypeExtensions.cs" />
+    <Compile Include="Interception\Registration\ReplaceableTypeInfo.cs" />
     <Compile Include="Interception\Registration\SpecificationRegistry.cs" />
     <Compile Include="PostCompiler\CciExtensions\MethodDefinitionExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\ModuleExtensions.cs" />
