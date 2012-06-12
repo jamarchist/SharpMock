@@ -75,34 +75,28 @@ namespace SharpMock.Core.Interception.Registration
         {
             var replaceable = new ReplaceableTypeInfo();
 
-            replaceable.Namespace = typeReference.Namespace();
-            replaceable.Name = (typeReference as INamedEntity).Name.Value;
+            var namespaceType = typeReference.GetNamespaceType();
+
+            replaceable.Namespace = namespaceType.Namespace();
+            replaceable.Name = namespaceType.Name.Value;
 
             var assembly = new ReplaceableAssemblyInfo();
-            assembly.AssemblyFullName =
-                (typeReference as INamespaceTypeReference).ContainingUnitNamespace.Unit.Name.Value;
-            assembly.AssemblyPath = typeReference.AssemblyPath();
+            assembly.AssemblyFullName = namespaceType.ContainingUnitNamespace.Unit.Name.Value;
+            assembly.AssemblyPath = namespaceType.AssemblyPath();
 
             replaceable.Assembly = assembly;
 
             return replaceable;
         }
 
-        internal static string AssemblyPath(this ITypeReference typeReference)
+        internal static string AssemblyPath(this INamespaceTypeReference namespaceType)
         {
-            var assembly = (typeReference as INamespaceTypeReference).ContainingUnitNamespace.Unit.ResolvedUnit as IAssembly;
+            var assembly = namespaceType.ContainingUnitNamespace.Unit.ResolvedUnit as IAssembly;
             return assembly.Location;
         }
 
-        internal static string Namespace(this ITypeReference typeReference)
+        internal static string Namespace(this INamespaceTypeReference namespaceType)
         {
-            var generic = typeReference as IGenericTypeInstanceReference;
-            var namespaceType = typeReference as INamespaceTypeReference;
-            if (generic != null)
-            {
-                namespaceType = generic.GenericType as INamespaceTypeReference;
-            }
-            
             var namespaceBuilder = new ReverseStringBuilder();
             namespaceType.ContainingUnitNamespace.AddParentNamespaces(namespaceBuilder);
 
@@ -124,6 +118,18 @@ namespace SharpMock.Core.Interception.Registration
                 // Root
                 // namespaceBuilder.Prepend(ns.ResolvedUnitNamespace.Name.Value);
             }
+        }
+
+        internal static INamespaceTypeReference GetNamespaceType(this ITypeReference typeReference)
+        {
+            var generic = typeReference as IGenericTypeInstanceReference;
+            var namespaceType = typeReference as INamespaceTypeReference;
+            if (generic != null)
+            {
+                namespaceType = generic.GenericType as INamespaceTypeReference;
+            }
+
+            return namespaceType;
         }
     } 
 }

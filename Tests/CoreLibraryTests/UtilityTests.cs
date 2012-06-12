@@ -33,7 +33,7 @@ namespace CoreLibraryTests
             var reflector = new UnitReflector(host);
             var cciType = reflector.Get(typeof(ReverseStringBuilder));
 
-            var resolvedNamespace = cciType.Namespace();
+            var resolvedNamespace = cciType.GetNamespaceType().Namespace();
             Assert.AreEqual("SharpMock.Core.Interception.Helpers", resolvedNamespace);
         }
 
@@ -47,7 +47,7 @@ namespace CoreLibraryTests
             var reflector = new UnitReflector(host);
             var cciType = reflector.Get(typeof(ReverseStringBuilder));
 
-            var assemblyPath = cciType.AssemblyPath();
+            var assemblyPath = cciType.GetNamespaceType().AssemblyPath();
 
             Assert.AreEqual("SharpMock.Core.dll", assemblyPath);            
         }
@@ -65,6 +65,21 @@ namespace CoreLibraryTests
             var replaceable = prepend.AsReplaceable();
 
             Assert.IsNotNull(replaceable);  
+        }
+
+        [Test]
+        public void CanGetReplaceableGenericType()
+        {
+            var host = new PeReader.DefaultHost();
+            host.LoadUnit(host.CoreAssemblySymbolicIdentity);
+            host.LoadUnitFrom("SharpMock.Core.dll");
+
+            var reflector = new UnitReflector(host);
+            var cciType = reflector.Get<Function<string>>();
+
+            var replaceable = cciType.AsReplaceable();
+
+            Assert.IsNotNull(replaceable);
         }
     }
 }
