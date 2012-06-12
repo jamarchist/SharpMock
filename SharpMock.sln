@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleUsages", "Tests\Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMock.PostCompiler.MSBuild", "SharpMock.PostCompiler.MSBuild\SharpMock.PostCompiler.MSBuild.csproj", "{7CE4EC1C-5EBE-4786-83EE-BC435881264B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLibraryTests", "Tests\CoreLibraryTests\CoreLibraryTests.csproj", "{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -220,6 +222,16 @@ Global
 		{7CE4EC1C-5EBE-4786-83EE-BC435881264B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7CE4EC1C-5EBE-4786-83EE-BC435881264B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7CE4EC1C-5EBE-4786-83EE-BC435881264B}.Release|x86.ActiveCfg = Release|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,5 +249,6 @@ Global
 		{80F2137D-0486-475A-A33A-98599B3DEBCE} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
 		{575EF2E4-3964-485B-B85D-C23F418BBDE5} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
 		{A1A8DCE3-155D-4F8F-AD74-B90DBB272AF2} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
+		{4BA9FB5D-1A08-42C8-B06C-42F35AECD8FA} = {5603B709-9DBA-441B-88F8-7CCB5D8B3FC5}
 	EndGlobalSection
 EndGlobal

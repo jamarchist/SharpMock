@@ -1,5 +1,6 @@
 ﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Syntax;
 using SharpMock.Core.Interception.Helpers;
@@ -45,6 +46,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
                         firstMethodCall = firstMethodCallReturn.Expression as MethodCall;
                     }
                 }
+
+                var replaceable = methodCall.MethodToCall.AsReplaceable();
+                MethodReferenceReplacementRegistry.AddReplaceable(replaceable);
 
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
                 //MethodReferenceReplacementRegistry.AddSpecification(firstMethodCall.MethodToCall);

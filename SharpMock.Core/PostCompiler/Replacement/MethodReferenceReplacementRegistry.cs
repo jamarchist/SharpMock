@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Cci;
+using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
     public static class MethodReferenceReplacementRegistry
 	{
+        private static readonly IList<ReplaceableMethodInfo> replaceables = new List<ReplaceableMethodInfo>();  
+
         private static readonly IDictionary<IMethodReference, IMethodReference> replacements = new MethodReferenceReplacementDictionary();
         private static readonly IDictionary<IMethodReference, IMethodReference> specifications = new MethodReferenceReplacementDictionary(); 
 
@@ -63,5 +66,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
             replacements.Keys.CopyTo(keys, 0);
 		    return keys;
 		}
+
+        public static void AddReplaceable(ReplaceableMethodInfo method)
+        {
+            replaceables.Add(method);
+        }
+
+        public static IList<ReplaceableMethodInfo> GetReplaceables()
+        {
+            return replaceables;
+        }
 	}
 }

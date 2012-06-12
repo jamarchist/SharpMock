@@ -115,6 +115,7 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="Interception\Helpers\InvocationHelper.cs" />
     <Compile Include="Interception\Helpers\MatchingHelper.cs" />
+    <Compile Include="Interception\Helpers\ReverseStringBuilder.cs" />
     <Compile Include="Interception\IInterceptionStrategy.cs" />
     <Compile Include="Interception\InterceptionStrategies\AfterCall.cs" />
     <Compile Include="Interception\InterceptionStrategies\Assert.cs" />

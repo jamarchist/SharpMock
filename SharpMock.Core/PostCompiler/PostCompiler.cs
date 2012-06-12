@@ -49,7 +49,7 @@ namespace SharpMock.Core.PostCompiler
         
         public void InterceptSpecifications()
         {
-            System.Diagnostics.Debugger.Launch();
+            //System.Diagnostics.Debugger.Launch();
 
             var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
             mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
@@ -62,6 +62,8 @@ namespace SharpMock.Core.PostCompiler
 
             SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
 
+            var autoSpecs = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(postCompilerArgs.TestAssemblyPath), "AutoSpecs.xml");
+            SerializeSpecifications(autoSpecs, MethodReferenceReplacementRegistry.GetReplaceables());
             SerializeExplicitSpecifications(postCompilerArgs.TestAssemblyPath);
         }
 
@@ -82,13 +84,20 @@ namespace SharpMock.Core.PostCompiler
             var specPath = Path.GetDirectoryName(specAssembly);
             var specAssemblyName = Path.GetFileNameWithoutExtension(specAssembly);
             var serializedSpecName = String.Format("{0}.SharpMock.SerializedSpecifications.xml", specAssemblyName);
-            var serializer = new XmlSerializer(typeof(List<ReplaceableMethodInfo>));
+
             var fullSpecPath = Path.Combine(specPath, serializedSpecName);
-            using (var binFile = File.Create(fullSpecPath))
+            SerializeSpecifications(fullSpecPath, specifiedMethods);
+        }
+
+        public static void SerializeSpecifications(string filename, IList<ReplaceableMethodInfo> specs)
+        {
+            var specList = new List<ReplaceableMethodInfo>(specs);
+            var serializer = new XmlSerializer(typeof(List<ReplaceableMethodInfo>));
+            using (var binFile = File.Create(filename))
             {
-                serializer.Serialize(binFile, specifiedMethods);
+                serializer.Serialize(binFile, specList);
                 binFile.Close();
-            }
+            }            
         }
 
         public void InterceptAllStaticMethodCalls()
@@ -135,6 +144,10 @@ namespace SharpMock.Core.PostCompiler
         {
             var registrar = new SpecifiedMethodCallRegistrar(host);
             registrar.Visit(assembly);
+
+            var replaceables = MethodReferenceReplacementRegistry.GetReplaceables();
+
+
             return assembly;
         }
 
