@@ -55,10 +55,15 @@ namespace SharpMock.Core.Interception.Registration
             replaceable.Parameters = new List<ReplaceableParameterInfo>();
             foreach (var parameter in methodReference.Parameters)
             {
+                var namedParameter = parameter as INamedEntity;
+                var name = namedParameter == null ? String.Format("p{0}", parameter.Index) : namedParameter.Name.Value;
+
                 var replaceableParameter = new ReplaceableParameterInfo();
-                replaceableParameter.Name = String.Format("p{0}", parameter.Index);
+                replaceableParameter.Name = name;
                 replaceableParameter.Index = parameter.Index;
                 replaceableParameter.ParameterType = parameter.Type.AsReplaceable();
+
+                replaceable.Parameters.Add(replaceableParameter);
             }
 
             replaceable.DeclaringType = declaringType;
@@ -69,20 +74,13 @@ namespace SharpMock.Core.Interception.Registration
         internal static ReplaceableTypeInfo AsReplaceable(this ITypeReference typeReference)
         {
             var replaceable = new ReplaceableTypeInfo();
-            var namespaces = new ReverseStringBuilder();
-            var currentNamespace = (typeReference as INamespaceTypeReference).ContainingUnitNamespace;
-            namespaces.Prepend(currentNamespace.ResolvedUnitNamespace.Name.Value);
-            while (currentNamespace != null)
-            {
-                namespaces.Prepend(currentNamespace.ResolvedUnitNamespace.Name.Value);
-                currentNamespace = (currentNamespace as INestedUnitNamespaceReference);
-            }
 
-            replaceable.Namespace = namespaces.ToString();
-            replaceable.Name = (typeReference as INamedTypeReference).Name.Value;
+            replaceable.Namespace = typeReference.Namespace();
+            replaceable.Name = (typeReference as INamedEntity).Name.Value;
 
             var assembly = new ReplaceableAssemblyInfo();
-            assembly.AssemblyFullName = typeReference.Namespace();
+            assembly.AssemblyFullName =
+                (typeReference as INamespaceTypeReference).ContainingUnitNamespace.Unit.Name.Value;
             assembly.AssemblyPath = typeReference.AssemblyPath();
 
             replaceable.Assembly = assembly;
@@ -98,8 +96,13 @@ namespace SharpMock.Core.Interception.Registration
 
         internal static string Namespace(this ITypeReference typeReference)
         {
+            var generic = typeReference as IGenericTypeInstanceReference;
             var namespaceType = typeReference as INamespaceTypeReference;
-
+            if (generic != null)
+            {
+                namespaceType = generic.GenericType as INamespaceTypeReference;
+            }
+            
             var namespaceBuilder = new ReverseStringBuilder();
             namespaceType.ContainingUnitNamespace.AddParentNamespaces(namespaceBuilder);
 

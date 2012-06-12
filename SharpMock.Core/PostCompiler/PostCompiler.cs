@@ -49,7 +49,7 @@ namespace SharpMock.Core.PostCompiler
         
         public void InterceptSpecifications()
         {
-            //System.Diagnostics.Debugger.Launch();
+            System.Diagnostics.Debugger.Launch();
 
             var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
             mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);

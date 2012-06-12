@@ -49,9 +49,22 @@ namespace CoreLibraryTests
 
             var assemblyPath = cciType.AssemblyPath();
 
-            var executingDirectory = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var typeReferenceAssemblyPath = System.IO.Path.Combine(executingDirectory, "SharpMock.Core.dll");
-            Assert.AreEqual(typeReferenceAssemblyPath, assemblyPath);            
+            Assert.AreEqual("SharpMock.Core.dll", assemblyPath);            
+        }
+
+        [Test]
+        public void CanGetReplaceableMethod()
+        {
+            var host = new PeReader.DefaultHost();
+            host.LoadUnit(host.CoreAssemblySymbolicIdentity);
+            host.LoadUnitFrom("SharpMock.Core.dll");
+
+            var reflector = new UnitReflector(host);
+            var prepend = reflector.From<ReverseStringBuilder>().GetMethod("Prepend", typeof (string));
+
+            var replaceable = prepend.AsReplaceable();
+
+            Assert.IsNotNull(replaceable);  
         }
     }
 }
