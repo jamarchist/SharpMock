@@ -47,7 +47,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     }
                 }
 
-                var replaceable = methodCall.MethodToCall.AsReplaceable();
+                var replaceable = firstMethodCall.MethodToCall.AsReplaceable();
                 MethodReferenceReplacementRegistry.AddReplaceable(replaceable);
 
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
