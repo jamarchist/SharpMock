@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InterfaceTests.cs" />
     <Compile Include="MockingTests.cs" />
     <Compile Include="MscorlibDependencyTests.cs" />
     <Compile Include="PeVerifyTests.cs" />
@@ -96,19 +97,11 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask
-    TaskName="InterceptSpecifications"
-    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
-  <UsingTask
-    TaskName="InterceptAllStaticMethods"
-    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
+  <UsingTask TaskName="InterceptSpecifications" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
+  <UsingTask TaskName="InterceptAllStaticMethods" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
   <Target Name="AfterBuild">
-    <InterceptSpecifications
-      SearchLocation="$(OutputPath)"
-      SpecificationAssembly="IntegrationTests.dll" />
-    <InterceptAllStaticMethods
-      SearchLocation="$(OutputPath)"
-      TargetAssembly="Scenarios.dll" />
+    <InterceptSpecifications SearchLocation="$(OutputPath)" SpecificationAssembly="IntegrationTests.dll" />
+    <InterceptAllStaticMethods SearchLocation="$(OutputPath)" TargetAssembly="Scenarios.dll" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

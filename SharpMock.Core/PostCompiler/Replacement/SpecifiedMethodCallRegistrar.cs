@@ -26,7 +26,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
                 var lambdaBody = lambda.Body as BlockStatement;
 
-                MethodCall firstMethodCall = null;
+                ConstructorOrMethodCall firstMethodCall = null;
 
                 if (mutableMethodCall.MethodToCall.IsGeneric && lambda.Parameters.Count == 0)
                 {
@@ -44,6 +44,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     {
                         var firstMethodCallReturn = lambdaBody.Statements[0] as ReturnStatement;
                         firstMethodCall = firstMethodCallReturn.Expression as MethodCall;
+
+                        if (firstMethodCall == null)
+                        {
+                            firstMethodCall = firstMethodCallReturn.Expression as CreateObjectInstance;
+                        }
                     }
                 }
 

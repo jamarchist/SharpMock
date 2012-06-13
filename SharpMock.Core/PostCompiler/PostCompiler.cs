@@ -64,7 +64,9 @@ namespace SharpMock.Core.PostCompiler
 
             SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
 
-            var autoSpecs = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(postCompilerArgs.TestAssemblyPath), "AutoSpecs.xml");
+            var specAssembly = Path.GetFileNameWithoutExtension(postCompilerArgs.TestAssemblyPath);
+            var autoSpecs = Path.Combine(Path.GetDirectoryName(postCompilerArgs.TestAssemblyPath), 
+                String.Format("{0}.Fluent.SharpMock.SerializedSpecifications.xml", specAssembly));
             SerializeSpecifications(autoSpecs, MethodReferenceReplacementRegistry.GetReplaceables());
             SerializeExplicitSpecifications(postCompilerArgs.TestAssemblyPath);
         }

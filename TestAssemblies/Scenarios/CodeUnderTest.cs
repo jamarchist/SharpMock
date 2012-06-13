@@ -65,6 +65,17 @@ namespace Scenarios
             someInstance.SomeMethod();
         }
 
+        public void CallsSomeInterface(ISomeInterface someInterface)
+        {
+            someInterface.DoSomething();
+        }
+
+        public SomeConcreteClass CallsConstructor()
+        {
+            var x = new SomeConcreteClass();
+            return x;
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

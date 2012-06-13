@@ -60,7 +60,6 @@ namespace IntegrationTests
         }
 
         [Test]
-        //[Ignore("Intercepting methods on concrete types is not implemented yet.")]
         public void InterceptsConcreteClassCalls()
         {
             var fake = new Faker();
@@ -84,8 +83,8 @@ namespace IntegrationTests
             var method = type.GetMethod("SomeMethod");
 
             var replaceable = method.AsReplaceable();
-            
-            return new List<ReplaceableMethodInfo>{ replaceable };
+
+            return new List<ReplaceableMethodInfo> { replaceable };
         }
     }
 }

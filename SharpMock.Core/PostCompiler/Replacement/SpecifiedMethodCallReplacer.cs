@@ -26,7 +26,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
                 var lambdaBody = lambda.Body as BlockStatement;
 
-                MethodCall firstMethodCall = null;
+                ConstructorOrMethodCall firstMethodCall = null;
 
                 if (mutableMethodCall.MethodToCall.IsGeneric && lambda.Parameters.Count == 0)
                 {
@@ -44,25 +44,39 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     {
                         var firstMethodReturn = lambdaBody.Statements[0] as ReturnStatement;
                         firstMethodCall = firstMethodReturn.Expression as MethodCall;
+
+                        if (firstMethodCall == null)
+                        {
+                            firstMethodCall = firstMethodReturn.Expression as CreateObjectInstance;
+                        }
                     }
                 }
 
-                if (//firstMethodCall.IsStaticCall &&
-                    MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
+                if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
                 {
                     var replacementCall =
                         MethodReferenceReplacementRegistry.GetReplacementFor(firstMethodCall.MethodToCall);
                     firstMethodCall.MethodToCall = replacementCall;
 
-                    if (!firstMethodCall.IsStaticCall)
+                    if (firstMethodCall is CreateObjectInstance)
                     {
-                        firstMethodCall.Arguments.Insert(0, firstMethodCall.ThisArgument);
-                        firstMethodCall.IsStaticCall = true;
-                        firstMethodCall.IsVirtualCall = false;
-                        firstMethodCall.ThisArgument = CodeDummy.Expression;
+                        
+                    }
+                    else
+                    {
+                        var call = firstMethodCall as MethodCall;
+
+                        if (!call.IsStaticCall)
+                        {
+                            call.Arguments.Insert(0, call.ThisArgument);
+                            call.IsStaticCall = true;
+                            call.IsVirtualCall = false;
+                            call.ThisArgument = CodeDummy.Expression;                            
+                        }
                     }
                 }
             }
+
             base.Visit(methodCall);
         }
     }
