@@ -10,9 +10,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
     public class SpecifiedMethodCallRegistrar : BaseCodeTraverser
     {
         private readonly IUnitReflector reflector;
+        private readonly IMetadataHost host;
 
         public SpecifiedMethodCallRegistrar(IMetadataHost host)
         {
+            this.host = host;
             reflector = new UnitReflector(host);
         }
 
@@ -24,41 +26,16 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (mutableMethodCall.MethodCallMatchesAnOverload(callsToOverloads))
             {
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
-                var lambdaBody = lambda.Body as BlockStatement;
 
-                ConstructorOrMethodCall firstMethodCall = null;
-
-                if (mutableMethodCall.MethodToCall.IsGeneric && lambda.Parameters.Count == 0)
-                {
-                    var firstMethodCallDeclaration = lambdaBody.Statements[0] as LocalDeclarationStatement;
-                    firstMethodCall = firstMethodCallDeclaration.InitialValue as MethodCall;
-                }
-                else
-                {
-                    var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
-                    if (firstMethodCallExpression != null)
-                    {
-                        firstMethodCall = firstMethodCallExpression.Expression as MethodCall;    
-                    }
-                    else
-                    {
-                        var firstMethodCallReturn = lambdaBody.Statements[0] as ReturnStatement;
-                        firstMethodCall = firstMethodCallReturn.Expression as MethodCall;
-
-                        if (firstMethodCall == null)
-                        {
-                            firstMethodCall = firstMethodCallReturn.Expression as CreateObjectInstance;
-                        }
-                    }
-                }
+                var parser = new LambdaParser(lambda, host);
+                var firstMethodCall = parser.GetFirstMethodCall();
 
                 var replaceable = firstMethodCall.MethodToCall.AsReplaceable();
                 MethodReferenceReplacementRegistry.AddReplaceable(replaceable);
-
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
-                //MethodReferenceReplacementRegistry.AddSpecification(firstMethodCall.MethodToCall);
             }
             base.Visit(methodCall);
         }
+
     }
 }

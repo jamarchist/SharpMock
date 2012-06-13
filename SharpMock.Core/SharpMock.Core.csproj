@@ -241,6 +241,7 @@
     <Compile Include="PostCompiler\Construction\Expressions\MethodCallOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\MethodCallReturnOptions.cs" />
     <Compile Include="PostCompiler\Construction\QualifiedMethodPath.cs" />
+    <Compile Include="PostCompiler\Replacement\LambdaParser.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilder.cs" />

@@ -219,7 +219,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var target = originalCallArguments[0];
                 originalCallArguments.RemoveAt(0);
 
-                if (Context.OriginalCall.ResolvedMethod.IsAbstract)
+                if (Context.OriginalCall.ContainingType.ResolvedType.IsInterface || Context.OriginalCall.ContainingType.ResolvedType.IsAbstract)
                 {
                     originalMethodCall = Call.VirtualMethod(Context.OriginalCall)
                                             .ThatReturns(Context.OriginalCall.Type)
