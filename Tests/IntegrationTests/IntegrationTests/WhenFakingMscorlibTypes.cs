@@ -6,10 +6,10 @@ using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
-namespace IntegrationTests
+namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
-    public class MscorlibDependencyTests
+    public class WhenFakingMscorlibTypes
     {
         [SetUp]
         public void ClearRegistryFirst()
@@ -24,7 +24,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsPrimitiveParsing()
+        public void MethodsOnPrimitivesAreIntercepted()
         {
             var fake = new Faker();
 
@@ -41,7 +41,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsCreateDelegate()
+        public void CreateDelegateMethodIsIntercepted()
         {
             var fake = new Faker();
             var wasCalled = false;
@@ -58,7 +58,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsEnvironmentProperty()
+        public void PropertyGetterIsIntercepted()
         {
             var fake = new Faker();
 
@@ -71,7 +71,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsDateTimeProperty()
+        public void DateTimePropertyIsIntercepted()
         {
             var fake = new Faker();
             var october25th1985 = new DateTime(1985, 10, 25);
@@ -85,7 +85,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsFileSystemMethods()
+        public void FileSystemMethodIsIntercepted()
         {
             var fake = new Faker();
 
