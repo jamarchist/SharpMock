@@ -1,18 +1,17 @@
-﻿using System.Reflection;
-using Microsoft.Cci;
+﻿using Microsoft.Cci;
 using NUnit.Framework;
 using SharpMock.Core;
 using SharpMock.Core.Interception.Helpers;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Interception.Registration;
 
-namespace CoreLibraryTests
+namespace IntegrationTests.CoreLibraryTests
 {
     [TestFixture]
-    public class UtilityTests
+    public class WhenConvertingToReplaceable
     {
         [Test]
-        public void CanBuildReverseString()
+        public void ReverseStringBuilderWorks()
         {
             var builder = new ReverseStringBuilder();
             builder.Prepend("Three");
@@ -24,7 +23,7 @@ namespace CoreLibraryTests
         }
 
         [Test]
-        public void CanGetNamespaceFromTypeReference()
+        public void NamespaceIsDiscovered()
         {
             var host = new PeReader.DefaultHost();
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
@@ -38,7 +37,7 @@ namespace CoreLibraryTests
         }
 
         [Test]
-        public void CanGetAssemblyPathFromTypeReference()
+        public void AssemblyPathIsDiscovered()
         {
             var host = new PeReader.DefaultHost();
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
@@ -53,7 +52,7 @@ namespace CoreLibraryTests
         }
 
         [Test]
-        public void CanGetReplaceableMethod()
+        public void FullReplaceableMethodIsConstructed()
         {
             var host = new PeReader.DefaultHost();
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
@@ -68,7 +67,7 @@ namespace CoreLibraryTests
         }
 
         [Test]
-        public void CanGetReplaceableGenericType()
+        public void FullReplaceableGenericTypeIsConstructed()
         {
             var host = new PeReader.DefaultHost();
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
