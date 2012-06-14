@@ -45,6 +45,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
             return replacements.ContainsKey(original);
         }
 
+        public static bool HasReplacementFor(ReplaceableMethodInfo methodInfo)
+        {
+            var list = new List<ReplaceableMethodInfo>(replaceables);
+            return list.FindAll(r => new ReplaceableMethodInfoComparer().Equals(methodInfo, r)).Count > 0;
+        }
+
         public static bool IsSpecified(IMethodReference original)
         {
             return specifications.ContainsKey(original);

@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
 using Microsoft.Cci;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
@@ -23,18 +20,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public override void Visit(IMethodCall methodCall)
         {
-            var matchers = new CompositeReplacementMatcher(
-                //new RegisteredMethodMatcher(),
-                new SpecifiedMethodMatcher(assemblyLocation, reflector)//,
-                //new StaticMethodMatcher(),
-                //new MethodInSealedClassMatcher()
-                //new ConstructorMatcher(),
-                //new DelegateConstructorMatcher()
-            );
+            var specs = new SpecifiedMethodMatcher(assemblyLocation, reflector);
 
-            //new RegisteredMethodMatcher().ShouldReplace(methodCall);
-
-            if (matchers.ShouldReplace(methodCall))
+            if (specs.ShouldReplace(methodCall))
             {
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
             }
@@ -47,45 +35,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             bool ShouldReplace(IMethodCall methodCall);
         }
 
-        private class CompositeReplacementMatcher : IReplacementMatcher
-        {
-            private readonly IReplacementMatcher[] matchers;
-
-            public CompositeReplacementMatcher(params IReplacementMatcher[] matchers)
-            {
-                this.matchers = matchers;
-            }
-
-            public bool ShouldReplace(IMethodCall methodCall)
-            {
-                foreach (var matcher in matchers)
-                {
-                    if (matcher.ShouldReplace(methodCall))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-
-        private class StaticMethodMatcher : IReplacementMatcher
-        {
-            public bool ShouldReplace(IMethodCall methodCall)
-            {
-                return methodCall.IsStaticCall;
-            }
-        }
-
-        private class MethodInSealedClassMatcher : IReplacementMatcher
-        {
-            public bool ShouldReplace(IMethodCall methodCall)
-            {
-                return methodCall.ThisArgument.Type.ResolvedType.IsSealed;
-            }
-        }
-
         private class SpecifiedMethodMatcher : IReplacementMatcher
         {
             private readonly List<IMethodDefinition> specifiedDefinitions;
@@ -94,7 +43,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
             public SpecifiedMethodMatcher(string assemblyLocation, IUnitReflector reflector)
             {
                 this.reflector = reflector;
-                var specifiedMethods = DeserializeSpecifiedMethods(assemblyLocation);
+                var serializer = new ReplaceableMethodInfoListSerializer(assemblyLocation);
+                var specifiedMethods = serializer.DeserializeAllSpecifiedMethods();
                 var assemblies = new List<string>();
                 specifiedMethods.ForEach(m =>
                 {
@@ -128,51 +78,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     .FindAll(m => m.Equals(methodCall.MethodToCall.ResolvedMethod));
 
                 return matches.Count > 0;
-            }
-
-            private List<ReplaceableMethodInfo> DeserializeSpecifiedMethods(string assemblyLocation)
-            {
-                var assemblyPath = Path.GetDirectoryName(assemblyLocation);
-                var files = Directory.GetFiles(assemblyPath, "*.SharpMock.SerializedSpecifications.xml");
-
-                var aggregateList = new List<ReplaceableMethodInfo>();
-                foreach (var specList in files)
-                {
-                    var serializer = new XmlSerializer(typeof(List<ReplaceableMethodInfo>));
-                    using (var fileStream = File.Open(specList, FileMode.Open))
-                    {
-                        var deserializedList = serializer.Deserialize(fileStream) as List<ReplaceableMethodInfo>;
-                        aggregateList.AddRange(deserializedList);
-                        fileStream.Close();
-                    }
-                }
-
-                return aggregateList;
-            }
-        }
-
-        private class ConstructorMatcher : IReplacementMatcher
-        {
-            public bool ShouldReplace(IMethodCall methodCall)
-            {
-                return !methodCall.MethodToCall.ResolvedMethod.IsConstructor;
-            }
-        }
-
-        private class DelegateConstructorMatcher : IReplacementMatcher
-        {
-            public bool ShouldReplace(IMethodCall methodCall)
-            {
-                return methodCall.MethodToCall.ResolvedMethod.ContainingTypeDefinition.IsDelegate &&
-                       new ConstructorMatcher().ShouldReplace(methodCall);
-            }
-        }
-
-        private class RegisteredMethodMatcher : IReplacementMatcher
-        {
-            public bool ShouldReplace(IMethodCall methodCall)
-            {
-                return MethodReferenceReplacementRegistry.HasReplacementFor(methodCall.MethodToCall);
             }
         }
     }

@@ -1,6 +1,7 @@
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
+using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -17,7 +18,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             var mutableMethodCall = methodCall as MethodCall;
 
-            if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall))
+            if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall.AsReplaceable()))
+            //if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall))
             {
                 var replacementCall =
                     MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);

@@ -65,9 +65,11 @@ namespace SharpMock.Core.PostCompiler
             SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
 
             var specAssembly = Path.GetFileNameWithoutExtension(postCompilerArgs.TestAssemblyPath);
-            var autoSpecs = Path.Combine(Path.GetDirectoryName(postCompilerArgs.TestAssemblyPath), 
-                String.Format("{0}.Fluent.SharpMock.SerializedSpecifications.xml", specAssembly));
-            SerializeSpecifications(autoSpecs, MethodReferenceReplacementRegistry.GetReplaceables());
+            var autoSpecs = String.Format("{0}.Fluent.SharpMock.SerializedSpecifications.xml", specAssembly);
+
+            var serializer = new ReplaceableMethodInfoListSerializer(
+                Path.GetDirectoryName(postCompilerArgs.TestAssemblyPath));
+            serializer.SerializeSpecifications(autoSpecs, MethodReferenceReplacementRegistry.GetReplaceables());
             SerializeExplicitSpecifications(postCompilerArgs.TestAssemblyPath);
         }
 
@@ -89,19 +91,8 @@ namespace SharpMock.Core.PostCompiler
             var specAssemblyName = Path.GetFileNameWithoutExtension(specAssembly);
             var serializedSpecName = String.Format("{0}.SharpMock.SerializedSpecifications.xml", specAssemblyName);
 
-            var fullSpecPath = Path.Combine(specPath, serializedSpecName);
-            SerializeSpecifications(fullSpecPath, specifiedMethods);
-        }
-
-        public static void SerializeSpecifications(string filename, IList<ReplaceableMethodInfo> specs)
-        {
-            var specList = new List<ReplaceableMethodInfo>(specs);
-            var serializer = new XmlSerializer(typeof(List<ReplaceableMethodInfo>));
-            using (var binFile = File.Create(filename))
-            {
-                serializer.Serialize(binFile, specList);
-                binFile.Close();
-            }            
+            var serializer = new ReplaceableMethodInfoListSerializer(specPath);
+            serializer.SerializeSpecifications(serializedSpecName, specifiedMethods);
         }
 
         public void InterceptAllStaticMethodCalls()

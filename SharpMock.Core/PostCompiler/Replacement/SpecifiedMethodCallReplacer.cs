@@ -4,15 +4,18 @@ using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Syntax;
 using SharpMock.Core.Interception.Helpers;
+using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class SpecifiedMethodCallReplacer : BaseCodeTraverser
     {
         private readonly IUnitReflector reflector;
+        private readonly IMetadataHost host;
 
         public SpecifiedMethodCallReplacer(IMetadataHost host)
         {
+            this.host = host;
             reflector = new UnitReflector(host);
         }
 
@@ -24,35 +27,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (mutableMethodCall.MethodCallMatchesAnOverload(callsToOverloads))
             {
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
-                var lambdaBody = lambda.Body as BlockStatement;
 
-                ConstructorOrMethodCall firstMethodCall = null;
+                var parser = new LambdaParser(lambda, host);
+                var firstMethodCall = parser.GetFirstMethodCall();
 
-                if (mutableMethodCall.MethodToCall.IsGeneric && lambda.Parameters.Count == 0)
-                {
-                    var firstMethodCallDeclaration = lambdaBody.Statements[0] as LocalDeclarationStatement;
-                    firstMethodCall = firstMethodCallDeclaration.InitialValue as MethodCall;
-                }
-                else
-                {
-                    var firstMethodCallExpression = lambdaBody.Statements[0] as ExpressionStatement;
-                    if (firstMethodCallExpression != null)
-                    {
-                        firstMethodCall = firstMethodCallExpression.Expression as MethodCall;                        
-                    }
-                    else
-                    {
-                        var firstMethodReturn = lambdaBody.Statements[0] as ReturnStatement;
-                        firstMethodCall = firstMethodReturn.Expression as MethodCall;
-
-                        if (firstMethodCall == null)
-                        {
-                            firstMethodCall = firstMethodReturn.Expression as CreateObjectInstance;
-                        }
-                    }
-                }
-
-                if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
+                if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall.AsReplaceable()))
+                //if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
                 {
                     var replacementCall =
                         MethodReferenceReplacementRegistry.GetReplacementFor(firstMethodCall.MethodToCall);

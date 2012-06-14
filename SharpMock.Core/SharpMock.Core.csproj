@@ -143,6 +143,7 @@
     <Compile Include="Interception\Registration\ISpecificationRegistry.cs" />
     <Compile Include="Interception\Registration\ReplaceableAssemblyInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableMethod.cs" />
+    <Compile Include="Interception\Registration\ReplaceableMethodInfoListSerializer.cs" />
     <Compile Include="Interception\Registration\ReplaceableParameterInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableTypeExtensions.cs" />
     <Compile Include="Interception\Registration\ReplaceableTypeInfo.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="PostCompiler\Construction\Expressions\MethodCallReturnOptions.cs" />
     <Compile Include="PostCompiler\Construction\QualifiedMethodPath.cs" />
     <Compile Include="PostCompiler\Replacement\LambdaParser.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilder.cs" />

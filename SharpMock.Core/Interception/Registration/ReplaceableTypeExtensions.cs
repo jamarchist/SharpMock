@@ -124,6 +124,13 @@ namespace SharpMock.Core.Interception.Registration
         {
             var generic = typeReference as IGenericTypeInstanceReference;
             var namespaceType = typeReference as INamespaceTypeReference;
+            var vector = typeReference as IArrayTypeReference;
+
+            if (vector != null)
+            {
+                namespaceType = vector.ElementType.GetNamespaceType();
+            }
+
             if (generic != null)
             {
                 namespaceType = generic.GenericType as INamespaceTypeReference;
