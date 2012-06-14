@@ -110,8 +110,7 @@
     <Compile Include="IntegrationTests\WhenFakingConcreteClasses.cs" />
     <Compile Include="SharpMockTests.cs" />
     <Compile Include="SyntaxTests\WhenUsingDefaultSyntax.cs" />
-    <Compile Include="TypeTranslationTests\DelegatesTests.cs" />
-    <Compile Include="TypeTranslationTests\GenericsTests.cs" />
+    <Compile Include="TypeTranslationTests\WhenTranslatingTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SharpMock.Core\SharpMock.Core.csproj">
