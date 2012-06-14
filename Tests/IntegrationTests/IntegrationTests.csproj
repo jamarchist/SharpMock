@@ -108,7 +108,6 @@
     <Compile Include="MethodInterceptionTests\WhenSpecifyingExactSignaturesMatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IntegrationTests\WhenFakingConcreteClasses.cs" />
-    <Compile Include="SharpMockTests.cs" />
     <Compile Include="SyntaxTests\WhenUsingDefaultSyntax.cs" />
     <Compile Include="TypeTranslationTests\WhenTranslatingTypes.cs" />
   </ItemGroup>

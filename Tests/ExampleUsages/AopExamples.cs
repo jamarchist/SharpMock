@@ -10,24 +10,13 @@ using SharpMock.Core.Interception.MatchingStrategies;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.StaticReflection;
 using SharpMock.Core.Syntax;
+using TestUtilities;
 
 namespace ExampleUsages
 {
     [TestFixture]
-    public class Examples
+    public class AopExamples : SharpMockTests
     {
-        [SetUp]
-        public void ClearRegistryBefore()
-        {
-            InterceptorRegistry.Clear();
-        }
-
-        [TearDown]
-        public void ClearRegistryAfter()
-        {
-            InterceptorRegistry.Clear();
-        }
-
         [Test]
         public void NoInstrumentation()
         {

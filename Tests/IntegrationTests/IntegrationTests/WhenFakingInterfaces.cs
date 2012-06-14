@@ -2,6 +2,7 @@
 using ScenarioDependencies;
 using Scenarios;
 using SharpMock.Core.Syntax;
+using TestUtilities;
 
 namespace IntegrationTests.IntegrationTests
 {

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using SharpMock.Core.Interception;
 
-namespace IntegrationTests
+namespace TestUtilities
 {
     public abstract class SharpMockTests
     {

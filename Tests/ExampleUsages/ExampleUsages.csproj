@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Examples.cs" />
+    <Compile Include="AopExamples.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -52,22 +52,18 @@
       <Project>{A62DCE26-E650-4C97-84F6-AC0778AD2A8E}</Project>
       <Name>ExampleApplication</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestUtilities\TestUtilities.csproj">
+      <Project>{D82AC45B-2BD3-4108-A2F8-BA08D0D437D3}</Project>
+      <Name>TestUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask
-    TaskName="InterceptSpecifications"
-    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
-  <UsingTask
-    TaskName="InterceptAllStaticMethods"
-    AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
+  <UsingTask TaskName="InterceptSpecifications" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
+  <UsingTask TaskName="InterceptAllStaticMethods" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\Release\SharpMock.PostCompiler.MSBuild.dll" />
   <Target Name="AfterBuild">
-    <InterceptSpecifications
-      SearchLocation="$(OutputPath)"
-      SpecificationAssembly="ExampleUsages.dll" />
-    <InterceptAllStaticMethods
-      SearchLocation="$(OutputPath)"
-      TargetAssembly="ExampleApplication.exe" />
-  </Target>  
+    <InterceptSpecifications SearchLocation="$(OutputPath)" SpecificationAssembly="ExampleUsages.dll" />
+    <InterceptAllStaticMethods SearchLocation="$(OutputPath)" TargetAssembly="ExampleApplication.exe" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
