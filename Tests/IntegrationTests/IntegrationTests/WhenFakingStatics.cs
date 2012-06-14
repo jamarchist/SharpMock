@@ -3,20 +3,13 @@ using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
 using SharpMock.Core;
-using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
 namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
-    public class WhenFakingStatics
+    public class WhenFakingStatics : SharpMockTests
     {
-        [TearDown]
-        public void ClearRegistry()
-        {
-            InterceptorRegistry.Clear();
-        }
-
         [Test]
         public void ReplacementMethodIsInvoked()
         {

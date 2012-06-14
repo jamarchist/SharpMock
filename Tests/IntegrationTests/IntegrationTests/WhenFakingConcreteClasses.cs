@@ -2,27 +2,14 @@
 using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
-using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.Syntax;
 
 namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
-    public class WhenFakingConcreteClasses
+    public class WhenFakingConcreteClasses : SharpMockTests
     {
-        [SetUp]
-        public void ClearRegistry()
-        {
-            InterceptorRegistry.Clear();
-        }
-
-        [TearDown]
-        public void ClearRegistryAfter()
-        {
-            InterceptorRegistry.Clear();
-        }
-
         [Test]
         public void SealedClassMethodIsIntercepted()
         {

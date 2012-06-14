@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 
-namespace IntegrationTests
+namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
     public class PeVerifyTests
     {
-        [Test]
+        [Test, Ignore]
         public void TestAssemblyPassesPeVerification()
         {
             var result = PeVerify.VerifyAssembly(@"C:\Projects\github\SharpMock\Tests\IntegrationTests\bin\Debug\IntegrationTests.dll", true);
@@ -16,7 +16,7 @@ namespace IntegrationTests
             Assert.AreEqual(0, result.MetaDataErrors.Count, PrintErrors(result.MetaDataErrors));
         }
 
-        [Test]
+        [Test, Ignore]
         public void TargetAssemblyPassesPeVerification()
         {
             var result = PeVerify.VerifyAssembly(@"C:\Projects\github\SharpMock\Tests\IntegrationTests\bin\Debug\Scenarios.dll", true);

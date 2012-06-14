@@ -3,26 +3,13 @@ using System.Reflection;
 using NUnit.Framework;
 using Scenarios;
 using SharpMock.Core;
-using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
 namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
-    public class WhenFakingMscorlibTypes
+    public class WhenFakingMscorlibTypes : SharpMockTests
     {
-        [SetUp]
-        public void ClearRegistryFirst()
-        {
-            ClearRegistry();
-        }
-
-        [TearDown]
-        public void ClearRegistry()
-        {
-            InterceptorRegistry.Clear();
-        }
-
         [Test]
         public void MethodsOnPrimitivesAreIntercepted()
         {

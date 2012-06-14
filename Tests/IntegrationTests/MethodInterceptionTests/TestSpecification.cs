@@ -6,7 +6,7 @@ using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
 using SharpMock.Core.Interception.Registration;
 
-namespace MethodInterceptionTests
+namespace IntegrationTests.MethodInterceptionTests
 {
     public class TestSpecification : IInterceptionSpecification
     {

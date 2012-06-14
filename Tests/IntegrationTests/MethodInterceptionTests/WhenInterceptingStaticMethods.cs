@@ -9,27 +9,14 @@ using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
 using TestUtilities;
 using Assert = NUnit.Framework.Assert;
-using AssertAction = SharpMock.Core.Interception.InterceptionStrategies.Assert;
 
-namespace MethodInterceptionTests
+namespace IntegrationTests.MethodInterceptionTests
 {
 	[TestFixture]
-	public class StaticMethodInterceptionTests
+	public class WhenInterceptingStaticMethods : SharpMockTests
 	{
-        [SetUp]
-        public void ClearRegistryFirst()
-        {
-            ClearRegistry();
-        }
-
-	    [TearDown]
-        public void ClearRegistry()
-        {
-            InterceptorRegistry.Clear();
-        }
-
         [Test]
-        public void CapturesOriginalConsoleWriteLineArgument()
+        public void OriginalArgumentIsCaptured()
         {
             string suppliedArgument = null;
             Action<string> replacement = s => suppliedArgument = s;
@@ -45,7 +32,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void ReplacesConsoleWriteLineCall()
+        public void CallIsReplaced()
         {
             Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
             
@@ -61,7 +48,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void InterceptsReturnValue()
+        public void ReturnValueIsIntercepted()
         {
             ReplaceReturnValue.ReturnValueReplacementFunction replace = o => "Replacement.";
             
@@ -78,7 +65,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void InterceptsArguments()
+        public void ArgumentsAreReplaced()
         {
             Function<IList<object>, IList<object>> replace = args => new List<object> { 5555 };
             
@@ -95,7 +82,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void InterceptsArgumentsAndReplacesMethod()
+        public void ArgumentsAreReplacedAndCallIsReplaced()
         {
             Function<int, string> replacementMethod = number => String.Format("Intercepted: {0}", number);
             Function<IList<object>, IList<object>> replaceArgs = args => new List<object>{ 4444 };
@@ -114,7 +101,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void InterceptsMethodAndAllowsCallingOriginal()
+        public void MethodIsReplacedAndOriginalIsCalled()
         {
             VoidAction<IInvocation> interceptor = i =>
             {
@@ -137,7 +124,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void InterceptsCallAndInsertsLogicBefore()
+        public void LogicIsInsertedBefore()
         {
             VoidAction<IInvocation> interceptor = i => Console.WriteLine("BEFORE " + i.OriginalCall.Method.Name);
 
@@ -153,7 +140,7 @@ namespace MethodInterceptionTests
         }
 
         [Test]
-        public void InterceptsCallAndInsertsLogicAfter()
+        public void LogicIsInsertedAfter()
         {
             VoidAction<IInvocation> interceptor = i =>
             {

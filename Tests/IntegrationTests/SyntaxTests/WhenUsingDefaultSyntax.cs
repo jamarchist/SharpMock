@@ -3,27 +3,20 @@ using ScenarioDependencies;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
-namespace SyntaxTests
+namespace IntegrationTests.SyntaxTests
 {
     [TestFixture]
-    public class ExpectationInterceptionTests
+    public class WhenUsingDefaultSyntax : SharpMockTests
     {
-        [TearDown]
-        public void ClearRegistry()
-        {
-            InterceptorRegistry.Clear();
-        }
-
         [Test]
-        public void InterceptsStaticExpectation()
+        public void StaticMethodIsIntercepted()
         {
             var fake = new Faker();
-
             fake.CallsTo(() => StaticClass.StringReturnNoParameters());
         }
 
         [Test]
-        public void RecordsExpectation()
+        public void ExpectationIsRecorded()
         {
             var fake = new Faker();
 
@@ -36,16 +29,16 @@ namespace SyntaxTests
         }
 
         [Test, ExpectedException(typeof(MethodNotInterceptedException))]
-        public void DoesNotInterceptStaticMethodThatIsntExplicitlyFaked()
+        public void UnspecifiedStaticMethodIsNotIntercepted()
         {
             StaticClass.VoidReturnNoParameters();
         }
 
         [Test]
-        public void RecordsCallingAssertion()
+        public void AssertionIsRecorded()
         {
             var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).Asserting(() => true == true);
+            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).Asserting(() => true);
 
             var recorder = InterceptorRegistry.GetCurrentRecorder();
 
@@ -56,7 +49,7 @@ namespace SyntaxTests
         }
 
         [Test]
-        public void RecordsReplacement()
+        public void ReplacementIsRecorded()
         {
             var wasCalled = false;
             var fake = new Faker();
