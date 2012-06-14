@@ -25,6 +25,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (specs.ShouldReplace(methodCall))
             {
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
+                MethodReferenceReplacementRegistry.AddReplaceable(methodCall.MethodToCall.AsReplaceable());
             }
 
             base.Visit(methodCall);
