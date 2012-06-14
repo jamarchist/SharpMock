@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Registration;
-using SharpMock.Core.StaticReflection;
 using SharpMock.Core.Syntax;
 
-namespace IntegrationTests
+namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
-    public class SealedMethodTests
+    public class WhenFakingConcreteClasses
     {
         [SetUp]
         public void ClearRegistry()
@@ -26,7 +24,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsSealedSpecification()
+        public void SealedClassMethodIsIntercepted()
         {
             var fake = new Faker();
             var wasCalled = false;
@@ -40,7 +38,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsSealedMethodWithParameters()
+        public void SealedClassMethodWithParametersIsIntercepted()
         {
             var fake = new Faker();
             string interception = "Method was not intercepted.";
@@ -60,7 +58,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void InterceptsConcreteClassCalls()
+        public void NonVirtualMethodOnNonSealedClassIsIntercepted()
         {
             var fake = new Faker();
             var wasCalled = false;

@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreLibraryTests\WhenConvertingToReplaceable.cs" />
-    <Compile Include="IntegrationTests\InterfaceTests.cs" />
+    <Compile Include="IntegrationTests\WhenFakingInterfaces.cs" />
     <Compile Include="IntegrationTests\MockingTests.cs" />
     <Compile Include="IntegrationTests\MscorlibDependencyTests.cs" />
     <Compile Include="IntegrationTests\PeVerifyTests.cs" />
@@ -106,7 +106,7 @@
     <Compile Include="MethodInterceptionTests\StaticMethodInterceptionTests.cs" />
     <Compile Include="MethodInterceptionTests\TestSpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IntegrationTests\SealedMethodTests.cs" />
+    <Compile Include="IntegrationTests\WhenFakingConcreteClasses.cs" />
     <Compile Include="SyntaxTests\ExpectationInterceptionTests.cs" />
     <Compile Include="TypeTranslationTests\DelegatesTests.cs" />
     <Compile Include="TypeTranslationTests\GenericsTests.cs" />

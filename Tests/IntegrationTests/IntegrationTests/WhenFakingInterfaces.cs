@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
+using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
 namespace IntegrationTests.IntegrationTests
@@ -8,6 +9,18 @@ namespace IntegrationTests.IntegrationTests
     [TestFixture]
     public class WhenFakingInterfaces
     {
+        [SetUp]
+        public void ClearRegistry()
+        {
+            InterceptorRegistry.Clear();
+        }
+
+        [TearDown]
+        public void ClearAfter()
+        {
+            InterceptorRegistry.Clear();
+        }
+
         [Test]
         public void MethodCallIsIntercepted()
         {
