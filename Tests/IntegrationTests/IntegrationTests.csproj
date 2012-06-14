@@ -95,7 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreLibraryTests\UtilityTests.cs" />
+    <Compile Include="CoreLibraryTests\WhenConvertingToReplaceable.cs" />
     <Compile Include="IntegrationTests\InterfaceTests.cs" />
     <Compile Include="IntegrationTests\MockingTests.cs" />
     <Compile Include="IntegrationTests\MscorlibDependencyTests.cs" />
