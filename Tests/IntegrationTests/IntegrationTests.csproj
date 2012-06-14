@@ -97,8 +97,8 @@
   <ItemGroup>
     <Compile Include="CoreLibraryTests\WhenConvertingToReplaceable.cs" />
     <Compile Include="IntegrationTests\WhenFakingInterfaces.cs" />
-    <Compile Include="IntegrationTests\MockingTests.cs" />
-    <Compile Include="IntegrationTests\MscorlibDependencyTests.cs" />
+    <Compile Include="IntegrationTests\WhenFakingStatics.cs" />
+    <Compile Include="IntegrationTests\WhenFakingMscorlibTypes.cs" />
     <Compile Include="IntegrationTests\PeVerifyTests.cs" />
     <Compile Include="MethodInterceptionTests\MatchingTests.cs" />
     <Compile Include="MethodInterceptionTests\PeVerifyTests.cs" />

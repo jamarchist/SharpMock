@@ -6,10 +6,10 @@ using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 
-namespace IntegrationTests
+namespace IntegrationTests.IntegrationTests
 {
     [TestFixture]
-    public class MockingTests
+    public class WhenFakingStatics
     {
         [TearDown]
         public void ClearRegistry()
@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void CallsReplacementAction()
+        public void ReplacementMethodIsInvoked()
         {
             var wasCalled = false;
 
@@ -32,7 +32,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void CallsReplacementFunction()
+        public void ReplacementMethodWithReturnValueIsInvoked()
         {
             var fake = new Faker();
             fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => "Interception Result");
@@ -44,7 +44,7 @@ namespace IntegrationTests
         }
 
         [Test, ExpectedException(typeof(AssertionFailedException))]
-        public void ThrowsAssertionException()
+        public void AssertionExceptionIsThrownIfAssertionFails()
         {
             var fake = new Faker();
             fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
@@ -56,7 +56,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void DoesNotThrowAssertionException()
+        public void AssertionExceptionIsNotThrownIfAssertionPasses()
         {
             var fake = new Faker();
             fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
@@ -70,7 +70,7 @@ namespace IntegrationTests
         [Test, ExpectedException(
             ExpectedException = typeof(InvalidOperationException),
             ExpectedMessage = "I threw this from a replacement.")]
-        public void ThrowExceptionFromReplacement()
+        public void CustomExceptionCanBeThrownFromReplacement()
         {
             var fake = new Faker();
             fake.CallsTo(() => StaticClass.VoidReturnNoParameters())
@@ -81,7 +81,7 @@ namespace IntegrationTests
         }
 
         [Test, ExpectedException(typeof(AssertionFailedException))]
-        public void MakesMultipleAssertionsOrderOne()
+        public void MultipleAssertionsAreAllowed()
         {
             var fake = new Faker();
             fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
@@ -94,7 +94,7 @@ namespace IntegrationTests
         }
 
         [Test, ExpectedException(typeof(AssertionFailedException))]
-        public void MakesMultipleAssertionsOrderTwo()
+        public void MultipleAssertionsAreAllowedInVaryingOrder()
         {
             var fake = new Faker();
             fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
@@ -107,7 +107,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public void DoesNotInterceptCallsThatArentSpecified()
+        public void CallsThatArentSpecifiedArentIntercepted()
         {
             var fake = new Faker();
 
