@@ -25,8 +25,10 @@ namespace SharpMock.PostCompiler.MSBuild
             }
             else
             {
-                var files = Directory.GetFiles(AllAssembliesIn, "*.dll|*.exe");
-                assemblies.AddRange(files);
+                var dllFiles = Directory.GetFiles(AllAssembliesIn, "*.dll");
+                var exeFiles = Directory.GetFiles(AllAssembliesIn, "*.exe");
+                assemblies.AddRange(dllFiles);
+                assemblies.AddRange(exeFiles);
             }
 
             var results = new List<AssemblyResult>();
@@ -56,7 +58,7 @@ namespace SharpMock.PostCompiler.MSBuild
                 }
             }
 
-            return failed;
+            return !failed;
         }
     }
 }

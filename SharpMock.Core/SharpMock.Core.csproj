@@ -113,6 +113,8 @@
   <ItemGroup>
     <Compile Include="AssertionFailedException.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="Diagnostics\NullLogger.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Interception\Helpers\InvocationHelper.cs" />
     <Compile Include="Interception\Helpers\MatchingHelper.cs" />
     <Compile Include="Interception\Helpers\ReverseStringBuilder.cs" />

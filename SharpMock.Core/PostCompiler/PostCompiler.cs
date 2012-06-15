@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
 using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Diagnostics;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.CciExtensions;
-using SharpMock.Core.PostCompiler.Construction.Assemblies;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
@@ -28,6 +25,7 @@ namespace SharpMock.Core.PostCompiler
 	    private readonly IMetadataHost host;
 	    private readonly IAssembly sharpMockDelegateTypes;
 	    private readonly IUnit sharpMockCore;
+	    private static readonly ILogger log = new NullLogger();
 
 		public PostCompiler(PostCompilerArgs postCompilerArgs)
 		{
@@ -162,7 +160,7 @@ namespace SharpMock.Core.PostCompiler
 
         private static IAssembly ReplaceStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
         {
-            var methodCallReplacer = new StaticMethodCallReplacer(host);
+            var methodCallReplacer = new StaticMethodCallReplacer(host, log);
             methodCallReplacer.Visit(mutableAssembly);
             return mutableAssembly;
         }

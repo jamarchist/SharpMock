@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using ScenarioDependencies;
 using Scenarios;
 using SharpMock.Core;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
+using SharpMock.Core.Interception.Registration;
 using TestUtilities;
 using Assert = NUnit.Framework.Assert;
 
@@ -159,4 +161,18 @@ namespace IntegrationTests.MethodInterceptionTests
             Assert.AreEqual("|| Original method return value when passed '999'. ||", result);            
         }
 	}
+
+    public class WhenInterceptingStaticMethodsSpecification : IReplacementSpecification
+    {
+        public IList<ReplaceableMethodInfo> GetMethodsToReplace()
+        {
+            var list = new List<ReplaceableMethodInfo>();
+
+            list.Add(SharpMock.Core.StaticReflection.VoidMethod.Of(Console.WriteLine).AsReplaceable());
+            list.Add(SharpMock.Core.StaticReflection.Method.Of(StaticClass.StringReturnNoParameters).AsReplaceable());
+            list.Add(SharpMock.Core.StaticReflection.Method.Of<int, string>(StaticClass.StringReturnOneParameter).AsReplaceable());
+
+            return list;
+        }
+    }
 }

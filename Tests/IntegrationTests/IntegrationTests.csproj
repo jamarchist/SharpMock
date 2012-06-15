@@ -99,7 +99,6 @@
     <Compile Include="IntegrationTests\WhenFakingInterfaces.cs" />
     <Compile Include="IntegrationTests\WhenFakingStatics.cs" />
     <Compile Include="IntegrationTests\WhenFakingMscorlibTypes.cs" />
-    <Compile Include="IntegrationTests\PeVerifyTests.cs" />
     <Compile Include="MethodInterceptionTests\WhenSpecifyingExactArgumentShouldMatch.cs" />
     <Compile Include="MethodInterceptionTests\WhenSpecifyingOverloadsMatch.cs" />
     <Compile Include="MethodInterceptionTests\RegisteredInterceptionTests.cs" />
@@ -129,12 +128,16 @@
       <Name>TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="InterceptSpecifications" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
   <UsingTask TaskName="InterceptAllStaticMethods" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
+  <UsingTask TaskName="PeVerify" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
   <Target Name="AfterBuild">
     <InterceptSpecifications SearchLocation="$(OutputPath)" SpecificationAssembly="IntegrationTests.dll" />
     <InterceptAllStaticMethods SearchLocation="$(OutputPath)" TargetAssembly="Scenarios.dll" />
+    <PeVerify SpecificAssembly="$(OutputPath)\IntegrationTests.dll" />
+    <PeVerify SpecificAssembly="$(OutputPath)\Scenarios.dll" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
