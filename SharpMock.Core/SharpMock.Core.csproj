@@ -283,6 +283,7 @@
     <Compile Include="Syntax\FakerOptions.cs" />
     <Compile Include="Syntax\IFaker.cs" />
     <Compile Include="Syntax\IFakerOptions.cs" />
+    <Compile Include="Utility\PeVerify.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
