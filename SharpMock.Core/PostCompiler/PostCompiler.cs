@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Microsoft.Cci;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
-using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
@@ -19,7 +17,17 @@ using SourceMethodBody = Microsoft.Cci.MutableCodeModel.SourceMethodBody;
 
 namespace SharpMock.Core.PostCompiler
 {
-	public class PostCompiler
+    public class PostCompilerContext
+    {
+        public PostCompilerArgs Args { get; set; }
+        public IMetadataHost Host { get; set; }
+        public IAssembly SharpMockDelegateTypes { get; set; }
+        public IUnit SharpMockCore { get; set; }
+        public ILogger Log { get; set; }
+        public Assembly AssemblyToAlter { get; set; }
+    }
+
+    public class PostCompiler
 	{
 		private readonly PostCompilerArgs postCompilerArgs;
 	    private readonly IMetadataHost host;
@@ -53,46 +61,33 @@ namespace SharpMock.Core.PostCompiler
         
         public void InterceptSpecifications()
         {
-            var mutableAssembly = GetMutableAssembly(postCompilerArgs.TestAssemblyPath, host);
-            mutableAssembly.AssemblyReferences.Add(sharpMockDelegateTypes);
+            // get mutable test assembly
+            // add sharpmockdelegatetypes assembly reference
+            // load referenced assemblies into host
+            // scan for interception specifications
+            // add interception targets
+            // replace specified static method calls
+            // save assembly
+            // serialize specs
 
-            LoadReferencedAssemblies(mutableAssembly, host);
+            var pipeline = new PostCompilerPipeline();
+            pipeline.AddStep(new GetMutableTestAssembly());
+            pipeline.AddStep(new AddReferenceToSharpMockTypesAssembly());
+            pipeline.AddStep(new LoadReferencesIntoHost());
+            pipeline.AddStep(new ScanForInterceptionSpecifications());
+            pipeline.AddStep(new AddInterceptionTargetsToAssembly());
+            pipeline.AddStep(new ReplaceInterceptedMethodsWithAlternativeInvocations());
+            pipeline.AddStep(new SaveAssembly());
+            pipeline.AddStep(new SerializeAllSpecifications());
 
-            ScanForInterceptionSpecifications(mutableAssembly, host);
-            AddInterceptionTargets(mutableAssembly, host);
-            var modifiedAssembly = ReplaceSpecifiedStaticMethodCalls(host, mutableAssembly);
+            var ctx = new PostCompilerContext();
+            ctx.Args = postCompilerArgs;
+            ctx.Host = host;
+            ctx.Log = log;
+            ctx.SharpMockCore = sharpMockCore;
+            ctx.SharpMockDelegateTypes = sharpMockDelegateTypes;
 
-            SaveAssembly(postCompilerArgs.TestAssemblyPath, modifiedAssembly, host);
-
-            var specAssembly = Path.GetFileNameWithoutExtension(postCompilerArgs.TestAssemblyPath);
-            var autoSpecs = String.Format("{0}.Fluent.SharpMock.SerializedSpecifications.xml", specAssembly);
-
-            var serializer = new ReplaceableMethodInfoListSerializer(
-                Path.GetDirectoryName(postCompilerArgs.TestAssemblyPath));
-            serializer.SerializeSpecifications(autoSpecs, MethodReferenceReplacementRegistry.GetReplaceables());
-            SerializeExplicitSpecifications(postCompilerArgs.TestAssemblyPath);
-        }
-
-        private void SerializeExplicitSpecifications(string specAssembly)
-        {
-            var assembly = System.Reflection.Assembly.LoadFrom(specAssembly);
-            var specs = new List<Type>(assembly.GetTypes())
-                .FindAll(t => typeof(IReplacementSpecification).IsAssignableFrom(t));
-
-            var specifiedMethods = new List<ReplaceableMethodInfo>();
-
-            foreach (var specType in specs)
-            {
-                var spec = Activator.CreateInstance(specType) as IReplacementSpecification;
-                specifiedMethods.AddRange(spec.GetMethodsToReplace());
-            }
-
-            var specPath = Path.GetDirectoryName(specAssembly);
-            var specAssemblyName = Path.GetFileNameWithoutExtension(specAssembly);
-            var serializedSpecName = String.Format("{0}.SharpMock.SerializedSpecifications.xml", specAssemblyName);
-
-            var serializer = new ReplaceableMethodInfoListSerializer(specPath);
-            serializer.SerializeSpecifications(serializedSpecName, specifiedMethods);
+            pipeline.Execute(ctx);
         }
 
         public void InterceptAllStaticMethodCalls()
@@ -109,11 +104,11 @@ namespace SharpMock.Core.PostCompiler
             SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, modifiedAssembly, host);
         }
 
-        private static void host_Errors(object sender, Microsoft.Cci.ErrorEventArgs e)
+        private void host_Errors(object sender, Microsoft.Cci.ErrorEventArgs e)
         {
             foreach (var error in e.Errors)
             {
-                Console.WriteLine(error.Message);
+                log.WriteError(error.Message); 
             }
         }
 
@@ -135,29 +130,11 @@ namespace SharpMock.Core.PostCompiler
             }
         }
 
-        private static IAssembly ScanForInterceptionSpecifications(IAssembly assembly, IMetadataHost host)
-        {
-            var registrar = new SpecifiedMethodCallRegistrar(host);
-            registrar.Visit(assembly);
-
-            var replaceables = MethodReferenceReplacementRegistry.GetReplaceables();
-
-
-            return assembly;
-        }
-
         private static IAssembly ScanForStaticMethodCalls(IAssembly assembly, IMetadataHost host)
         {
             var registrar = new StaticMethodCallRegistrar(host, assembly.Location);
             registrar.Visit(assembly);
             return assembly;
-        }
-
-        private static IAssembly ReplaceSpecifiedStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
-        {
-            var methodCallReplacer = new SpecifiedMethodCallReplacer(host);
-            methodCallReplacer.Visit(mutableAssembly);
-            return mutableAssembly;
         }
 
         private IAssembly ReplaceStaticMethodCalls(IAssembly mutableAssembly)
