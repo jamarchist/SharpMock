@@ -10,8 +10,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (    x.Name == y.Name 
                     &&  x.DeclaringType.Namespace == y.DeclaringType.Namespace
                     &&  x.DeclaringType.Name == y.DeclaringType.Name
-                    &&  x.DeclaringType.Assembly.AssemblyFullName == y.DeclaringType.Assembly.AssemblyFullName
-                    &&  x.DeclaringType.Assembly.AssemblyPath == y.DeclaringType.Assembly.AssemblyPath)
+                    &&  x.DeclaringType.Assembly.Name == y.DeclaringType.Assembly.Name)
             {
                 return true;
             }

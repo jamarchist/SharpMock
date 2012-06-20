@@ -16,7 +16,7 @@ namespace SharpMock.PostCompiler.MSBuild
                 var targetPath = System.IO.Path.Combine(SearchLocation, TargetAssembly);
 
                 var compiler = new SharpMock.Core.PostCompiler.PostCompiler(
-                    new PostCompilerArgs(new[] { String.Empty, targetPath }));
+                    new PostCompilerArgs(new[] { String.Empty, targetPath }), new MSBuildLogger(Log));
 
                 compiler.InterceptAllStaticMethodCalls();                                                    
             }

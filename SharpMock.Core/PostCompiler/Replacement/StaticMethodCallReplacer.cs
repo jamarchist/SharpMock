@@ -22,9 +22,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var mutableMethodCall = methodCall as MethodCall;
             var method = mutableMethodCall.MethodToCall.AsReplaceable();
 
-            log.WriteTrace("Finding replacement for {0}.{1} in '{2}' in '{3}'",
-                method.DeclaringType.Name, method.Name, method.DeclaringType.Assembly.AssemblyPath, method.DeclaringType.Assembly.AssemblyFullName);
-
+            log.WriteTrace("Finding replacement for {0}.{1}", method.DeclaringType.Name, method.Name);
+            log.WriteTrace("  in '{0}' at '{1}'", method.DeclaringType.Assembly.Name, method.DeclaringType.Assembly.AssemblyPath);
+            
             if (MethodReferenceReplacementRegistry.HasReplacementFor(method))
             //if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall))
             {
@@ -39,6 +39,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     mutableMethodCall.IsVirtualCall = false;
                     mutableMethodCall.ThisArgument = CodeDummy.Expression;
                 }
+
+                log.WriteTrace("  --REPLACEMENT FOUND--");
+                //var loggable = replacementCall.AsReplaceable();
+                //log.WriteTrace("  --REPLACEMENT: {0}.{1}.{2}--", 
+                //    loggable.DeclaringType.Namespace, loggable.DeclaringType.Namespace, loggable.Name);
+            }
+            else
+            {
+                log.WriteTrace("  --NOT FOUND--");                
             }
             
             base.Visit(methodCall);

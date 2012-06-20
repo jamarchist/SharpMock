@@ -25,10 +25,12 @@ namespace SharpMock.Core.PostCompiler
 	    private readonly IMetadataHost host;
 	    private readonly IAssembly sharpMockDelegateTypes;
 	    private readonly IUnit sharpMockCore;
-	    private static readonly ILogger log = new NullLogger();
+	    private readonly ILogger log;
 
-		public PostCompiler(PostCompilerArgs postCompilerArgs)
+		public PostCompiler(PostCompilerArgs postCompilerArgs, ILogger log)
 		{
+		    this.log = log;
+
             if (postCompilerArgs.AreValid())
             {
                 var nameTable = new NameTable();
@@ -103,7 +105,7 @@ namespace SharpMock.Core.PostCompiler
             ScanForStaticMethodCalls(mutableAssembly, host);
             AddInterceptionTargets(mutableAssembly, host);
 
-            var modifiedAssembly = ReplaceStaticMethodCalls(host, mutableAssembly);
+            var modifiedAssembly = ReplaceStaticMethodCalls(mutableAssembly);
             SaveAssembly(postCompilerArgs.ReferencedAssemblyPath, modifiedAssembly, host);
         }
 
@@ -158,7 +160,7 @@ namespace SharpMock.Core.PostCompiler
             return mutableAssembly;
         }
 
-        private static IAssembly ReplaceStaticMethodCalls(IMetadataHost host, IAssembly mutableAssembly)
+        private IAssembly ReplaceStaticMethodCalls(IAssembly mutableAssembly)
         {
             var methodCallReplacer = new StaticMethodCallReplacer(host, log);
             methodCallReplacer.Visit(mutableAssembly);

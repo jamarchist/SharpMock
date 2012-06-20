@@ -11,18 +11,18 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IUnitReflector reflector;
         private readonly string assemblyLocation;
+        private readonly SpecifiedMethodMatcher matcher;
 
         public StaticMethodCallRegistrar(IMetadataHost host, string assemblyLocation)
         {
             this.assemblyLocation = assemblyLocation;
             reflector = new UnitReflector(host);
+            matcher = new SpecifiedMethodMatcher(assemblyLocation, reflector);
         }
 
         public override void Visit(IMethodCall methodCall)
         {
-            var specs = new SpecifiedMethodMatcher(assemblyLocation, reflector);
-
-            if (specs.ShouldReplace(methodCall))
+            if (matcher.ShouldReplace(methodCall))
             {
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
                 MethodReferenceReplacementRegistry.AddReplaceable(methodCall.MethodToCall.AsReplaceable());
@@ -39,6 +39,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private class SpecifiedMethodMatcher : IReplacementMatcher
         {
             private readonly List<IMethodDefinition> specifiedDefinitions;
+            private readonly List<ReplaceableMethodInfo> specdReplacements; 
             private readonly IUnitReflector reflector;
 
             public SpecifiedMethodMatcher(string assemblyLocation, IUnitReflector reflector)
@@ -47,6 +48,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var serializer = new ReplaceableMethodInfoListSerializer(assemblyLocation);
                 var specifiedMethods = serializer.DeserializeAllSpecifiedMethods();
                 var assemblies = new List<string>();
+                specdReplacements = new List<ReplaceableMethodInfo>();
                 specifiedMethods.ForEach(m =>
                 {
                     if (!assemblies.Contains(m.DeclaringType.Assembly.AssemblyPath))
@@ -68,15 +70,24 @@ namespace SharpMock.Core.PostCompiler.Replacement
                         parameters.Add(parameterAssembly.GetType(parameterTypeName));
                     }
 
-                    specifiedDefinitions.Add(
-                        reflector.From(declaringType).GetMethod(method.Name, parameters.ToArray()));
+                    var overloads = reflector.From(declaringType).GetAllOverloadsOf(method.Name);
+                    foreach (var overload in overloads)
+                    {
+                        specdReplacements.Add(overload.AsReplaceable());    
+                    }
                 }
             }
 
             public bool ShouldReplace(IMethodCall methodCall)
             {
-                var matches = specifiedDefinitions
-                    .FindAll(m => m.Equals(methodCall.MethodToCall.ResolvedMethod));
+                //var matches = specifiedDefinitions
+                //    .FindAll(m => m.Equals(methodCall.MethodToCall.ResolvedMethod));
+
+                //return matches.Count > 0;
+
+                var matches =
+                    specdReplacements.FindAll(
+                        m => new ReplaceableMethodInfoComparer().Equals(m, methodCall.MethodToCall.AsReplaceable()));
 
                 return matches.Count > 0;
             }

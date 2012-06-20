@@ -17,7 +17,8 @@ namespace IntegrationTests.MethodInterceptionTests
         [Test]
         public void MethodWithMatchingOverloadIsIntercepted()
         {
-            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            var dummy = new MethodReplacement();
+            Action<string> replacement = s => dummy.Call("Intercepted.");
 
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AllOverloadsMatch(VoidMethod.Of(Console.WriteLine)),
@@ -27,7 +28,7 @@ namespace IntegrationTests.MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineFormatStingOverload();
 
-            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);            
+            Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);            
         }
     }
 }

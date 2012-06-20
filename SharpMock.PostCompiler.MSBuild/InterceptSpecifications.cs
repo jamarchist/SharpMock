@@ -16,7 +16,7 @@ namespace SharpMock.PostCompiler.MSBuild
                 var specPath = System.IO.Path.Combine(SearchLocation, SpecificationAssembly);
                 
                 var compiler = new SharpMock.Core.PostCompiler.PostCompiler(
-                    new PostCompilerArgs(new[] { specPath, String.Empty }));
+                    new PostCompilerArgs(new[] { specPath, String.Empty }), new MSBuildLogger(Log));
 
                 compiler.InterceptSpecifications();
             }

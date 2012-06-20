@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="AssertionFailedException.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="Diagnostics\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\NullLogger.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Interception\Helpers\InvocationHelper.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Interception\Interceptors\RegistryInterceptor.cs" />
     <Compile Include="Interception\MatchingStrategies\IArgumentMatcher.cs" />
     <Compile Include="Interception\MatchingStrategies\MatchesExactly.cs" />
+    <Compile Include="Interception\MatchingStrategies\MethodInfoComparer.cs" />
     <Compile Include="Interception\Registration\IReplacementSpecification.cs" />
     <Compile Include="Interception\Registration\IInterceptionSpecification.cs" />
     <Compile Include="Interception\Registration\ISpecificationRegistry.cs" />

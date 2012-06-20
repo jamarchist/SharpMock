@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="InterceptAllStaticMethods.cs" />
     <Compile Include="InterceptSpecifications.cs" />
+    <Compile Include="MSBuildLogger.cs" />
     <Compile Include="PeVerify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

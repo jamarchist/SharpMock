@@ -33,7 +33,7 @@ namespace SharpMock.Core.Interception.Registration
         private static ReplaceableTypeInfo AsReplaceable(this Type type)
         {
             var assembly = new ReplaceableAssemblyInfo();
-            assembly.AssemblyFullName = type.Assembly.FullName;
+            assembly.Name = type.Assembly.GetName().Name;
             assembly.AssemblyPath = type.Assembly.Location;
 
             var replaceable = new ReplaceableTypeInfo();
@@ -81,7 +81,7 @@ namespace SharpMock.Core.Interception.Registration
             replaceable.Name = namespaceType.Name.Value;
 
             var assembly = new ReplaceableAssemblyInfo();
-            assembly.AssemblyFullName = namespaceType.ContainingUnitNamespace.Unit.Name.Value;
+            assembly.Name = namespaceType.ContainingUnitNamespace.Unit.Name.Value;
             assembly.AssemblyPath = namespaceType.AssemblyPath();
 
             replaceable.Assembly = assembly;

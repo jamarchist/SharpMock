@@ -17,36 +17,37 @@ namespace IntegrationTests.MethodInterceptionTests
         [Test]
         public void ExactMatchesAreIntercepted()
         {
-            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            var dummy = new MethodReplacement();
+            Action<string> replacement = s => dummy.Call("Intercepted.");
             var console = typeof(Console);
             var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new EquivalentCallsMatch(writeLine),
-                                        new InsteadOfCall(() => replacement)
-                    ));
+                new CompoundInterceptor(
+                    new EquivalentCallsMatch(writeLine),
+                        new InsteadOfCall(() => replacement)));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
 
-            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);
+            Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);
         }
 
         [Test]
         public void DifferingSignaturesAreNotIntercepted()
         {
-            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            var dummy = new MethodReplacement();
+            Action<string> replacement = s => dummy.Call("Intercepted.");
             var writeLineWithFormatString = VoidMethod.Of<string, string>(Console.WriteLine);
 
             InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new EquivalentCallsMatch(writeLineWithFormatString),
-                                        new InsteadOfCall(() => replacement)
-                    ));
+                new CompoundInterceptor(
+                    new EquivalentCallsMatch(writeLineWithFormatString), new InsteadOfCall(() => replacement)));
 
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineNotIntercepted();
 
-            Assert.AreNotEqual("Intercepted.", MethodReplacement.ReplacementArg1);
+            Assert.AreNotEqual("Intercepted.", dummy.ReplacementArg1);
         }
     }
 }

@@ -6,6 +6,6 @@ namespace SharpMock.Core.Interception.Registration
     public class ReplaceableAssemblyInfo
     {
         public string AssemblyPath { get; set; }
-        public string AssemblyFullName { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -36,7 +36,8 @@ namespace IntegrationTests.MethodInterceptionTests
         [Test]
         public void CallIsReplaced()
         {
-            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            var dummy = new MethodReplacement();
+            Action<string> replacement = s => dummy.Call("Intercepted.");
             
             InterceptorRegistry.AddInterceptor(
                 new CompoundInterceptor(new AlwaysMatches(),
@@ -46,7 +47,7 @@ namespace IntegrationTests.MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
 
-            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);
+            Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);
         }
 
         [Test]

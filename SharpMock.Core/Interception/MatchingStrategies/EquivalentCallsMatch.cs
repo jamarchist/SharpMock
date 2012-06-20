@@ -15,6 +15,7 @@ namespace SharpMock.Core.Interception.MatchingStrategies
         public bool Matches(MethodInfo calledMethod, IList<object> arguments)
         {
             return calledMethod.Equals(expectedMethod);
+            //return new MethodInfoComparer().Equals(calledMethod, expectedMethod);
         }
     }
 }

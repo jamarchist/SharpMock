@@ -16,8 +16,9 @@ namespace IntegrationTests.MethodInterceptionTests
         [Test]
         public void MethodCallWithMatchingArgumentsIsIntercepted()
         {
+            var dummy = new MethodReplacement();
             var arg = "This should not appear.";
-            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            Action<string> replacement = s => dummy.Call("Intercepted.");
             var console = typeof(Console);
             var writeLine = console.GetMethod("WriteLine", new[] {typeof (string)});
 
@@ -30,13 +31,14 @@ namespace IntegrationTests.MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLine();
 
-            Assert.AreEqual("Intercepted.", MethodReplacement.ReplacementArg1);             
+            Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);             
         }
 
         [Test]
         public void MethodCallWithNonMatchingArgumentsIsNotIntercepted()
         {
-            Action<string> replacement = s => MethodReplacement.Call("Intercepted.");
+            var dummy = new MethodReplacement();
+            Action<string> replacement = s => dummy.Call("Intercepted.");
             var console = typeof(Console);
             var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
 
@@ -49,7 +51,7 @@ namespace IntegrationTests.MethodInterceptionTests
             var mocked = new CodeUnderTest();
             mocked.CallsConsoleWriteLineNotIntercepted();
 
-            Assert.AreNotEqual("Intercepted.", MethodReplacement.ReplacementArg1);
+            Assert.AreNotEqual("Intercepted.", dummy.ReplacementArg1);
         }        
     }
 }
