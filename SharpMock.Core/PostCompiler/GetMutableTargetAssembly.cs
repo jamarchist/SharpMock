@@ -1,10 +1,10 @@
 namespace SharpMock.Core.PostCompiler
 {
-    public class GetMutableTestAssembly : GetMutableAssembly
+    public class GetMutableTargetAssembly : GetMutableAssembly
     {
         protected override string AssemblyPath(PostCompilerContext context)
         {
-            return context.Args.TestAssemblyPath;
+            return context.Args.ReferencedAssemblyPath;
         }
     }
 }

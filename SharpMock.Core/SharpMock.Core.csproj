@@ -151,6 +151,7 @@
     <Compile Include="Interception\Registration\ReplaceableTypeExtensions.cs" />
     <Compile Include="Interception\Registration\ReplaceableTypeInfo.cs" />
     <Compile Include="Interception\Registration\SpecificationRegistry.cs" />
+    <Compile Include="PostCompiler\AddInterceptionTargetsToAssembly.cs" />
     <Compile Include="PostCompiler\AddReferenceToSharpMockTypesAssembly.cs" />
     <Compile Include="PostCompiler\CciExtensions\MethodDefinitionExtensions.cs" />
     <Compile Include="PostCompiler\CciExtensions\ModuleExtensions.cs" />
@@ -232,9 +233,12 @@
     <Compile Include="PostCompiler\Construction\Expressions\InstanceCreator.cs" />
     <Compile Include="PostCompiler\Construction\Variables\IParameterBindings.cs" />
     <Compile Include="PostCompiler\Construction\Variables\ParameterBindings.cs" />
+    <Compile Include="PostCompiler\GetMutableAssembly.cs" />
+    <Compile Include="PostCompiler\GetMutableTargetAssembly.cs" />
     <Compile Include="PostCompiler\GetMutableTestAssembly.cs" />
     <Compile Include="PostCompiler\IPostCompilerPipelineStep.cs" />
     <Compile Include="PostCompiler\LoadReferencesIntoHost.cs" />
+    <Compile Include="PostCompiler\PostCompilerContext.cs" />
     <Compile Include="PostCompiler\PostCompilerPipeline.cs" />
     <Compile Include="PostCompiler\ReplaceInterceptedMethodsWithAlternativeInvocations.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />
@@ -284,8 +288,11 @@
     <Compile Include="PostCompiler\Replacement\SpecifiedMethodCallReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallReplacer.cs" />
-    <Compile Include="PostCompiler\SaveAssembly.cs" />
+    <Compile Include="PostCompiler\ReplaceStaticMethodCalls.cs" />
+    <Compile Include="PostCompiler\SaveTargetAssembly.cs" />
+    <Compile Include="PostCompiler\SaveTestAssembly.cs" />
     <Compile Include="PostCompiler\ScanForInterceptionSpecifications.cs" />
+    <Compile Include="PostCompiler\ScanForStaticMethods.cs" />
     <Compile Include="PostCompiler\SerializeAllSpecifications.cs" />
     <Compile Include="PostCompiler\SharpMockGeneratedAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
