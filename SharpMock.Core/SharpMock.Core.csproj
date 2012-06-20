@@ -127,6 +127,7 @@
     <Compile Include="Interception\InterceptionStrategies\InvokeCallSafe.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeOriginalCallSafe.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeWithInvocation.cs" />
+    <Compile Include="Interception\InterceptionStrategies\LazyIntercept.cs" />
     <Compile Include="Interception\Interceptors\Expectations.cs" />
     <Compile Include="Interception\MatchingStrategies\AllOverloadsMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\AlwaysMatches.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.Interception.InterceptionStrategies
 {
@@ -23,7 +24,7 @@ namespace SharpMock.Core.Interception.InterceptionStrategies
 
             try
             {
-                invocation.Return = callBinder().DynamicInvoke(arguments);
+                invocation.Return = callBinder().SafeInvoke(arguments);
             }
             catch (TargetInvocationException exceptionOnInvoke)
             {

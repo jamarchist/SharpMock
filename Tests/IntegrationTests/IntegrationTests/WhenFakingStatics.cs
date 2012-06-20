@@ -3,6 +3,7 @@ using NUnit.Framework;
 using ScenarioDependencies;
 using Scenarios;
 using SharpMock.Core;
+using SharpMock.Core.Interception;
 using SharpMock.Core.Syntax;
 using TestUtilities;
 
@@ -123,6 +124,24 @@ namespace IntegrationTests.IntegrationTests
 
             var code = new CodeUnderTest();
             code.CallsTwoOverloads();
+        }
+
+        [Test]
+        public void CanIncludeInvocationWhenSpecified()
+        {
+            var fake = new Faker();
+
+            fake.CallsTo(() => StaticClass.StringReturnOneParameter(0))
+                .ByReplacingWith((IInvocation i) =>
+                                     {
+                                         i.Return = i.OriginalCallInfo.Name;
+                                     })
+                .AsInterceptor();
+
+            var code = new CodeUnderTest();
+            var result = code.CallsStringReturnOneParameter();
+        
+            Assert.AreEqual("StringReturnOneParameter", result);
         }
     }
 }

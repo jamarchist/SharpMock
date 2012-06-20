@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.Interceptors;
 using SharpMock.Core.Interception.MatchingStrategies;
 
@@ -64,6 +65,12 @@ namespace SharpMock.Core.Syntax
         public IFakerOptions AndAllMatchingCalls()
         {
             currentExpectations.MatchingStrategy = new AllOverloadsMatch(currentExpectations.Method);
+            return this;
+        }
+
+        public IFakerOptions AsInterceptor()
+        {
+            currentExpectations.Invoker = new InvokeWithInvocation(() => currentExpectations.Replacement);
             return this;
         }
 

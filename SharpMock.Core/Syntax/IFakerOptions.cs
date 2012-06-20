@@ -14,5 +14,7 @@
         IFakerOptions ByReplacingWith<TArg1, TArg2, TReturnValue>(Function<TArg1, TArg2, TReturnValue> replacement);
 
         IFakerOptions AndAllMatchingCalls();
+
+        IFakerOptions AsInterceptor();
     }
 }

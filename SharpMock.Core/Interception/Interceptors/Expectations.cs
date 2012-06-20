@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SharpMock.Core.Interception.InterceptionStrategies;
 using SharpMock.Core.Interception.MatchingStrategies;
 
 namespace SharpMock.Core.Interception.Interceptors
@@ -43,6 +44,22 @@ namespace SharpMock.Core.Interception.Interceptors
             }
 
             set { matchingStrategy = value; }
+        }
+
+        private IInterceptionStrategy invoker;
+        public IInterceptionStrategy Invoker
+        {
+            get
+            {
+                if (invoker == null)
+                {
+                    invoker = new InsteadOfCall(() => Replacement);
+                }
+
+                return invoker;
+            }
+
+            set { invoker = value; }
         }
     }
 }
