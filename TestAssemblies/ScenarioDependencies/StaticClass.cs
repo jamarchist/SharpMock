@@ -23,5 +23,17 @@ namespace ScenarioDependencies
             //throw new MethodNotInterceptedException(
             //    "StaticClass.StringReturnOneParameter should have been intercepted, but was called instead.");
         }
+
+        public static void Overloaded()
+        {
+            throw new MethodNotInterceptedException(
+                "StaticClass.Overload() should have been intercepted, but was called instead.");
+        }
+
+        public static void Overloaded(string ignored)
+        {
+            throw new MethodNotInterceptedException(
+                "StaticClass.Overloaded(string) should have been intercepted, but was called instead.");
+        }
 	}
 }

@@ -75,6 +75,11 @@ namespace Scenarios
             return x;
         }
 
+        public void CallsTwoOverloads()
+        {
+            StaticClass.Overloaded();
+            StaticClass.Overloaded(String.Empty);
+        }
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

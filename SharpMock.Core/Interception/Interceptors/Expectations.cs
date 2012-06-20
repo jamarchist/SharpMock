@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SharpMock.Core.Interception.MatchingStrategies;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
@@ -28,5 +29,20 @@ namespace SharpMock.Core.Interception.Interceptors
 
         public IList<Delegate> Assertions { get; private set; }
         public Delegate Replacement { get; set; }
+        private IMatchingStrategy matchingStrategy;
+        public IMatchingStrategy MatchingStrategy
+        {
+            get
+            {
+                if (matchingStrategy == null)
+                {
+                    matchingStrategy = new EquivalentCallsMatch(Method);
+                }
+
+                return matchingStrategy;
+            }
+
+            set { matchingStrategy = value; }
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace SharpMock.Core.Syntax
             var expectations = InterceptorRegistry.GetCurrentRecorder().GetExpectations();
 
             var interceptor = new CompoundInterceptor(
-                new EquivalentCallsMatch(expectations.Method),
+                new LazyMatch(() => expectations.MatchingStrategy),
                 new Assert(() => expectations.Assertions),
                 new InsteadOfCall(() => expectations.Replacement)
             );

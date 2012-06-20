@@ -113,5 +113,16 @@ namespace IntegrationTests.IntegrationTests
             Assert.AreEqual("Intercepted.", result.FirstValue);
             Assert.AreEqual("|| Original method return value when passed '9876'. ||", result.SecondValue);
         }
+
+        [Test]
+        public void MultipleOverloadsAreInterceptedWhenSpecified()
+        {
+            var fake = new Faker();
+
+            fake.CallsTo(() => StaticClass.Overloaded()).AndAllMatchingCalls().ByReplacingWith(() => { });
+
+            var code = new CodeUnderTest();
+            code.CallsTwoOverloads();
+        }
     }
 }

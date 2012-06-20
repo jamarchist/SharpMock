@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using NUnit.Framework;
 using SharpMock.Core.PostCompiler.Construction.Assemblies;
+using SharpMock.Core.Utility;
 
 namespace ConstructionTests
 {
@@ -55,7 +56,14 @@ namespace ConstructionTests
             {
                 if (File.Exists(AssemblyFileName))
                 {
-                    File.Delete(AssemblyFileName);
+                    try
+                    {
+                        File.Delete(AssemblyFileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Unable to delete generated assembly: {0}", ex.Message);    
+                    }
                 }                
             }
         }

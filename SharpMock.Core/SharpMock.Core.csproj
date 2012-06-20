@@ -140,6 +140,7 @@
     <Compile Include="Interception\Invocation.cs" />
     <Compile Include="Interception\Interceptors\RegistryInterceptor.cs" />
     <Compile Include="Interception\MatchingStrategies\IArgumentMatcher.cs" />
+    <Compile Include="Interception\MatchingStrategies\LazyMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\MatchesExactly.cs" />
     <Compile Include="Interception\Registration\IReplacementSpecification.cs" />
     <Compile Include="Interception\Registration\IInterceptionSpecification.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="PostCompiler\Replacement\StaticMethodCallRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\StaticMethodCallReplacer.cs" />
     <Compile Include="PostCompiler\ReplaceStaticMethodCalls.cs" />
+    <Compile Include="PostCompiler\SaveAssembly.cs" />
     <Compile Include="PostCompiler\SaveTargetAssembly.cs" />
     <Compile Include="PostCompiler\SaveTestAssembly.cs" />
     <Compile Include="PostCompiler\ScanForInterceptionSpecifications.cs" />

@@ -12,5 +12,7 @@
         IFakerOptions ByReplacingWith<TReturnValue>(Function<TReturnValue> replacement);
         IFakerOptions ByReplacingWith<TInterceptedArgument, TReturnValue>(Function<TInterceptedArgument, TReturnValue> replacement);
         IFakerOptions ByReplacingWith<TArg1, TArg2, TReturnValue>(Function<TArg1, TArg2, TReturnValue> replacement);
+
+        IFakerOptions AndAllMatchingCalls();
     }
 }

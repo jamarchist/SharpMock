@@ -1,5 +1,6 @@
 ﻿using System;
 using SharpMock.Core.Interception.Interceptors;
+using SharpMock.Core.Interception.MatchingStrategies;
 
 namespace SharpMock.Core.Syntax
 {
@@ -57,6 +58,12 @@ namespace SharpMock.Core.Syntax
         public IFakerOptions ByReplacingWith<TArg1, TArg2, TReturnValue>(Function<TArg1, TArg2, TReturnValue> replacement)
         {
             currentExpectations.Replacement = replacement;
+            return this;
+        }
+
+        public IFakerOptions AndAllMatchingCalls()
+        {
+            currentExpectations.MatchingStrategy = new AllOverloadsMatch(currentExpectations.Method);
             return this;
         }
 
