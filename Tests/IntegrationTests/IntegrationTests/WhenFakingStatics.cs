@@ -17,8 +17,7 @@ namespace IntegrationTests.IntegrationTests
         {
             var wasCalled = false;
 
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.VoidReturnNoParameters()).ByReplacingWith(() => wasCalled = true);
+            Replace.CallsTo(() => StaticClass.VoidReturnNoParameters()).With(() => wasCalled = true);
 
             var code = new CodeUnderTest();
             code.CallsVoidReturnNoParameters();
@@ -29,8 +28,7 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void ReplacementMethodWithReturnValueIsInvoked()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => "Interception Result");
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => "Interception Result");
 
             var code = new CodeUnderTest();
             var result = code.CallsStringReturnNoParameters();
@@ -41,10 +39,9 @@ namespace IntegrationTests.IntegrationTests
         [Test, ExpectedException(typeof(AssertionFailedException))]
         public void AssertionExceptionIsThrownIfAssertionFails()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
                 .Asserting((int x) => x == 77)
-                .ByReplacingWith((int x) => x.ToString());
+                .With((int x) => x.ToString());
 
             var code = new CodeUnderTest();
             code.CallsStringReturnOneParameter();
@@ -53,9 +50,8 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void AssertionExceptionIsNotThrownIfAssertionPasses()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
-                .ByReplacingWith((int x) => x.ToString())
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .With((int x) => x.ToString())
                 .Asserting((int x) => x == 999);
 
             var code = new CodeUnderTest();
@@ -67,9 +63,8 @@ namespace IntegrationTests.IntegrationTests
             ExpectedMessage = "I threw this from a replacement.")]
         public void CustomExceptionCanBeThrownFromReplacement()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.VoidReturnNoParameters())
-                .ByReplacingWith(() => { throw new InvalidOperationException("I threw this from a replacement."); });
+            Replace.CallsTo(() => StaticClass.VoidReturnNoParameters())
+                .With(() => { throw new InvalidOperationException("I threw this from a replacement."); });
 
             var code = new CodeUnderTest();
             code.CallsVoidReturnNoParameters();
@@ -78,11 +73,10 @@ namespace IntegrationTests.IntegrationTests
         [Test, ExpectedException(typeof(AssertionFailedException))]
         public void MultipleAssertionsAreAllowed()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
                 .Asserting((int x) => x > 10)
                 .Asserting((int x) => x > 1000)
-                .ByReplacingWith((int x) => "dummy return value");
+                .With((int x) => "dummy return value");
 
             var code = new CodeUnderTest();
             code.CallsStringReturnOneParameter();
@@ -91,11 +85,10 @@ namespace IntegrationTests.IntegrationTests
         [Test, ExpectedException(typeof(AssertionFailedException))]
         public void MultipleAssertionsAreAllowedInVaryingOrder()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
                 .Asserting((int x) => x > 1000)
                 .Asserting((int x) => x > 10)
-                .ByReplacingWith((int x) => "dummy return value");
+                .With((int x) => "dummy return value");
 
             var code = new CodeUnderTest();
             code.CallsStringReturnOneParameter();
@@ -104,9 +97,7 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void CallsThatArentSpecifiedArentIntercepted()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => "Intercepted.");
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => "Intercepted.");
 
             var code = new CodeUnderTest();
             var result = code.CallsTwoMethods();
@@ -118,9 +109,7 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void MultipleOverloadsAreInterceptedWhenSpecified()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => StaticClass.Overloaded()).AndAllMatchingCalls().ByReplacingWith(() => { });
+            Replace.CallsTo(() => StaticClass.Overloaded()).AndAllOverloads().With(() => { });
 
             var code = new CodeUnderTest();
             code.CallsTwoOverloads();
@@ -129,13 +118,11 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void CanIncludeInvocationWhenSpecified()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => StaticClass.StringReturnOneParameter(0))
-                .ByReplacingWith((IInvocation i) =>
-                                     {
-                                         i.Return = i.OriginalCallInfo.Name;
-                                     })
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(0))
+                .With((IInvocation i) =>
+                          {
+                              i.Return = i.OriginalCallInfo.Name;
+                          })
                 .AsInterceptor();
 
             var code = new CodeUnderTest();

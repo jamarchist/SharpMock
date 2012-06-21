@@ -14,10 +14,9 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void SealedClassMethodIsIntercepted()
         {
-            var fake = new Faker();
             var wasCalled = false;
 
-            fake.CallsTo((SealedClass s) => s.VoidReturnNoParameters()).ByReplacingWith(() => { wasCalled = true; });
+            Replace.CallsTo((SealedClass s) => s.VoidReturnNoParameters()).With(() => { wasCalled = true; });
 
             var code = new CodeUnderTest();
             code.CallsSealedMethod();
@@ -28,10 +27,9 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void SealedClassMethodWithParametersIsIntercepted()
         {
-            var fake = new Faker();
             string interception = "Method was not intercepted.";
 
-            fake.CallsTo((SealedClass s) => s.StringReturnOneParameter(0)).ByReplacingWith(
+            Replace.CallsTo((SealedClass s) => s.StringReturnOneParameter(0)).With(
                 (int i) =>
                     {
                         interception = string.Format("Method was called with {0}.", i);
@@ -48,11 +46,10 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void NonVirtualMethodOnNonSealedClassIsIntercepted()
         {
-            var fake = new Faker();
             var wasCalled = false;
 
-            fake.CallsTo((SomeConcreteClass i) => i.SomeMethod())
-                .ByReplacingWith(() => { wasCalled = true; });
+            Replace.CallsTo((SomeConcreteClass i) => i.SomeMethod())
+                .With(() => { wasCalled = true; });
 
             var code = new CodeUnderTest();
             code.CallsSomeConcreteClassMethod(null);

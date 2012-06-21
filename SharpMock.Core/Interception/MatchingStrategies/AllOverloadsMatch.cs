@@ -9,18 +9,6 @@ namespace SharpMock.Core.Interception.MatchingStrategies
         private readonly Type declaringType;
         private readonly string methodName;
 
-        public AllOverloadsMatch(Type declaringType, string methodName)
-        {
-            this.declaringType = declaringType;
-            this.methodName = methodName;
-        }
-
-        public AllOverloadsMatch(Type declaringType, MethodInfo method)
-        {
-            this.declaringType = declaringType;
-            methodName = method.Name;
-        }
-
         public AllOverloadsMatch(MethodInfo method)
         {
             declaringType = method.DeclaringType;

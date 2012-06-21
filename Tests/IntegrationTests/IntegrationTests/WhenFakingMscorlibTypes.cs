@@ -14,11 +14,9 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void MethodsOnPrimitivesAreIntercepted()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => bool.Parse("")).ByReplacingWith((string x) => false);
-            fake.CallsTo(() => int.Parse("")).ByReplacingWith((string x) => 4);
-            fake.CallsTo(() => decimal.Parse("")).ByReplacingWith((string x) => 3.14M);
+            Replace.CallsTo(() => bool.Parse("")).With((string x) => false);
+            Replace.CallsTo(() => int.Parse("")).With((string x) => 4);
+            Replace.CallsTo(() => decimal.Parse("")).With((string x) => 3.14M);
 
             var code = new CodeWithMscorlibDependencies();
             var result = code.ParsesHardCodedStrings();
@@ -31,12 +29,11 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void CreateDelegateMethodIsIntercepted()
         {
-            var fake = new Faker();
             var wasCalled = false;
             VoidAction setWasCalledEqualToTrue = () => { wasCalled = true; };
             Delegate substitute = setWasCalledEqualToTrue;
 
-            fake.CallsTo(() => Delegate.CreateDelegate(null, null)).ByReplacingWith((Type t, MethodInfo m) => substitute);
+            Replace.CallsTo(() => Delegate.CreateDelegate(null, null)).With((Type t, MethodInfo m) => substitute);
 
             var code = new CodeWithMscorlibDependencies();
             var createdDelegate = code.CreatesDelegate();
@@ -48,9 +45,7 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void PropertyGetterIsIntercepted()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => Environment.MachineName).ByReplacingWith(() => "Machine-X");
+            Replace.CallsTo(() => Environment.MachineName).With(() => "Machine-X");
 
             var code = new CodeWithMscorlibDependencies();
             var machineName = code.GetsMachineName();
@@ -61,10 +56,9 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void DateTimePropertyIsIntercepted()
         {
-            var fake = new Faker();
             var october25th1985 = new DateTime(1985, 10, 25);
 
-            fake.CallsTo(() => DateTime.Now).ByReplacingWith(() => october25th1985);
+            Replace.CallsTo(() => DateTime.Now).With(() => october25th1985);
 
             var code = new CodeWithMscorlibDependencies();
             var result = code.GetsCurrentDateTime();
@@ -75,9 +69,7 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void FileSystemMethodIsIntercepted()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => System.IO.File.Exists(null)).ByReplacingWith((string s) => true);
+            Replace.CallsTo(() => System.IO.File.Exists(null)).With((string s) => true);
 
             var code = new CodeWithMscorlibDependencies();
             var result = code.ChecksIfFileExists();

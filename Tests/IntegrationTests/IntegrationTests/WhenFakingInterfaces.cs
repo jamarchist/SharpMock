@@ -14,8 +14,7 @@ namespace IntegrationTests.IntegrationTests
         {
             var wasCalled = false;
 
-            var fake = new Faker();
-            fake.CallsTo<ISomeInterface>(i => i.DoSomething()).ByReplacingWith(() => wasCalled = true);
+            Replace.CallsTo<ISomeInterface>(i => i.DoSomething()).With(() => wasCalled = true);
 
             var code = new CodeUnderTest();
             code.CallsSomeInterface(null);

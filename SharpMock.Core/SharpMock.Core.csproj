@@ -301,10 +301,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticReflection\Method.cs" />
     <Compile Include="StaticReflection\VoidMethod.cs" />
-    <Compile Include="Syntax\Faker.cs" />
-    <Compile Include="Syntax\FakerOptions.cs" />
-    <Compile Include="Syntax\IFaker.cs" />
-    <Compile Include="Syntax\IFakerOptions.cs" />
+    <Compile Include="Syntax\Replace.cs" />
+    <Compile Include="Syntax\ReplacementOptions.cs" />
+    <Compile Include="Syntax\IReplace.cs" />
+    <Compile Include="Syntax\IReplacementOptions.cs" />
     <Compile Include="Utility\PeVerify.cs" />
   </ItemGroup>
   <ItemGroup />

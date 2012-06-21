@@ -23,7 +23,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             var mutableMethodCall = methodCall as MethodCall;
 
-            var callsToOverloads = reflector.From<Faker>().GetAllOverloadsOf("CallsTo");
+            var callsToOverloads = reflector.From(typeof(Replace)).GetAllOverloadsOf("CallsTo");
             if (mutableMethodCall.MethodCallMatchesAnOverload(callsToOverloads))
             {
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;

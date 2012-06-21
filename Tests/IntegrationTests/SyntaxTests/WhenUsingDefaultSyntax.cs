@@ -12,16 +12,13 @@ namespace IntegrationTests.SyntaxTests
         [Test]
         public void StaticMethodIsIntercepted()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters());
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters());
         }
 
         [Test]
         public void ExpectationIsRecorded()
         {
-            var fake = new Faker();
-
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters());
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters());
 
             var recorder = InterceptorRegistry.GetCurrentRecorder();
 
@@ -38,8 +35,7 @@ namespace IntegrationTests.SyntaxTests
         [Test]
         public void AssertionIsRecorded()
         {
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).Asserting(() => true);
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).Asserting(() => true);
 
             var recorder = InterceptorRegistry.GetCurrentRecorder();
 
@@ -53,8 +49,7 @@ namespace IntegrationTests.SyntaxTests
         public void ReplacementIsRecorded()
         {
             var wasCalled = false;
-            var fake = new Faker();
-            fake.CallsTo(() => StaticClass.StringReturnNoParameters()).ByReplacingWith(() => wasCalled = true);
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => wasCalled = true);
 
             var recorder = InterceptorRegistry.GetCurrentRecorder();
 

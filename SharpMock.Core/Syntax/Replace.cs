@@ -7,24 +7,24 @@ using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.Syntax
 {
-    public class Faker : IFaker
+    public static class Replace //: IReplace
     {
-        public IFakerOptions CallsTo(VoidAction methodToRecord)
+        public static IReplacementOptions CallsTo(VoidAction methodToRecord)
         {
             return RecordCallsTo(methodToRecord);
         }
 
-        public IFakerOptions CallsTo<TResult>(Function<TResult> propertyToRecord)
+        public static IReplacementOptions CallsTo<TResult>(Function<TResult> propertyToRecord)
         {
             return RecordCallsTo(propertyToRecord);
         }
 
-        public IFakerOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord)
+        public static IReplacementOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord)
         {
             return RecordCallsTo(instanceMethodToRecord);
         }
 
-        private static IFakerOptions RecordCallsTo(Delegate method)
+        private static IReplacementOptions RecordCallsTo(Delegate method)
         {
             InterceptorRegistry.Record();
 
@@ -43,27 +43,7 @@ namespace SharpMock.Core.Syntax
 
             InterceptorRegistry.StopRecording();
 
-            return new FakerOptions(expectations);
+            return new ReplacementOptions(expectations);
         }
-
-        //public void CallsTo(VoidAction method, VoidAction<IFakerOptions> by)
-        //{
-        //    InterceptorRegistry.Record();
-        //    //
-        //    System.Diagnostics.Debugger.Launch();
-        //    method();
-        //    var expectations = InterceptorRegistry.GetCurrentRecorder().GetExpectations();
-        //    by(new FakerOptions(expectations));
-
-        //    var interceptor = new CompoundInterceptor(
-        //        new EquivalentCallsMatch(expectations.Method),
-        //        new ReplaceCall(expectations.Replacement), new InsteadOfCall()
-        //        );
-
-        //    InterceptorRegistry.AddInterceptor(interceptor);
-
-        //    //
-        //    InterceptorRegistry.StopRecording();
-        //}
     }
 }

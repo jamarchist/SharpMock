@@ -80,6 +80,12 @@ namespace Scenarios
             StaticClass.Overloaded();
             StaticClass.Overloaded(String.Empty);
         }
+
+        public void CallsSomeConcreteClassPropertySetter()
+        {
+            var c = new SomeConcreteClass();
+            c.SomeProperty = "ignored";
+        }
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{
