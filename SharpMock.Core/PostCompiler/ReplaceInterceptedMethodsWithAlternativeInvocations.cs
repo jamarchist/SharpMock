@@ -6,7 +6,7 @@ namespace SharpMock.Core.PostCompiler
     {
         public void Execute(PostCompilerContext context)
         {
-            var methodCallReplacer = new SpecifiedMethodCallReplacer(context.Host);
+            var methodCallReplacer = new SpecifiedMethodCallReplacer(context.Host, context.Log);
             methodCallReplacer.Visit(context.AssemblyToAlter);
         }
     }

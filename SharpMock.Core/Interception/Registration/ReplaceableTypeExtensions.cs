@@ -97,10 +97,15 @@ namespace SharpMock.Core.Interception.Registration
 
         internal static string Namespace(this INamespaceTypeReference namespaceType)
         {
+            return namespaceType.NamespaceBuilder().ToString();
+        }
+
+        internal static ReverseStringBuilder NamespaceBuilder(this INamespaceTypeReference namespaceType)
+        {
             var namespaceBuilder = new ReverseStringBuilder();
             namespaceType.ContainingUnitNamespace.AddParentNamespaces(namespaceBuilder);
 
-            return namespaceBuilder.ToString();
+            return namespaceBuilder;
         }
 
         private static void AddParentNamespaces(this IUnitNamespaceReference ns, ReverseStringBuilder namespaceBuilder)

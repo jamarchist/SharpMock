@@ -1,5 +1,6 @@
 ﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Diagnostics;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Syntax;
@@ -11,10 +12,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IUnitReflector reflector;
         private readonly IMetadataHost host;
+        private readonly ILogger log;
 
-        public SpecifiedMethodCallRegistrar(IMetadataHost host)
+        public SpecifiedMethodCallRegistrar(IMetadataHost host, ILogger log)
         {
             this.host = host;
+            this.log = log;
             reflector = new UnitReflector(host);
         }
 
@@ -27,7 +30,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             {
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
 
-                var parser = new LambdaParser(lambda, host);
+                var parser = new LambdaParser(lambda, host, log);
                 var firstMethodCall = parser.GetFirstMethodCall();
 
                 var replaceable = firstMethodCall.MethodToCall.AsReplaceable();
@@ -36,6 +39,5 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
             base.Visit(methodCall);
         }
-
     }
 }

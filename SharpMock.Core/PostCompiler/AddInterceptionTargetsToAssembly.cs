@@ -1,69 +1,162 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Diagnostics;
+using SharpMock.Core.Interception.Helpers;
 using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core.CciExtensions;
+using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler
 {
     public class AddInterceptionTargetsToAssembly : IPostCompilerPipelineStep
     {
+        private NestedUnitNamespace fake;
+        private IDictionary<string, NestedUnitNamespace> namespaces;
+        private IDictionary<string, NamespaceTypeDefinition> classes;
+        private IMetadataHost host;
+        private Module module;
+        private ILogger log;
+
         public void Execute(PostCompilerContext context)
         {
-            AddInterceptionTargets(context.AssemblyToAlter, context.Host);
+            host = context.Host;
+            module = context.AssemblyToAlter;
+            log = context.Log;
+
+            ConfigureLocals();
+            AddInterceptionTargets();    
         }
 
-
-        private static void AddInterceptionTargets(Module mutableAssembly, IMetadataHost host)
+        private void ConfigureLocals()
         {
-            //var newAssemblyPath = mutableAssembly.Location;
-            //var referencePaths = new List<string>();
-            //foreach (var assemblyReference in mutableAssembly.AssemblyReferences)
-            //{
-            //    referencePaths.Add(assemblyReference.ResolvedAssembly.Location);
-            //}
+            fake = module.UnitNamespaceRoot.AddNestedNamespace("Fake", host);
+            namespaces = new Dictionary<string, NestedUnitNamespace>();
+            classes = new Dictionary<string, NamespaceTypeDefinition>();
+        }
 
-            //var newAssembly = new AssemblyBuilder().CreateNewDll(with =>
-            //                                                         {
-            //                                                             with.Name(mutableAssembly.Name.Value + ".Fakes");
-            //                                                             foreach (var rp in referencePaths)
-            //                                                             {
-            //                                                                 with.ReferenceTo.Assembly(rp);
-            //                                                             }
-            //                                                             with.Type.Class.Public.Static.
-            //                                                         })
+        private void AddNamespaces(ReverseStringBuilder reversedNamespaces)
+        {
+            log.WriteTrace("Adding fake namespace: '{0}'.", reversedNamespaces);
+            var allNamespaces = reversedNamespaces.ToStringArray();
+            var stack = StackedNamespaces(allNamespaces);
+            
+            foreach (var ns in stack)
+            {
+                if (!namespaces.ContainsKey(ns.Key))
+                {
+                    NestedUnitNamespace root = null;
+                    if (namespaces.ContainsKey(ns.Value.Root))
+                        root = namespaces[ns.Value.Root];
+                    else
+                        root = fake.AddNestedNamespace(ns.Value.Root, host);
 
-            var createdPaths = new Dictionary<QualifiedMethodPath, NamespaceTypeDefinition>();
+                    var newNamespace = root.AddNestedNamespace(ns.Value.LastElement, host);
+                    namespaces.Add(ns.Key, newNamespace);
+                }
+            }
+        }
+
+        private void AddClass(string fullNamespace, string className)
+        {
+            var fullyQualifiedName = String.Format("{0}.{1}", fullNamespace, className);
+            log.WriteTrace("Adding fake class: '{0}'.", fullyQualifiedName);
+            if (!classes.ContainsKey(fullyQualifiedName))
+            {
+                var ns = namespaces[fullNamespace];
+                var newClass = ns.AddStaticClass(module, className, host);
+
+                classes.Add(fullyQualifiedName, newClass);
+            }
+        }
+
+        private IDictionary<string, NamespaceInfo> StackedNamespaces(string[] namespaceElements)
+        {
+            var stack = new Dictionary<string, NamespaceInfo>();
+            for (var elementIndex = 0; elementIndex < namespaceElements.Length; elementIndex++)
+            {
+                var stackElement = StackedNamespace(namespaceElements, elementIndex);
+
+                var namespaceInfo = new NamespaceInfo();
+                namespaceInfo.FullNamespace = stackElement;
+                namespaceInfo.LastElement = namespaceElements[elementIndex];
+                namespaceInfo.Root = StackedNamespace(namespaceElements, elementIndex - 1);
+
+                stack.Add(namespaceInfo.FullNamespace, namespaceInfo);
+            }
+
+            return stack;
+        }
+
+        private string StackedNamespace(string[] elements, int lastElementIndex)
+        {
+            var stackElement = new StringBuilder();
+            for (var subIndex = 0; subIndex <= lastElementIndex; subIndex++)
+            {
+                stackElement.Append(elements[subIndex]);
+                stackElement.Append('.');
+            }
+
+            var stack = stackElement.ToString();
+
+            if (stack.Length > 0)
+            {
+                return stack.Trim('.');
+            }
+
+            return stack;
+        }
+
+        private void AddInterceptionTargets()
+        {
+            //var createdPaths = new Dictionary<QualifiedMethodPath, NamespaceTypeDefinition>();
+            var createdPaths = new Dictionary<string, NamespaceTypeDefinition>();
 
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
 
-            var fakeNamespace = mutableAssembly.UnitNamespaceRoot.AddNestedNamespace("Fake", host);
+            //var fakeNamespace = mutableAssembly.UnitNamespaceRoot.AddNestedNamespace("Fake", host);
 
             foreach (var method in MethodReferenceReplacementRegistry.GetMethodsToIntercept())
             {
-                var qualifiedMethodPath = new QualifiedMethodPath();
-                AggregateDeclarationSpaces(qualifiedMethodPath, method, false);
+                //var qualifiedMethodPath = new QualifiedMethodPath();
 
-                NamespaceTypeDefinition methodClass;
-                if (!createdPaths.ContainsKey(qualifiedMethodPath))
-                {
-                    IUnitNamespace lastNs = fakeNamespace;
-                    foreach (var element in qualifiedMethodPath)
-                    {
-                        lastNs = lastNs.AddNestedNamespace(element, host);
-                    }
+                var nsType = method.ContainingType.GetNamespaceType();
+                var fullNs = nsType.NamespaceBuilder();
+                var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
 
-                    methodClass = lastNs.AddStaticClass(mutableAssembly, qualifiedMethodPath.GetClassName(), host);
+                log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
 
-                    createdPaths.Add(qualifiedMethodPath, methodClass);
-                }
-                else
-                {
-                    methodClass = createdPaths[qualifiedMethodPath];
-                }
+                AddNamespaces(fullNs);
+                AddClass(fullNs.ToString(), nsType.Name.Value);
 
+                //AggregateDeclarationSpaces(qualifiedMethodPath, method, false);
+
+                //NamespaceTypeDefinition methodClass;
+                ////if (!createdPaths.ContainsKey(qualifiedMethodPath))
+                //if (!createdPaths.ContainsKey(fullNsWithType))
+                //{
+                //    IUnitNamespace lastNs = fakeNamespace;
+                //    foreach (var element in qualifiedMethodPath)
+                //    {
+                //        lastNs = lastNs.AddNestedNamespace(element, host);
+                //    }
+
+                //    methodClass = lastNs.AddStaticClass(mutableAssembly, qualifiedMethodPath.GetClassName(), host);
+
+                //    //createdPaths.Add(qualifiedMethodPath, methodClass);
+                //    createdPaths.Add(fullNsWithType, methodClass);
+                //}
+                //else
+                //{
+                //    methodClass = createdPaths[fullNsWithType];
+                //    //methodClass = createdPaths[qualifiedMethodPath];
+                //}
+
+                var methodClass = classes[fullNsWithType];
                 var fakeMethod = methodClass.AddPublicStaticMethod(method.Name.Value, method.Type, host);
 
                 // if it's an instance method, we add a parameter at the end for the target
@@ -182,7 +275,7 @@ namespace SharpMock.Core.PostCompiler
         }
 
         private static void AddAlternativeInvocation(BlockStatement block,
-                                                     IMethodDefinition fakeMethod, IMethodReference originalCall, IMetadataHost host)
+            IMethodDefinition fakeMethod, IMethodReference originalCall, IMetadataHost host)
         {
             var context = new ReplacementMethodConstructionContext(host, originalCall, fakeMethod, block);
             var methodBuilder = context.GetMethodBuilder();
@@ -207,5 +300,11 @@ namespace SharpMock.Core.PostCompiler
             return body;
         }
 
+        private class NamespaceInfo
+        {
+            public string FullNamespace { get; set; }
+            public string LastElement { get; set; }
+            public string Root { get; set; }
+        }
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Diagnostics;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -7,30 +8,36 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly AnonymousDelegate lambda;
         private readonly IMetadataHost host;
+        private readonly ILogger log;
 
-        public LambdaParser(AnonymousDelegate lambda, IMetadataHost host)
+        internal LambdaParser(AnonymousDelegate lambda, IMetadataHost host, ILogger log)
         {
             this.lambda = lambda;
             this.host = host;
+            this.log = log;
         }
 
         public ConstructorOrMethodCall GetFirstMethodCall()
         {
-            if (IsStaticMethodCallWithReturnValue())
+            if (IsStaticMethodCallWithReturnValue() && !IsConstructor())
             {
+                log.WriteTrace("MethodCall identified as static with return value.");
                 return FirstStatementAs<ReturnStatement>().Expression as MethodCall;
             }
 
             if (IsVoidMethodCall())
             {
+                log.WriteTrace("MethodCall identified as void.");
                 return FirstStatementAs<ExpressionStatement>().Expression as MethodCall;
             }
 
             if (IsConstructor())
             {
+                log.WriteTrace("MethodCall identified as .ctor.");
                 return FirstStatementAs<ReturnStatement>().Expression as CreateObjectInstance;
             }
 
+            log.WriteTrace("MethodCall defaulted to instance with return value.");
             return FirstStatementAs<ReturnStatement>().Expression as MethodCall;
         }
 

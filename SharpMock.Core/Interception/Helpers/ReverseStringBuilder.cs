@@ -19,13 +19,32 @@ namespace SharpMock.Core.Interception.Helpers
 
         public override string ToString()
         {
-            var forwardStringBuilder = new StringBuilder();
-            while (buffer.Count > 0)
+            var clone = new string[buffer.Count];
+            buffer.CopyTo(clone, 0);
+
+            var bufferCopy = new Stack<string>();
+            for (var copyIndex = clone.Length - 1; copyIndex >= 0; copyIndex--)
             {
-                forwardStringBuilder.Append(buffer.Pop());
+                bufferCopy.Push(clone[copyIndex]);
+            }
+
+            var forwardStringBuilder = new StringBuilder();
+            while (bufferCopy.Count > 0)
+            {
+                forwardStringBuilder.Append(bufferCopy.Pop());
             }
 
             return forwardStringBuilder.ToString();
+        }
+
+        public bool HasString()
+        {
+            return buffer.Count > 0;
+        }
+
+        public string[] ToStringArray()
+        {
+            return ToString().Split('.');
         }
     }
 }

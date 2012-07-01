@@ -86,6 +86,13 @@ namespace Scenarios
             var c = new SomeConcreteClass();
             c.SomeProperty = "ignored";
         }
+
+        public ClassWithConstructor CallsClassWithConstructor()
+        {
+            var classWithConstructor = new ClassWithConstructor();
+            return classWithConstructor;
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

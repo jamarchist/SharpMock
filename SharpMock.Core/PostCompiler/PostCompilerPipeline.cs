@@ -8,8 +8,10 @@ namespace SharpMock.Core.PostCompiler
 
         public void Execute(PostCompilerContext context)
         {
+            context.Log.WriteInfo("Executing PostCompilerPipeline.");
             foreach (var step in steps)
             {
+                context.Log.WriteTrace("Executing step '{0}'.", step.GetType().Name);
                 step.Execute(context);
             }
         }
