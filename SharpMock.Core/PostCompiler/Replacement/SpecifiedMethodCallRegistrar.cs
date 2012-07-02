@@ -33,9 +33,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var parser = new LambdaParser(lambda, host, log);
                 var firstMethodCall = parser.GetFirstMethodCall();
 
-                var replaceable = firstMethodCall.MethodToCall.AsReplaceable();
-                MethodReferenceReplacementRegistry.AddReplaceable(replaceable);
-                MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
+                var replacement = parser.GetReplacementFactory();
+                var registrar = replacement.GetRegistrar();
+                
+                registrar.RegisterReplacement(firstMethodCall);
             }
 
             base.Visit(methodCall);

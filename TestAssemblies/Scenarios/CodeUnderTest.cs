@@ -93,6 +93,11 @@ namespace Scenarios
             return classWithConstructor;
         }
 
+        public int CallsStaticField()
+        {
+            return StaticClass.StaticField;
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

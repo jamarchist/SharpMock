@@ -35,5 +35,7 @@ namespace ScenarioDependencies
             throw new MethodNotInterceptedException(
                 "StaticClass.Overloaded(string) should have been intercepted, but was called instead.");
         }
+
+	    public static int StaticField;
 	}
 }

@@ -101,6 +101,7 @@
     <Compile Include="IntegrationTests\WhenFakingProperties.cs" />
     <Compile Include="IntegrationTests\WhenFakingStatics.cs" />
     <Compile Include="IntegrationTests\WhenFakingMscorlibTypes.cs" />
+    <Compile Include="IntegrationTests\WhenFakingFields.cs" />
     <Compile Include="MethodInterceptionTests\WhenSpecifyingExactArgumentShouldMatch.cs" />
     <Compile Include="MethodInterceptionTests\WhenSpecifyingOverloadsMatch.cs" />
     <Compile Include="MethodInterceptionTests\RegisteredInterceptionTests.cs" />

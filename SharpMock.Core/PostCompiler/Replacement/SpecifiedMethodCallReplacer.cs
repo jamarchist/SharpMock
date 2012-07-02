@@ -34,37 +34,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var parser = new LambdaParser(lambda, host, log);
                 var firstMethodCall = parser.GetFirstMethodCall();
 
-                if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall.AsReplaceable()))
-                //if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
-                {
-                    var replacementCall =
-                        MethodReferenceReplacementRegistry.GetReplacementFor(firstMethodCall.MethodToCall);
-                    firstMethodCall.MethodToCall = replacementCall;
 
-                    if (firstMethodCall is CreateObjectInstance)
-                    {
-                        var newCall = new MethodCall();
-                        newCall.Type = firstMethodCall.Type;
-                        newCall.Arguments = firstMethodCall.Arguments;
-                        newCall.Locations = firstMethodCall.Locations;
-                        newCall.MethodToCall = replacementCall;
-                        newCall.IsStaticCall = true;
-
-                        parser.ReplaceFirstCall(newCall);
-                    }
-                    else
-                    {
-                        var call = firstMethodCall as MethodCall;
-
-                        if (!call.IsStaticCall)
-                        {
-                            call.Arguments.Insert(0, call.ThisArgument);
-                            call.IsStaticCall = true;
-                            call.IsVirtualCall = false;
-                            call.ThisArgument = CodeDummy.Expression;                            
-                        }
-                    }
-                }
             }
 
             base.Visit(methodCall);

@@ -7,22 +7,13 @@ using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.Syntax
 {
-    public static class Replace //: IReplace
+    public static class Replace
     {
-        public static IReplacementOptions CallsTo(VoidAction methodToRecord)
-        {
-            return RecordCallsTo(methodToRecord);
-        }
+        public static IReplacementOptions CallsTo(VoidAction methodToRecord) { return RecordCallsTo(methodToRecord); }
 
-        public static IReplacementOptions CallsTo<TResult>(Function<TResult> propertyToRecord)
-        {
-            return RecordCallsTo(propertyToRecord);
-        }
+        public static IReplacementOptions CallsTo<TResult>(Function<TResult> propertyToRecord) { return RecordCallsTo(propertyToRecord); }
 
-        public static IReplacementOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord)
-        {
-            return RecordCallsTo(instanceMethodToRecord);
-        }
+        public static IReplacementOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord) { return RecordCallsTo(instanceMethodToRecord); }
 
         private static IReplacementOptions RecordCallsTo(Delegate method)
         {
@@ -40,7 +31,6 @@ namespace SharpMock.Core.Syntax
             );
 
             InterceptorRegistry.AddInterceptor(interceptor);
-
             InterceptorRegistry.StopRecording();
 
             return new ReplacementOptions(expectations);
