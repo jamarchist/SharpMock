@@ -5,14 +5,14 @@ namespace SharpMock.Core.Interception.MatchingStrategies
 {
     public class EquivalentCallsMatch : IMatchingStrategy
     {
-        private readonly MethodInfo expectedMethod;
+        private readonly MethodBase expectedMethod;
 
-        public EquivalentCallsMatch(MethodInfo expectedMethod)
+        public EquivalentCallsMatch(MethodBase expectedMethod)
         {
             this.expectedMethod = expectedMethod;
         }
 
-        public bool Matches(MethodInfo calledMethod, IList<object> arguments)
+        public bool Matches(MethodBase calledMethod, IList<object> arguments)
         {
             return calledMethod.Equals(expectedMethod);
         }

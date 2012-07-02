@@ -14,7 +14,7 @@ namespace SharpMock.Core.Interception.MatchingStrategies
             this.argumentMatchers = argumentMatchers;
         }
 
-        public bool Matches(MethodInfo calledMethod, IList<object> arguments)
+        public bool Matches(MethodBase calledMethod, IList<object> arguments)
         {
             var signaturesMatch = signatureMatcher.Matches(calledMethod, arguments);
             if (signaturesMatch)

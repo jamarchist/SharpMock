@@ -7,13 +7,11 @@ namespace SharpMock.Core.Interception.Interceptors
 {
     public class RegistryInterceptor : IInterceptor
     {
-        private MethodInfo interceptedMethod;
-        private IList<object> interceptedArguments;
+        private IInvocation originalInvocation;
 
-        public bool ShouldIntercept(MethodInfo method, IList<object> arguments)
+        public bool ShouldIntercept(IInvocation invocation)
         {
-            interceptedMethod = method;
-            interceptedArguments = arguments;
+            originalInvocation = invocation;
 
             // It doesn't matter what we return here
             return true;
@@ -24,7 +22,7 @@ namespace SharpMock.Core.Interception.Interceptors
             var wasIntercepted = false;
             foreach (var interceptor in InterceptorRegistry.GetInterceptors())
             {
-                if (interceptor.ShouldIntercept(interceptedMethod, interceptedArguments))
+                if (interceptor.ShouldIntercept(originalInvocation))
                 {
                     interceptor.Intercept(invocation);
                     wasIntercepted = true;

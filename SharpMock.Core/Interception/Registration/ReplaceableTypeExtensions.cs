@@ -97,6 +97,8 @@ namespace SharpMock.Core.Interception.Registration
         internal static string AssemblyPath(this INamespaceTypeReference namespaceType)
         {
             var assembly = namespaceType.ContainingUnitNamespace.Unit.ResolvedUnit as IAssembly;
+            if (assembly == null) return "(unknown)";
+
             return assembly.Location;
         }
 

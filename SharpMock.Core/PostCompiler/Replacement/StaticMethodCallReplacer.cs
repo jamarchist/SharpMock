@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
@@ -8,6 +9,42 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class StaticMethodCallReplacer : BaseCodeTraverser
     {
+        private class NewObjStatementVisitor : BaseCodeTraverser
+        {
+            private readonly IStatement parent;
+            private readonly ILogger log;
+
+            public NewObjStatementVisitor(IStatement parent, ILogger log)
+            {
+                this.parent = parent;
+                this.log = log;
+            }
+
+            public override void Visit(ICreateObjectInstance createObjectInstance)
+            {
+                if (MethodReferenceReplacementRegistry.HasReplacementFor(createObjectInstance.MethodToCall.AsReplaceable()))
+                {
+                    var replacementCall =
+                        MethodReferenceReplacementRegistry.GetReplacementFor(createObjectInstance.MethodToCall);
+
+                    var newCall = new MethodCall();
+                    newCall.Type = createObjectInstance.Type;
+                    newCall.Arguments = new List<IExpression>(createObjectInstance.Arguments);
+                    newCall.Locations = new List<ILocation>(createObjectInstance.Locations);
+                    newCall.MethodToCall = replacementCall;
+                    newCall.IsStaticCall = true;
+
+                    if (parent is LocalDeclarationStatement)
+                    {
+                        var declaration = parent as LocalDeclarationStatement;
+                        declaration.InitialValue = newCall;
+                    }
+                }
+
+                //base.Visit(createObjectInstance);
+            }
+        }
+
         private readonly IUnitReflector reflector;
         private readonly ILogger log;
 
@@ -15,6 +52,14 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             this.log = log;
             reflector = new UnitReflector(host);
+        }
+
+        public override void Visit(IStatement statement)
+        {
+            var statementVisitor = new NewObjStatementVisitor(statement, log);
+            statementVisitor.Visit(statement);
+
+            base.Visit(statement);
         }
 
         public override void Visit(IMethodCall methodCall)
@@ -26,7 +71,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             log.WriteTrace("  in '{0}' at '{1}'", method.DeclaringType.Assembly.Name, method.DeclaringType.Assembly.AssemblyPath);
             
             if (MethodReferenceReplacementRegistry.HasReplacementFor(method))
-            //if (MethodReferenceReplacementRegistry.HasReplacementFor(mutableMethodCall.MethodToCall))
             {
                 var replacementCall =
                     MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);
@@ -41,9 +85,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 }
 
                 log.WriteTrace("  --REPLACEMENT FOUND--");
-                //var loggable = replacementCall.AsReplaceable();
-                //log.WriteTrace("  --REPLACEMENT: {0}.{1}.{2}--", 
-                //    loggable.DeclaringType.Namespace, loggable.DeclaringType.Namespace, loggable.Name);
             }
             else
             {

@@ -243,6 +243,7 @@
     <Compile Include="PostCompiler\PostCompilerContext.cs" />
     <Compile Include="PostCompiler\PostCompilerPipeline.cs" />
     <Compile Include="PostCompiler\ReplaceInterceptedMethodsWithAlternativeInvocations.cs" />
+    <Compile Include="PostCompiler\Replacement\CodeUnderTestVisitor.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />
     <Compile Include="PostCompiler\Construction\IReturnStatementBuilder.cs" />
     <Compile Include="PostCompiler\Construction\IStatementBuilder.cs" />

@@ -14,9 +14,9 @@ namespace SharpMock.Core.Interception.Interceptors
             this.matcher = matcher;
         }
 
-        public bool ShouldIntercept(MethodInfo method, IList<object> arguments)
+        public bool ShouldIntercept(IInvocation invocation)
         {
-            return matcher.Matches(method, arguments);
+            return matcher.Matches(invocation.OriginalCallInfo, invocation.Arguments);
         }
 
         public void Intercept(IInvocation invocation)

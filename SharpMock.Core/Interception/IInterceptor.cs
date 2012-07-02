@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-
-namespace SharpMock.Core.Interception
+﻿namespace SharpMock.Core.Interception
 {
     public interface IInterceptor
     {
-        bool ShouldIntercept(MethodInfo method, IList<object> arguments);
+        bool ShouldIntercept(IInvocation invocation);
         void Intercept(IInvocation invocation);
     }
 }

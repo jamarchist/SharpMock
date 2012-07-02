@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace SharpMock.Core.Interception.Interceptors
 {
@@ -8,9 +6,9 @@ namespace SharpMock.Core.Interception.Interceptors
     {
         private Expectations expectiations;
 
-        public bool ShouldIntercept(MethodInfo method, IList<object> arguments)
+        public bool ShouldIntercept(IInvocation invocation)
         {
-            expectiations = new Expectations(method, arguments);
+            expectiations = new Expectations(invocation.OriginalCallInfo, invocation.Arguments);
             return true;
         }
 

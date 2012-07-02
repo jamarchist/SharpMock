@@ -57,7 +57,7 @@ namespace SharpMock.Core.Syntax
             return this;
         }
 
-        public IReplacementOptions MatchingWith(Function<MethodInfo, IMatchingStrategy> matcherBinder)
+        public IReplacementOptions MatchingWith(Function<MethodBase, IMatchingStrategy> matcherBinder)
         {
             currentExpectations.MatchingStrategy = matcherBinder(currentExpectations.Method);
             return this;

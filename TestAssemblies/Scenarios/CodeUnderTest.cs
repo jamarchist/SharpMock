@@ -147,48 +147,48 @@ namespace Scenarios
         //    return sample.Name;
         //}
 
-        //// For instance methods
-        public static void VoidReturnNoParameters(SealedClass c)
-        {
-            var interceptor = new RegistryInterceptor();
-            var invocation = new Invocation();
+        //////// For instance methods
+        ////public static void VoidReturnNoParameters(SealedClass c)
+        ////{
+        ////    var interceptor = new RegistryInterceptor();
+        ////    var invocation = new Invocation();
             
-            var interceptedType = typeof(SealedClass);
-            var parameterTypes = new Type[0];
-            //parameterTypes[0] = typeof(string);
+        ////    var interceptedType = typeof(SealedClass);
+        ////    var parameterTypes = new Type[0];
+        ////    //parameterTypes[0] = typeof(string);
 
-            var interceptedMethod = interceptedType.GetMethod("VoidReturnNoParameters", parameterTypes);
-            VoidAction<SealedClass> originalCall = (SealedClass s) => s.VoidReturnNoParameters();
+        ////    var interceptedMethod = interceptedType.GetMethod("VoidReturnNoParameters", parameterTypes);
+        ////    VoidAction<SealedClass> originalCall = (SealedClass s) => s.VoidReturnNoParameters();
 
-            var arguments = new List<object>();
-            //arguments.Add(x);
+        ////    var arguments = new List<object>();
+        ////    //arguments.Add(x);
             
-            invocation.OriginalCall = originalCall;
-            invocation.Arguments = arguments;
-            invocation.Target = c;
+        ////    invocation.OriginalCall = originalCall;
+        ////    invocation.Arguments = arguments;
+        ////    invocation.Target = c;
 
-            var notUsed = interceptor.ShouldIntercept(interceptedMethod, arguments);
-            interceptor.Intercept(invocation);
+        ////    var notUsed = interceptor.ShouldIntercept(invocation);
+        ////    interceptor.Intercept(invocation);
 
-            //return (decimal)invocation.Return;
+        ////    //return (decimal)invocation.Return;
 
-            //var interceptor = new RegistryInterceptor();
-            //if (interceptor.ShouldIntercept(interceptedMethod))
-            //{
-            //    var invocation = new Invocation();
-            //    invocation.Arguments = arguments;
-            //    invocation.OriginalCall = originalCall;
-            //    invocation.Target = null;
+        ////    //var interceptor = new RegistryInterceptor();
+        ////    //if (interceptor.ShouldIntercept(interceptedMethod))
+        ////    //{
+        ////    //    var invocation = new Invocation();
+        ////    //    invocation.Arguments = arguments;
+        ////    //    invocation.OriginalCall = originalCall;
+        ////    //    invocation.Target = null;
 
-            //    interceptor.Intercept(invocation);
+        ////    //    interceptor.Intercept(invocation);
 
-            //    return (string)invocation.Return;                
-            //}
+        ////    //    return (string)invocation.Return;                
+        ////    //}
 
-            //return originalCall(x, y);
+        ////    //return originalCall(x, y);
 
-            //return String.Empty;
-        }
+        ////    //return String.Empty;
+        ////}
 
         //public class Sample
         //{
