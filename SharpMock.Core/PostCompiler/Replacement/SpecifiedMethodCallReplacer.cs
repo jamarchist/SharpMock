@@ -43,7 +43,14 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
                     if (firstMethodCall is CreateObjectInstance)
                     {
-                        
+                        var newCall = new MethodCall();
+                        newCall.Type = firstMethodCall.Type;
+                        newCall.Arguments = firstMethodCall.Arguments;
+                        newCall.Locations = firstMethodCall.Locations;
+                        newCall.MethodToCall = replacementCall;
+                        newCall.IsStaticCall = true;
+
+                        parser.ReplaceFirstCall(newCall);
                     }
                     else
                     {

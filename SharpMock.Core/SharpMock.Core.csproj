@@ -260,6 +260,7 @@
     <Compile Include="PostCompiler\Replacement\LambdaParser.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementConstructorBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodConstructionContext.cs" />

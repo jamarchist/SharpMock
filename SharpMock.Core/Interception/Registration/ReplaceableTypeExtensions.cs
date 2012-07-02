@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using Microsoft.Cci;
 using SharpMock.Core.Interception.Helpers;
 
@@ -13,7 +12,10 @@ namespace SharpMock.Core.Interception.Registration
         {
             var replaceable = new ReplaceableMethodInfo();
             replaceable.DeclaringType = methodInfo.DeclaringType.AsReplaceable();
-            replaceable.ReturnType = methodInfo.ReturnType.AsReplaceable();
+            if (methodInfo.IsConstructor)
+                replaceable.ReturnType = replaceable.DeclaringType;
+            else
+                replaceable.ReturnType = methodInfo.ReturnType.AsReplaceable();
             replaceable.Name = methodInfo.Name;
             replaceable.Parameters = new List<ReplaceableParameterInfo>();
 
@@ -50,7 +52,10 @@ namespace SharpMock.Core.Interception.Registration
 
             var replaceable = new ReplaceableMethodInfo();
             replaceable.Name = methodReference.Name.Value;
-            replaceable.ReturnType = methodReference.Type.AsReplaceable();
+            if (methodReference.ResolvedMethod.IsConstructor)
+                replaceable.ReturnType = declaringType;
+            else
+                replaceable.ReturnType = methodReference.Type.AsReplaceable();
 
             replaceable.Parameters = new List<ReplaceableParameterInfo>();
             foreach (var parameter in methodReference.Parameters)

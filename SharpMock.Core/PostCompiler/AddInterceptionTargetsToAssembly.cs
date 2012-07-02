@@ -34,7 +34,7 @@ namespace SharpMock.Core.PostCompiler
 
         private void ConfigureLocals()
         {
-            fake = module.UnitNamespaceRoot.AddNestedNamespace("Fake", host);
+            fake = module.UnitNamespaceRoot.AddNestedNamespace("<Fake>", host);
             namespaces = new Dictionary<string, NestedUnitNamespace>();
             classes = new Dictionary<string, NamespaceTypeDefinition>();
         }
@@ -113,17 +113,10 @@ namespace SharpMock.Core.PostCompiler
 
         private void AddInterceptionTargets()
         {
-            //var createdPaths = new Dictionary<QualifiedMethodPath, NamespaceTypeDefinition>();
-            var createdPaths = new Dictionary<string, NamespaceTypeDefinition>();
-
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
-
-            //var fakeNamespace = mutableAssembly.UnitNamespaceRoot.AddNestedNamespace("Fake", host);
 
             foreach (var method in MethodReferenceReplacementRegistry.GetMethodsToIntercept())
             {
-                //var qualifiedMethodPath = new QualifiedMethodPath();
-
                 var nsType = method.ContainingType.GetNamespaceType();
                 var fullNs = nsType.NamespaceBuilder();
                 var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
@@ -133,31 +126,9 @@ namespace SharpMock.Core.PostCompiler
                 AddNamespaces(fullNs);
                 AddClass(fullNs.ToString(), nsType.Name.Value);
 
-                //AggregateDeclarationSpaces(qualifiedMethodPath, method, false);
-
-                //NamespaceTypeDefinition methodClass;
-                ////if (!createdPaths.ContainsKey(qualifiedMethodPath))
-                //if (!createdPaths.ContainsKey(fullNsWithType))
-                //{
-                //    IUnitNamespace lastNs = fakeNamespace;
-                //    foreach (var element in qualifiedMethodPath)
-                //    {
-                //        lastNs = lastNs.AddNestedNamespace(element, host);
-                //    }
-
-                //    methodClass = lastNs.AddStaticClass(mutableAssembly, qualifiedMethodPath.GetClassName(), host);
-
-                //    //createdPaths.Add(qualifiedMethodPath, methodClass);
-                //    createdPaths.Add(fullNsWithType, methodClass);
-                //}
-                //else
-                //{
-                //    methodClass = createdPaths[fullNsWithType];
-                //    //methodClass = createdPaths[qualifiedMethodPath];
-                //}
-
                 var methodClass = classes[fullNsWithType];
-                var fakeMethod = methodClass.AddPublicStaticMethod(method.Name.Value, method.Type, host);
+                var methodName = method.Name.Value == ".ctor" ? "<constructor>" : method.Name.Value;
+                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, method.Type, host);
 
                 // if it's an instance method, we add a parameter at the end for the target
                 ushort extraParameters = 0;
@@ -169,11 +140,19 @@ namespace SharpMock.Core.PostCompiler
 
                 foreach (var parameter in method.Parameters)
                 {
-                    fakeMethod.AddParameter((ushort)(parameter.Index + extraParameters), "p" + parameter.Index, parameter.Type, host);
+                    fakeMethod.AddParameter((ushort)(parameter.Index + extraParameters), 
+                        "p" + parameter.Index, parameter.Type, host);
+                }
+
+                if (method.ResolvedMethod.IsConstructor)
+                {
+                    fakeMethod.Type = method.ResolvedMethod.ContainingTypeDefinition;
+                    //fakeMethod.CallingConvention = CallingConvention.Standard;
                 }
 
                 var customAttribute = new CustomAttribute();
-                customAttribute.Constructor = new UnitReflector(host).From<SharpMockGeneratedAttribute>().GetConstructor();
+                customAttribute.Constructor = new UnitReflector(host)
+                    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
                 fakeMethod.Body = GetBody(host, fakeMethod, method);
@@ -185,92 +164,9 @@ namespace SharpMock.Core.PostCompiler
                 }
 
                 var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
-                                                                          fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name,
-                                                                          0, parameterTypes.ToArray());
+                    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
 
                 MethodReferenceReplacementRegistry.ReplaceWith(method, fakeCallReference);
-            }
-        }
-
-        private static void AggregateDeclarationSpaces(QualifiedMethodPath path, INamedEntity namedEntity, bool isClass)
-        {
-            if (namedEntity as IMethodReference == null && !isClass)
-            {
-                path.AddPathElement(namedEntity.Name.Value);
-            }
-
-            var assembly = namedEntity as AssemblyReference;
-            if (assembly != null)
-            {
-                return;
-                // exit
-            }
-
-            var method = namedEntity as IMethodReference;
-            if (method != null)
-            {
-                path.AddClassName((method.ContainingType as INamedEntity).Name.Value);
-
-                var nestedTypeParentClass = method.ContainingType as NestedTypeReference;
-                if (nestedTypeParentClass != null)
-                {
-                    AggregateDeclarationSpaces(path, nestedTypeParentClass, true);
-                }
-
-                var nestedTypeParentNamespace = method.ContainingType as NamespaceTypeReference;
-                if (nestedTypeParentNamespace != null)
-                {
-                    AggregateDeclarationSpaces(path, nestedTypeParentNamespace, true);
-                }
-            }
-
-            var typeDeclaration = namedEntity as NamespaceTypeReference;
-            if (typeDeclaration != null)
-            {
-                var typeParent = typeDeclaration.ContainingUnitNamespace as NestedUnitNamespaceReference;
-                if (typeParent != null)
-                {
-                    AggregateDeclarationSpaces(path, typeParent, false);
-                }
-
-                var typeParent2 = typeDeclaration.ContainingUnitNamespace as RootUnitNamespaceReference;
-                if (typeParent2 != null)
-                {
-                    AggregateDeclarationSpaces(path, typeParent2.Unit, false);
-                }
-                //AggregateDeclarationSpaces(path, typeDeclaration.ContainingUnitNamespace.Unit);
-            }
-
-            var nestedNamespace = namedEntity as NestedUnitNamespaceReference;
-            if (nestedNamespace != null)
-            {
-                var container = nestedNamespace.ContainingUnitNamespace as NestedUnitNamespaceReference;
-                if (container != null)
-                {
-                    AggregateDeclarationSpaces(path, container, false);
-                }
-
-                var containerNamespace = nestedNamespace.ContainingUnitNamespace as RootUnitNamespaceReference;
-                if (containerNamespace != null)
-                {
-                    AggregateDeclarationSpaces(path, containerNamespace.Unit, false);
-                }
-            }
-
-            var nestedTypeDefinition = namedEntity as NestedTypeReference;
-            if (nestedTypeDefinition != null)
-            {
-                var nestedTypeParentClass = nestedTypeDefinition.ContainingType as NestedTypeReference;
-                if (nestedTypeParentClass != null)
-                {
-                    AggregateDeclarationSpaces(path, nestedTypeParentClass, false);
-                }
-
-                var nestedTypeParentNamespace = nestedTypeDefinition.ContainingType as NamespaceTypeReference;
-                if (nestedTypeParentNamespace != null)
-                {
-                    AggregateDeclarationSpaces(path, nestedTypeParentNamespace, false);
-                }
             }
         }
 
@@ -285,9 +181,6 @@ namespace SharpMock.Core.PostCompiler
 
         private static SourceMethodBody GetBody(IMetadataHost host, IMethodDefinition method, IMethodReference originalCall)
         {
-            var coreAssembly = host.LoadUnit(host.CoreAssemblySymbolicIdentity);
-            var nameTable = host.NameTable;
-
             var body = new SourceMethodBody(host, null, null);
             body.MethodDefinition = method;
             body.LocalsAreZeroed = true;

@@ -25,6 +25,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public IReplacementMethodBuilder GetMethodBuilder()
         {
+            if (originalCall.ResolvedMethod.IsConstructor)
+            {
+                return new ReplacementConstructorBuilder(this);
+            }
+
             if (!originalCall.Type.ResolvedType.Equals(host.PlatformType.SystemVoid.ResolvedType))
             {
                 return new ReplacementFunctionBuilder(this);

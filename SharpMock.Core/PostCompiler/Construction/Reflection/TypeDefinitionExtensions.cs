@@ -23,16 +23,15 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             return GetMethod(".ctor", arguments);
         }
 
-        public IMethodDefinition GetMethod(string name, params Type[] arguments)
+        public IMethodDefinition GetConstructor(params ITypeReference[] arguments)
         {
-            var convertedArguments = new ITypeReference[arguments.Length];
-            for (int argumentIndex = 0; argumentIndex < arguments.Length; argumentIndex++)
-            {
-                convertedArguments[argumentIndex] = reflector.Get(arguments[argumentIndex]);
-            }
+            return GetMethod(".ctor", arguments);
+        }
 
-            var method = TypeHelper.GetMethod(type, nameTable.GetNameFor(name), convertedArguments);
-            
+        private IMethodDefinition GetMethod(string name, params ITypeReference[] arguments)
+        {
+            var method = TypeHelper.GetMethod(type, nameTable.GetNameFor(name), arguments);
+
             // Try to find the method by brute force
             if (method.Equals(Dummy.Method))
             {
@@ -42,14 +41,14 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
                     {
                         var parameters = new List<IParameterDefinition>(member.Parameters);
 
-                        if (parameters.Count == convertedArguments.Length)
+                        if (parameters.Count == arguments.Length)
                         {
                             var matches = new bool[arguments.Length];
 
                             for (int parameterIndex = 0; parameterIndex < parameters.Count; parameterIndex++)
                             {
                                 matches[parameterIndex] = TypeHelper.TypesAreEquivalent(
-                                    convertedArguments[parameterIndex], parameters[parameterIndex].Type);
+                                    arguments[parameterIndex], parameters[parameterIndex].Type);
                             }
 
                             var matchList = new List<bool>(matches);
@@ -62,12 +61,23 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
                                 method = member;
                                 break;
                             }
-                        }    
+                        }
                     }
                 }
             }
 
-            return method;
+            return method;            
+        }
+
+        public IMethodDefinition GetMethod(string name, params Type[] arguments)
+        {
+            var convertedArguments = new ITypeReference[arguments.Length];
+            for (int argumentIndex = 0; argumentIndex < arguments.Length; argumentIndex++)
+            {
+                convertedArguments[argumentIndex] = reflector.Get(arguments[argumentIndex]);
+            }
+
+            return GetMethod(name, convertedArguments);
         }
 
         public IMethodDefinition GetMethod(MethodInfo methodInfo)
@@ -116,7 +126,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
 
         public IMethodDefinition GetPropertyGetter(string propertyName)
         {
-            return GetMethod(String.Format("get_{0}", propertyName));
+            return GetMethod(String.Format("get_{0}", propertyName), Type.EmptyTypes);
         }
     }
 }

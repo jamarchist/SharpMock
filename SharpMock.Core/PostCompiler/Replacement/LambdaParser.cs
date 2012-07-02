@@ -41,6 +41,16 @@ namespace SharpMock.Core.PostCompiler.Replacement
             return FirstStatementAs<ReturnStatement>().Expression as MethodCall;
         }
 
+        /// <summary>
+        /// This is required for intercepting constructors
+        /// </summary>
+        /// <param name="replacementCall"></param>
+        public void ReplaceFirstCall(ConstructorOrMethodCall replacementCall)
+        {
+            var firstStatement = FirstStatementAs<ReturnStatement>();
+            firstStatement.Expression = replacementCall;
+        }
+
         private bool IsStaticMethodCallWithReturnValue()
         {
             return IsStaticMethodCall() && !IsVoidMethodCall();

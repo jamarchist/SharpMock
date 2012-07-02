@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 
@@ -13,12 +14,21 @@ namespace SharpMock.Core.PostCompiler.Construction.Expressions
             this.reflector = reflector;
         }
 
+        public CreateObjectInstance New(ITypeReference type, params ITypeReference[] constructorParameters)
+        {
+            var createObjectInstance = new CreateObjectInstance();
+            createObjectInstance.Type = type.ResolvedType;
+            createObjectInstance.MethodToCall = reflector.From(type).GetConstructor(constructorParameters);
+
+            return createObjectInstance;
+        }
+
         public CreateObjectInstance New<TReflectionType>()
         {
             var createObjectInstance = new CreateObjectInstance();
             var objectType = reflector.Get<TReflectionType>();
             createObjectInstance.Type = objectType.ResolvedType;
-            createObjectInstance.MethodToCall = reflector.From<TReflectionType>().GetConstructor();
+            createObjectInstance.MethodToCall = reflector.From<TReflectionType>().GetConstructor(Type.EmptyTypes);
 
             return createObjectInstance;
         }
