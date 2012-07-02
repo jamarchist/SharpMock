@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
+using SharpMock.Core.Diagnostics;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 
@@ -12,28 +13,52 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly IUnitReflector reflector;
         private readonly string assemblyLocation;
         private readonly SpecifiedMethodMatcher matcher;
+        private readonly ILogger log;
 
-        public StaticMethodCallRegistrar(IMetadataHost host, string assemblyLocation)
+        public StaticMethodCallRegistrar(IMetadataHost host, string assemblyLocation, ILogger log)
         {
             this.assemblyLocation = assemblyLocation;
+            this.log = log;
             reflector = new UnitReflector(host);
             matcher = new SpecifiedMethodMatcher(assemblyLocation, reflector);
+        }
+        
+        public override void Visit(ICreateObjectInstance createObjectInstance)
+        {
+            var container = createObjectInstance.Type as INamedEntity;
+            var containerName = container == null ? "<unknown>" : container.Name.Value;
+
+            log.WriteTrace("StaticMethodCallRegistrar visiting newobj '{0}.{1}'.",
+                containerName, createObjectInstance.MethodToCall.Name.Value);
+
+            VisitCallOrConstructor(createObjectInstance.MethodToCall);
+
+            base.Visit(createObjectInstance);
         }
 
         public override void Visit(IMethodCall methodCall)
         {
-            if (matcher.ShouldReplace(methodCall))
-            {
-                MethodReferenceReplacementRegistry.AddMethodToIntercept(methodCall.MethodToCall);
-                MethodReferenceReplacementRegistry.AddReplaceable(methodCall.MethodToCall.AsReplaceable());
-            }
+            log.WriteTrace("StaticMethodCallRegistrar visiting call '{0}.{1}'.", 
+                (methodCall.MethodToCall.ContainingType as INamedEntity).Name.Value, 
+                methodCall.MethodToCall.Name.Value);
+            
+            VisitCallOrConstructor(methodCall.MethodToCall);
 
             base.Visit(methodCall);
         }
 
+        private void VisitCallOrConstructor(IMethodReference methodToCall)
+        {
+            if (matcher.ShouldReplace(methodToCall))
+            {
+                MethodReferenceReplacementRegistry.AddMethodToIntercept(methodToCall);
+                MethodReferenceReplacementRegistry.AddReplaceable(methodToCall.AsReplaceable());
+            }            
+        }
+
         private interface IReplacementMatcher
         {
-            bool ShouldReplace(IMethodCall methodCall);
+            bool ShouldReplace(IMethodReference methodToCall);
         }
 
         private class SpecifiedMethodMatcher : IReplacementMatcher
@@ -78,7 +103,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 }
             }
 
-            public bool ShouldReplace(IMethodCall methodCall)
+            public bool ShouldReplace(IMethodReference methodToCall)
             {
                 //var matches = specifiedDefinitions
                 //    .FindAll(m => m.Equals(methodCall.MethodToCall.ResolvedMethod));
@@ -87,7 +112,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
                 var matches =
                     specdReplacements.FindAll(
-                        m => new ReplaceableMethodInfoComparer().Equals(m, methodCall.MethodToCall.AsReplaceable()));
+                        m => new ReplaceableMethodInfoComparer().Equals(m, methodToCall.AsReplaceable()));
 
                 return matches.Count > 0;
             }

@@ -56,7 +56,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private void BuildMethodTemplate()
         {
             var ParamBindings = new Dictionary<string, IBoundExpression>();
-            if (!Context.OriginalCall.ResolvedMethod.IsStatic)
+            if (!Context.OriginalCall.ResolvedMethod.IsStatic && !Context.OriginalCall.ResolvedMethod.IsConstructor)
             {
                 var targetBinding = new BoundExpression();
                 var ps = new List<IParameterDefinition>(Context.FakeMethod.Parameters);
@@ -188,7 +188,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 addMethodCallStatements.Add(addArgumentCallExpression);
             }
 
-            if (!Context.OriginalCall.ResolvedMethod.IsStatic)
+            if (!Context.OriginalCall.ResolvedMethod.IsStatic && !Context.OriginalCall.ResolvedMethod.IsConstructor)
             {
                 addMethodCallStatements.RemoveAt(0);
             }
@@ -207,7 +207,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // 
             // ...
             MethodCall originalMethodCall = null;
-            if (Context.OriginalCall.ResolvedMethod.IsStatic)
+            if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
             {
                 originalMethodCall = Call.StaticMethod(Context.OriginalCall)
                                             .ThatReturns(Context.OriginalCall.Type)
@@ -273,7 +273,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // invocation.Target = null;
             // ...
             ExpressionStatement setTargetStatement = null;
-            if (Context.OriginalCall.ResolvedMethod.IsStatic)
+            if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
             {
                 setTargetStatement = Statements.Execute(
                     Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"));                

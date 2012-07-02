@@ -132,7 +132,7 @@ namespace SharpMock.Core.PostCompiler
 
                 // if it's an instance method, we add a parameter at the end for the target
                 ushort extraParameters = 0;
-                if (!method.ResolvedMethod.IsStatic)
+                if (!method.ResolvedMethod.IsStatic && !method.ResolvedMethod.IsConstructor)
                 {
                     fakeMethod.AddParameter(0, "target", method.ContainingType, host);
                     extraParameters = 1;
@@ -147,7 +147,6 @@ namespace SharpMock.Core.PostCompiler
                 if (method.ResolvedMethod.IsConstructor)
                 {
                     fakeMethod.Type = method.ResolvedMethod.ContainingTypeDefinition;
-                    //fakeMethod.CallingConvention = CallingConvention.Standard;
                 }
 
                 var customAttribute = new CustomAttribute();
