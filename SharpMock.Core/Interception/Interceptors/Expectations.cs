@@ -8,17 +8,17 @@ namespace SharpMock.Core.Interception.Interceptors
 {
     public class Expectations
     {
-        private readonly MethodBase method;
+        private readonly MemberInfo method;
         private readonly IList<object> arguments;
 
-        public Expectations(MethodBase method, IList<object> arguments)
+        public Expectations(MemberInfo method, IList<object> arguments)
         {
             this.method = method;
             this.arguments = arguments;
             this.Assertions = new List<Delegate>();
         }
 
-        public MethodBase Method
+        public MemberInfo Method
         {
             get { return method; }
         }

@@ -1,5 +1,4 @@
 using Microsoft.Cci.MutableCodeModel;
-using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -16,8 +15,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             if (target != null)
             {
-                var replaceable = target.MethodToCall.AsReplaceable();
-                MethodReferenceReplacementRegistry.AddReplaceable(replaceable);
                 MethodReferenceReplacementRegistry.AddMethodToIntercept(target.MethodToCall);
             }
         }

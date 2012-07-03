@@ -30,7 +30,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
 
                 var parser = new LambdaParser(lambda, host, log);
-                var target = parser.GetFirstMethodCall();
 
                 var factory = parser.GetReplacementFactory();
 

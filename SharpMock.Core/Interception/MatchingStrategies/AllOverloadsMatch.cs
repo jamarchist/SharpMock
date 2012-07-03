@@ -9,13 +9,13 @@ namespace SharpMock.Core.Interception.MatchingStrategies
         private readonly Type declaringType;
         private readonly string methodName;
 
-        public AllOverloadsMatch(MethodBase method)
+        public AllOverloadsMatch(MemberInfo method)
         {
             declaringType = method.DeclaringType;
             methodName = method.Name;
         }
 
-        public bool Matches(MethodBase calledMethod, IList<object> arguments)
+        public bool Matches(MemberInfo calledMethod, IList<object> arguments)
         {
             if (calledMethod.DeclaringType.Equals(declaringType) && calledMethod.Name == methodName)
             {

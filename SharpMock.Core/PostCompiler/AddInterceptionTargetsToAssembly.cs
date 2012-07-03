@@ -167,12 +167,55 @@ namespace SharpMock.Core.PostCompiler
 
                 MethodReferenceReplacementRegistry.ReplaceWith(method, fakeCallReference);
             }
+
+            foreach (var field in FieldReferenceReplacementRegistry.GetFieldsToIntercept())
+            {
+                var nsType = field.ContainingType.GetNamespaceType();
+                var fullNs = nsType.NamespaceBuilder();
+                var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+
+                log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
+
+                AddNamespaces(fullNs);
+                AddClass(fullNs.ToString(), nsType.Name.Value);
+
+                var methodClass = classes[fullNsWithType];
+                var methodName = String.Format("<accessor>{0}", field.Name.Value);
+                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, field.Type, host);
+
+                var customAttribute = new CustomAttribute();
+                customAttribute.Constructor = new UnitReflector(host)
+                    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
+                fakeMethod.Attributes = new List<ICustomAttribute>();
+                fakeMethod.Attributes.Add(customAttribute);
+                fakeMethod.Body = GetBody(host, fakeMethod, field);
+
+                var parameterTypes = new List<ITypeDefinition>();
+                //foreach (var param in fakeMethod.Parameters)
+                //{
+                //    parameterTypes.Add(param.Type.ResolvedType);
+                //}
+
+                var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
+                    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
+
+                FieldReferenceReplacementRegistry.ReplaceWith(field, fakeCallReference);
+            }
         }
 
         private static void AddAlternativeInvocation(BlockStatement block,
             IMethodDefinition fakeMethod, IMethodReference originalCall, IMetadataHost host)
         {
             var context = new ReplacementMethodConstructionContext(host, originalCall, fakeMethod, block);
+            var methodBuilder = context.GetMethodBuilder();
+
+            methodBuilder.BuildMethod();
+        }
+
+        private static void AddAlternativeInvocation(BlockStatement block,
+            IMethodDefinition fakeMethod, IFieldReference originalField, IMetadataHost host)
+        {
+            var context = new ReplacementMethodConstructionContext(host, originalField, fakeMethod, block);
             var methodBuilder = context.GetMethodBuilder();
 
             methodBuilder.BuildMethod();
@@ -190,6 +233,20 @@ namespace SharpMock.Core.PostCompiler
             AddAlternativeInvocation(block, method, originalCall, host);
 
             return body;
+        }
+
+        private static SourceMethodBody GetBody(IMetadataHost host, IMethodDefinition method, IFieldReference originalField)
+        {
+            var body = new SourceMethodBody(host, null, null);
+            body.MethodDefinition = method;
+            body.LocalsAreZeroed = true;
+
+            var block = new BlockStatement();
+            body.Block = block;
+
+            AddAlternativeInvocation(block, method, originalField, host);
+
+            return body;            
         }
 
         private class NamespaceInfo

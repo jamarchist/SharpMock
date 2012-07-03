@@ -30,7 +30,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public IReplacer GetReplacer()
         {
-            return new MethodCallReplacer(firstStatement as ReturnStatement);
+            return new NullReplacer();
         }
     }
 }

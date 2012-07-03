@@ -5,6 +5,6 @@ namespace SharpMock.Core.Interception
 {
     public interface IMatchingStrategy
     {
-        bool Matches(MethodBase calledMethod, IList<object> arguments);
+        bool Matches(MemberInfo calledMethod, IList<object> arguments);
     }
 }

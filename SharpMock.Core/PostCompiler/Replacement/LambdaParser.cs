@@ -9,9 +9,28 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         internal IReplacementFactory GetReplacementFactory()
         {
-            if (!IsFieldReference())
-                return new MethodCallReplacementFactory(FirstStatementAs<IStatement>());
-        
+            if (IsConstructor())
+            {
+                var firstStatement = FirstStatementAs<ReturnStatement>();
+                var constructor = firstStatement.Expression as CreateObjectInstance;
+
+                return new ConstructorReplacementFactory(constructor, firstStatement);                
+            }
+
+            if (IsFieldReference())
+            {
+                var returnStatement = FirstStatementAs<ReturnStatement>();
+                var fieldBinding = returnStatement.Expression as BoundExpression;
+                var field = fieldBinding.Definition as FieldReference;
+
+                return new FieldAccessorReplacementFactory(field, returnStatement);
+            }
+
+            if (IsStaticMethodCallWithReturnValue() || IsVoidMethodCall() || IsMethodCall())
+            {
+                return new MethodCallReplacementFactory(FirstStatementAs<IStatement>());                
+            }
+
             return new NullReplacementFactory();
         }
 

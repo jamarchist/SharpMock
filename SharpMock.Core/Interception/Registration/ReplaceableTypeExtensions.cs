@@ -8,6 +8,16 @@ namespace SharpMock.Core.Interception.Registration
 {
     public static class ReplaceableTypeExtensions
     {
+        internal static ReplaceableFieldAccessorInfo AsReplaceable(this IFieldReference fieldReference)
+        {
+            var replaceable = new ReplaceableFieldAccessorInfo();
+            replaceable.Name = fieldReference.Name.Value;
+            replaceable.FieldType = fieldReference.Type.AsReplaceable();
+            replaceable.DeclaringType = fieldReference.ContainingType.AsReplaceable();
+
+            return replaceable;
+        }
+
         public static ReplaceableMethodInfo AsReplaceable(this MethodInfo methodInfo)
         {
             var replaceable = new ReplaceableMethodInfo();

@@ -15,6 +15,6 @@ namespace SharpMock.Core.Interception
         public object Return { get; set; }
         public object Target { get; set; }
         public Delegate OriginalCall { get; set; }
-        public MethodBase OriginalCallInfo { get; set; }
+        public MemberInfo OriginalCallInfo { get; set; }
     }
 }

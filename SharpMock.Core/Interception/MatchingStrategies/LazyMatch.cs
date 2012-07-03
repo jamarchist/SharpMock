@@ -12,7 +12,7 @@ namespace SharpMock.Core.Interception.MatchingStrategies
             this.strategyBinder = strategyBinder;
         }
 
-        public bool Matches(MethodBase calledMethod, IList<object> arguments)
+        public bool Matches(MemberInfo calledMethod, IList<object> arguments)
         {
             var strategy = strategyBinder();
             return strategy.Matches(calledMethod, arguments);

@@ -5,55 +5,17 @@ using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Interceptors;
-using SharpMock.Core.PostCompiler.Construction;
-using SharpMock.Core.PostCompiler.Construction.ControlFlow;
-using SharpMock.Core.PostCompiler.Construction.Conversions;
 using SharpMock.Core.PostCompiler.Construction.Declarations;
-using SharpMock.Core.PostCompiler.Construction.Definitions;
-using SharpMock.Core.PostCompiler.Construction.Expressions;
-using SharpMock.Core.PostCompiler.Construction.Reflection;
-using SharpMock.Core.PostCompiler.Construction.Variables;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public abstract class ReplacementMethodBuilder : IReplacementMethodBuilder
+    public abstract class ReplacementMethodBuilder : ReplacementMethodBuilderBase
     {
-        protected SharpMockTypes SharpMockTypes { get; private set; }
-        protected ReplacementMethodConstructionContext Context { get; private set; }
-        protected IUnitReflector Reflector { get; private set; }
-        protected IDefinitionBuilder Define { get; private set; }
-        protected IDeclarationBuilder Declare { get; private set; }
-        protected ILocalVariableBindings Locals { get; private set; }
-        protected IInstanceCreator Create { get; private set; }
-        protected IMethodCallBuilder Call { get; private set; }
-        protected IConverter ChangeType { get; private set; }
-        protected IStatementBuilder Statements { get; private set; }
-        protected ITypeOperatorBuilder Operators { get; private set; }
-        protected ICompileTimeConstantBuilder Constant { get; private set; }
-        protected IIfStatementBuilder If { get; private set; }
-
-        protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context)
+        protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context) : base(context)
         {
-            Context = context;
-            SharpMockTypes = new SharpMockTypes(context.Host);
         }
 
-        private void CreateDslContext()
-        {
-            Reflector = new UnitReflector(Context.Host);
-            Locals = new LocalVariableBindings(Reflector);
-            Define = new DefinitionBuilder(Reflector, Locals, Context.Host.NameTable);
-            Create = new InstanceCreator(Reflector);
-            Declare = new DeclarationBuilder(Define);
-            Call = new MethodCallBuilder(Context.Host, Reflector, Locals);
-            ChangeType = new Converter(Reflector);
-            Statements = new StatementBuilder();
-            Operators = new TypeOperatorBuilder(Reflector);
-            Constant = new CompileTimeConstantBuilder(Reflector);
-            If = new IfStatementBuilder();
-        }
-
-        private void BuildMethodTemplate()
+        protected override void BuildMethodTemplate()
         {
             var ParamBindings = new Dictionary<string, IBoundExpression>();
             if (!Context.OriginalCall.ResolvedMethod.IsStatic && !Context.OriginalCall.ResolvedMethod.IsConstructor)
@@ -125,11 +87,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             foreach (var originalParameter in Context.OriginalCall.Parameters)
             {
                 closedGenericFunction.GenericArguments.Add(originalParameter.Type);
-
-                //if (!Context.OriginalCall.ResolvedMethod.IsStatic)
-                //{
-                //    closedGenericFunction.GenericArguments.RemoveAt(0);
-                //}
             }
             // abstract
             AddReturnTypeSpecificGenericArguments(closedGenericFunction);
@@ -281,7 +238,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // invocation.OriginalCallInfo = interceptedMethod;
             // ...
             var setOriginalCallInfoStatement = Statements.Execute(
-                    Call.PropertySetter<MethodBase>("OriginalCallInfo").WithArguments("interceptedMethod").On("invocation"));
+                    Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedMethod").On("invocation"));
 
             // ...
             // invocation.Arguments = arguments;
@@ -378,12 +335,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
         protected virtual IDynamicDeclarationOptions DeclareMethodInfoVariable()
         {
             return Declare.Variable("interceptedMethod", Reflector.Get<MethodInfo>());
-        }
-
-        public void BuildMethod()
-        {
-            CreateDslContext();
-            BuildMethodTemplate();
         }
     }
 }

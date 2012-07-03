@@ -1,21 +1,22 @@
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    internal class MethodCallReplacer : IReplacer
+    internal class FieldAccessorReplacer : IReplacer
     {
         private readonly ReturnStatement firstStatement;
 
-        public MethodCallReplacer(ReturnStatement firstStatement)
+        public FieldAccessorReplacer(ReturnStatement firstStatement)
         {
             this.firstStatement = firstStatement;
         }
 
         public void ReplaceWith(object replacement)
         {
-            if (firstStatement != null && firstStatement.Expression is CreateObjectInstance)
+            if (replacement != null)
             {
-                firstStatement.Expression = replacement as ConstructorOrMethodCall;    
+                firstStatement.Expression = replacement as IExpression;
             }
         }
     }
