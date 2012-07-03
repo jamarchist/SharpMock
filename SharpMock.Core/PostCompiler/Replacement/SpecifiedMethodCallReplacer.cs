@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using Microsoft.Cci;
+﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.Syntax;
 using SharpMock.Core.Interception.Helpers;
-using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -37,7 +35,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var factory = parser.GetReplacementFactory();
 
                 var builder = factory.GetBuilder();
-                var replacement = builder.BuildReplacement(target);
+                var replacement = builder.BuildReplacement();
 
                 var replacer = factory.GetReplacer();
                 replacer.ReplaceWith(replacement);

@@ -9,7 +9,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         internal IReplacementFactory GetReplacementFactory()
         {
-            return new MethodCallReplacementFactory(FirstStatementAs<ReturnStatement>());
+            if (!IsFieldReference())
+                return new MethodCallReplacementFactory(FirstStatementAs<IStatement>());
+        
+            return new NullReplacementFactory();
         }
 
         private readonly AnonymousDelegate lambda;
@@ -51,16 +54,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             log.WriteTrace("MethodCall defaulted to instance with return value.");
             return FirstStatementAs<ReturnStatement>().Expression as MethodCall;
-        }
-
-        /// <summary>
-        /// This is required for intercepting constructors
-        /// </summary>
-        /// <param name="replacementCall"></param>
-        public void ReplaceFirstCall(ConstructorOrMethodCall replacementCall)
-        {
-            var firstStatement = FirstStatementAs<ReturnStatement>();
-            firstStatement.Expression = replacementCall;
         }
 
         private bool IsStaticMethodCallWithReturnValue()

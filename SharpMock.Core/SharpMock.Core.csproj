@@ -244,6 +244,10 @@
     <Compile Include="PostCompiler\PostCompilerPipeline.cs" />
     <Compile Include="PostCompiler\ReplaceInterceptedMethodsWithAlternativeInvocations.cs" />
     <Compile Include="PostCompiler\Replacement\CodeUnderTestVisitor.cs" />
+    <Compile Include="PostCompiler\Replacement\ConstructorRegistrar.cs" />
+    <Compile Include="PostCompiler\Replacement\ConstructorReplacementBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ConstructorReplacementFactory.cs" />
+    <Compile Include="PostCompiler\Replacement\ConstructorReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />
@@ -267,6 +271,10 @@
     <Compile Include="PostCompiler\Replacement\MethodCallReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\MethodCallReplacementRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\MethodCallReplacer.cs" />
+    <Compile Include="PostCompiler\Replacement\NullReplacementBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\NullReplacementFactory.cs" />
+    <Compile Include="PostCompiler\Replacement\NullReplacementRegistrar.cs" />
+    <Compile Include="PostCompiler\Replacement\NullReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementConstructorBuilder.cs" />

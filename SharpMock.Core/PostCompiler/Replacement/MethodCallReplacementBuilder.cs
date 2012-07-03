@@ -6,25 +6,30 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     internal class MethodCallReplacementBuilder : IReplacementBuilder
     {
-        public object BuildReplacement(object replacementTarget)
-        {
-            var firstMethodCall = replacementTarget as ConstructorOrMethodCall;
+        private readonly ConstructorOrMethodCall replacementTarget;
 
-            if (firstMethodCall != null)
+        public MethodCallReplacementBuilder(ConstructorOrMethodCall replacementTarget)
+        {
+            this.replacementTarget = replacementTarget;
+        }
+
+        public object BuildReplacement()
+        {
+            if (replacementTarget != null)
             {
-                if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall.AsReplaceable()))
+                if (MethodReferenceReplacementRegistry.HasReplacementFor(replacementTarget.MethodToCall.AsReplaceable()))
                     //if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
                 {
                     var replacementCall =
-                        MethodReferenceReplacementRegistry.GetReplacementFor(firstMethodCall.MethodToCall);
-                    firstMethodCall.MethodToCall = replacementCall;
+                        MethodReferenceReplacementRegistry.GetReplacementFor(replacementTarget.MethodToCall);
+                    replacementTarget.MethodToCall = replacementCall;
 
-                    if (firstMethodCall is CreateObjectInstance)
+                    if (replacementTarget is CreateObjectInstance)
                     {
                         var newCall = new MethodCall();
-                        newCall.Type = firstMethodCall.Type;
-                        newCall.Arguments = firstMethodCall.Arguments;
-                        newCall.Locations = firstMethodCall.Locations;
+                        newCall.Type = replacementTarget.Type;
+                        newCall.Arguments = replacementTarget.Arguments;
+                        newCall.Locations = replacementTarget.Locations;
                         newCall.MethodToCall = replacementCall;
                         newCall.IsStaticCall = true;
 
@@ -32,7 +37,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     }
                     else
                     {
-                        var call = firstMethodCall as MethodCall;
+                        var call = replacementTarget as MethodCall;
 
                         if (!call.IsStaticCall)
                         {

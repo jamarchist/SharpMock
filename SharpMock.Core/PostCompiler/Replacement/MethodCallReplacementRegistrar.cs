@@ -5,15 +5,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     internal class MethodCallReplacementRegistrar : IReplacementRegistrar
     {
-        public void RegisterReplacement(object replacementTarget)
-        {
-            var firstMethodCall = replacementTarget as ConstructorOrMethodCall;
+        private readonly ConstructorOrMethodCall target;
 
-            if (firstMethodCall != null)
+        public MethodCallReplacementRegistrar(ConstructorOrMethodCall target)
+        {
+            this.target = target;
+        }
+
+        public void RegisterReplacement()
+        {
+            if (target != null)
             {
-                var replaceable = firstMethodCall.MethodToCall.AsReplaceable();
+                var replaceable = target.MethodToCall.AsReplaceable();
                 MethodReferenceReplacementRegistry.AddReplaceable(replaceable);
-                MethodReferenceReplacementRegistry.AddMethodToIntercept(firstMethodCall.MethodToCall);
+                MethodReferenceReplacementRegistry.AddMethodToIntercept(target.MethodToCall);
             }
         }
     }

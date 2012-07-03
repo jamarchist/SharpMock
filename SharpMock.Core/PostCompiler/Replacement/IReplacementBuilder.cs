@@ -2,6 +2,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     internal interface IReplacementBuilder
     {
-        object BuildReplacement(object replacementTarget);
+        object BuildReplacement();
     }
 }
