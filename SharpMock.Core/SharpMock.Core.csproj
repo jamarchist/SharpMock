@@ -147,9 +147,10 @@
     <Compile Include="Interception\Registration\IInterceptionSpecification.cs" />
     <Compile Include="Interception\Registration\ISpecificationRegistry.cs" />
     <Compile Include="Interception\Registration\ReplaceableAssemblyInfo.cs" />
+    <Compile Include="Interception\Registration\ReplaceableCodeInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableFieldAccessorInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableMethod.cs" />
-    <Compile Include="Interception\Registration\ReplaceableMethodInfoListSerializer.cs" />
+    <Compile Include="Interception\Registration\ReplaceableCodeInfoSerializer.cs" />
     <Compile Include="Interception\Registration\ReplaceableParameterInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableTypeExtensions.cs" />
     <Compile Include="Interception\Registration\ReplaceableTypeInfo.cs" />
@@ -252,7 +253,9 @@
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacementRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacer.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementDictionary.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementRegistry.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldReferenceVisitor.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />

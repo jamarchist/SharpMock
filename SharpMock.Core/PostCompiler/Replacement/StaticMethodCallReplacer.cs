@@ -8,8 +8,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class StaticMethodCallReplacer : BaseCodeTraverser
     {
-
-
         private readonly IUnitReflector reflector;
         private readonly ILogger log;
 
@@ -23,6 +21,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             var statementVisitor = new NewObjStatementVisitor(statement, log);
             statementVisitor.Visit(statement);
+
+            var fieldReferenceVisitor = new FieldReferenceVisitor(statement, log);
+            fieldReferenceVisitor.Visit(statement);
 
             base.Visit(statement);
         }

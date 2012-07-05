@@ -92,14 +92,26 @@ namespace SharpMock.Core.Interception.Registration
 
             var namespaceType = typeReference.GetNamespaceType();
 
-            replaceable.Namespace = namespaceType.Namespace();
-            replaceable.Name = namespaceType.Name.Value;
+            if (namespaceType == null)
+            {
+                replaceable.Namespace = String.Empty;   
+                replaceable.Assembly = new ReplaceableAssemblyInfo();
+                replaceable.Assembly.Name = String.Empty;
+                replaceable.Assembly.AssemblyPath = String.Empty;
 
-            var assembly = new ReplaceableAssemblyInfo();
-            assembly.Name = namespaceType.ContainingUnitNamespace.Unit.Name.Value;
-            assembly.AssemblyPath = namespaceType.AssemblyPath();
+                replaceable.Name = (typeReference as INamedEntity).Name.Value;
+            }
+            else
+            {
+                replaceable.Namespace = namespaceType.Namespace();
+                replaceable.Name = namespaceType.Name.Value;
 
-            replaceable.Assembly = assembly;
+                var assembly = new ReplaceableAssemblyInfo();
+                assembly.Name = namespaceType.ContainingUnitNamespace.Unit.Name.Value;
+                assembly.AssemblyPath = namespaceType.AssemblyPath();
+
+                replaceable.Assembly = assembly;                
+            }
 
             return replaceable;
         }
@@ -145,6 +157,7 @@ namespace SharpMock.Core.Interception.Registration
         internal static INamespaceTypeReference GetNamespaceType(this ITypeReference typeReference)
         {
             var generic = typeReference as IGenericTypeInstanceReference;
+            var genericParam = typeReference as IGenericTypeParameter;
             var namespaceType = typeReference as INamespaceTypeReference;
             var vector = typeReference as IArrayTypeReference;
 

@@ -13,9 +13,14 @@ namespace SharpMock.Core.PostCompiler
             var specAssembly = Path.GetFileNameWithoutExtension(context.Args.TestAssemblyPath);
             var autoSpecs = String.Format("{0}.Fluent.SharpMock.SerializedSpecifications.xml", specAssembly);
 
-            var serializer = new ReplaceableMethodInfoListSerializer(
+            var serializer = new ReplaceableCodeInfoSerializer(
                 Path.GetDirectoryName(context.Args.TestAssemblyPath));
-            serializer.SerializeSpecifications(autoSpecs, MethodReferenceReplacementRegistry.GetReplaceables());
+
+            var replaceableCode = new ReplaceableCodeInfo();
+            replaceableCode.Methods = new List<ReplaceableMethodInfo>(MethodReferenceReplacementRegistry.GetReplaceables());
+            replaceableCode.FieldAccessors = new List<ReplaceableFieldAccessorInfo>(FieldReferenceReplacementRegistry.GetReplaceables());
+
+            serializer.SerializeSpecifications(autoSpecs, replaceableCode);
             SerializeExplicitSpecifications(context.Args.TestAssemblyPath);
         }
 
@@ -37,8 +42,11 @@ namespace SharpMock.Core.PostCompiler
             var specAssemblyName = Path.GetFileNameWithoutExtension(specAssembly);
             var serializedSpecName = String.Format("{0}.SharpMock.SerializedSpecifications.xml", specAssemblyName);
 
-            var serializer = new ReplaceableMethodInfoListSerializer(specPath);
-            serializer.SerializeSpecifications(serializedSpecName, specifiedMethods);
+            var replaceableCode = new ReplaceableCodeInfo();
+            replaceableCode.Methods = specifiedMethods;
+
+            var serializer = new ReplaceableCodeInfoSerializer(specPath);
+            serializer.SerializeSpecifications(serializedSpecName, replaceableCode);
         }
     }
 }

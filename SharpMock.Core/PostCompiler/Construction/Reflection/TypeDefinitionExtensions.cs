@@ -18,6 +18,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             this.nameTable = nameTable;
         }
 
+        public IFieldDefinition GetField(string name)
+        {
+            return TypeHelper.GetField(type, nameTable.GetNameFor(name));
+        }
+
         public IMethodDefinition GetConstructor(params Type[] arguments)
         {
             return GetMethod(".ctor", arguments);

@@ -7,6 +7,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
 {
     public interface ITypeDefinitionExtensions
     {
+        IFieldDefinition GetField(string name);
         IMethodDefinition GetConstructor(params Type[] arguments);
         IMethodDefinition GetConstructor(params ITypeReference[] arguments);
         IMethodDefinition GetMethod(string name, params Type[] arguments);

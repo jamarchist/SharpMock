@@ -7,7 +7,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
     public static class FieldReferenceReplacementRegistry
     {
         private static readonly IList<ReplaceableFieldAccessorInfo> replaceables = new List<ReplaceableFieldAccessorInfo>(); 
-        private static readonly IDictionary<IFieldReference, IMethodReference> replacements = new Dictionary<IFieldReference, IMethodReference>();
+        private static readonly IDictionary<IFieldReference, IMethodReference> replacements = new FieldReferenceReplacementDictionary();
 
         public static void AddFieldToIntercept(IFieldReference field)
         {
