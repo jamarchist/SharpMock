@@ -11,13 +11,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
     public class StaticMethodCallRegistrar : BaseCodeTraverser
     {
         private readonly IUnitReflector reflector;
-        private readonly string assemblyLocation;
         private readonly SpecifiedMethodMatcher matcher;
         private readonly ILogger log;
 
         public StaticMethodCallRegistrar(IMetadataHost host, string assemblyLocation, ILogger log)
         {
-            this.assemblyLocation = assemblyLocation;
             this.log = log;
             reflector = new UnitReflector(host);
             matcher = new SpecifiedMethodMatcher(assemblyLocation, reflector);
@@ -62,7 +60,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         private class SpecifiedMethodMatcher : IReplacementMatcher
         {
-            private readonly List<IMethodDefinition> specifiedDefinitions;
             private readonly List<ReplaceableMethodInfo> specdReplacements; 
             private readonly IUnitReflector reflector;
 
@@ -79,7 +76,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                         assemblies.Add(m.DeclaringType.Assembly.AssemblyPath);
                 });
 
-                specifiedDefinitions = new List<IMethodDefinition>();
                 foreach (var method in specifiedMethods)
                 {
                     var assembly = Assembly.LoadFrom(method.DeclaringType.Assembly.AssemblyPath);
@@ -89,7 +85,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     foreach (var parameter in method.Parameters)
                     {
                         var parameterAssembly = Assembly.LoadFrom(parameter.ParameterType.Assembly.AssemblyPath);
-                        var parameterTypeName = String.Format("{0}.{1}", 
+                        var parameterTypeName = String.Format("{0}.{1}",
                             parameter.ParameterType.Namespace, parameter.ParameterType.Name);
                         parameters.Add(parameterAssembly.GetType(parameterTypeName));
                     }
@@ -97,18 +93,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     var overloads = reflector.From(declaringType).GetAllOverloadsOf(method.Name);
                     foreach (var overload in overloads)
                     {
-                        specdReplacements.Add(overload.AsReplaceable());    
+                        specdReplacements.Add(overload.AsReplaceable());
                     }
                 }
             }
 
             public bool ShouldReplace(IMethodReference methodToCall)
             {
-                //var matches = specifiedDefinitions
-                //    .FindAll(m => m.Equals(methodCall.MethodToCall.ResolvedMethod));
-
-                //return matches.Count > 0;
-
                 var matches =
                     specdReplacements.FindAll(
                         m => new ReplaceableMethodInfoComparer().Equals(m, methodToCall.AsReplaceable()));
