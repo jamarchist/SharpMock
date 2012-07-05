@@ -6,6 +6,8 @@ namespace ScenarioDependencies
 {
     public sealed class SealedClass
     {
+        public int SomeField;
+
         public void VoidReturnNoParameters()
         {
             throw new MethodNotInterceptedException(

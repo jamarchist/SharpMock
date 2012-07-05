@@ -15,6 +15,8 @@ namespace SharpMock.Core.Syntax
 
         public static IReplacementOptions CallsTo<TInstanceType>(VoidAction<TInstanceType> instanceMethodToRecord) { return RecordCallsTo(instanceMethodToRecord); }
 
+        public static IReplacementOptions CallsTo<TInstanceType, TResult>(Function<TInstanceType, TResult> instanceMethodToRecord) { return RecordCallsTo(instanceMethodToRecord); }
+
         private static IReplacementOptions RecordCallsTo(Delegate method)
         {
             InterceptorRegistry.Record();

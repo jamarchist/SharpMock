@@ -116,7 +116,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 return FirstStatementAs<ReturnStatement>().Expression as MethodCall != null;                
             }
 
-            return FirstStatementAs<ExpressionStatement>().Expression as MethodCall != null;
+            if (FirstStatementAs<ExpressionStatement>() != null)
+            {
+                return FirstStatementAs<ExpressionStatement>().Expression as MethodCall != null;
+            }
+
+            return false;
         }
 
         private TExpression FirstStatementAs<TExpression>() where TExpression : class

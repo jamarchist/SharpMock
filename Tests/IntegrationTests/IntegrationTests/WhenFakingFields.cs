@@ -9,7 +9,7 @@ namespace IntegrationTests.IntegrationTests
     public class WhenFakingFields
     {
         [Test]
-        public void FieldAccessIsFaked()
+        public void StaticFieldAccessIsFaked()
         {
             Replace.CallsTo(() => StaticClass.StaticField).With(() => 99);
 
@@ -20,7 +20,7 @@ namespace IntegrationTests.IntegrationTests
         }
 
         [Test]
-        public void FieldAssignmentIsFaked()
+        public void StaticFieldAssignmentIsFaked()
         {
             Replace.CallsTo(() => StaticClass.StaticField = 0).With(() => { });
 
@@ -29,5 +29,16 @@ namespace IntegrationTests.IntegrationTests
 
             Assert.AreNotEqual(5678, StaticClass.StaticField);
         }
+
+        //[Test]
+        //public void InstanceFieldAccessIsFaked()
+        //{
+        //    Replace.CallsTo((SealedClass s) => s.SomeField).With(() => 999);
+
+        //    var code = new CodeUnderTest();
+        //    var result = code.CallsInstanceField();
+        
+        //    Assert.AreEqual(999, result);
+        //}
     }
 }

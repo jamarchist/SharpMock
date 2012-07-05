@@ -87,6 +87,12 @@ namespace Scenarios
             c.SomeProperty = "ignored";
         }
 
+        public string CallsSomeConcreteClassPropertyGetter()
+        {
+            var c = new SomeConcreteClass();
+            return c.SomeProperty;
+        }
+
         public ClassWithConstructor CallsClassWithConstructor()
         {
             var classWithConstructor = new ClassWithConstructor();
@@ -103,6 +109,21 @@ namespace Scenarios
             StaticClass.StaticField = value;
         }
 
+        public int CallsInstanceField()
+        {
+            var instance = new SealedClass();
+            return instance.SomeField;
+        }
+
+        public string CallsStaticPropertyGetter()
+        {
+            return StaticClass.StaticProperty;
+        }
+
+        public void CallsStaticPropertySetter()
+        {
+            StaticClass.StaticProperty = "some value";
+        }
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

@@ -4,10 +4,21 @@ namespace ScenarioDependencies
 {
 	public static class StaticClass
 	{
+	    public static string StaticProperty
+	    {
+	        get
+	        {
+	            throw new MethodNotInterceptedException("StaticClass.get_StaticProperty");
+	        }
+            set
+            {
+                throw new MethodNotInterceptedException("StaticClass.set_StaticProperty");
+            }
+	    }
+
 		public static void VoidReturnNoParameters()
 		{
-			throw new MethodNotInterceptedException(
-				"StaticClass.VoidReturnNoParameters should have been intercepted, but was called instead.");
+			throw new MethodNotInterceptedException("StaticClass.VoidReturnNoParameters");
 		}
 
         public static string StringReturnNoParameters()
@@ -26,14 +37,12 @@ namespace ScenarioDependencies
 
         public static void Overloaded()
         {
-            throw new MethodNotInterceptedException(
-                "StaticClass.Overload() should have been intercepted, but was called instead.");
+            throw new MethodNotInterceptedException("StaticClass.Overload()");
         }
 
         public static void Overloaded(string ignored)
         {
-            throw new MethodNotInterceptedException(
-                "StaticClass.Overloaded(string) should have been intercepted, but was called instead.");
+            throw new MethodNotInterceptedException("StaticClass.Overloaded(string)");
         }
 
 	    public static int StaticField;
