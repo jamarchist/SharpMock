@@ -34,7 +34,23 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var expressionStatement = parent as ExpressionStatement;
                 if (expressionStatement != null)
                 {
-                    expressionStatement.Expression = replacementExpression;
+                    var assignment = expressionStatement.Expression as Assignment;
+                    if (assignment != null)
+                    {
+                        var source = assignment.Source as BoundExpression;
+                        if (source != null)
+                        {
+                            var assignmentSource = source.Definition as FieldReference;
+                            if (assignmentSource != null)
+                            {
+                                if (fieldReference.ResolvedField.Equals(assignmentSource.ResolvedField))
+                                {
+                                    assignment.Source = replacementExpression;
+                                }                                
+                            }
+
+                        }
+                    }
                 }
 
                 var returnStatement = parent as ReturnStatement;

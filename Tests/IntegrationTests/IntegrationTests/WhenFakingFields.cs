@@ -22,7 +22,12 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void FieldAssignmentIsFaked()
         {
-            Assert.Fail("Field assignment faking is not implemented.");
+            Replace.CallsTo(() => StaticClass.StaticField = 0).With(() => { });
+
+            var code = new CodeUnderTest();
+            code.SetsStaticField(5678);
+
+            Assert.AreNotEqual(5678, StaticClass.StaticField);
         }
     }
 }

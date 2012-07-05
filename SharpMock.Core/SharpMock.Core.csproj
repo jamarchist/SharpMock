@@ -253,6 +253,7 @@
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacementRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacer.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementDictionary.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementRegistry.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceVisitor.cs" />

@@ -98,6 +98,11 @@ namespace Scenarios
             return StaticClass.StaticField;
         }
 
+        public void SetsStaticField(int value)
+        {
+            StaticClass.StaticField = value;
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

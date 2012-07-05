@@ -17,7 +17,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 return new ConstructorReplacementFactory(constructor, firstStatement);                
             }
 
-            if (IsFieldReference())
+            if (IsFieldAccessor())
             {
                 var returnStatement = FirstStatementAs<ReturnStatement>();
                 var fieldBinding = returnStatement.Expression as BoundExpression;
@@ -65,7 +65,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 return FirstStatementAs<ReturnStatement>().Expression as CreateObjectInstance;
             }
 
-            if (IsFieldReference())
+            if (IsFieldAccessor())
             {
                 //throw new NotImplementedException("FieldReference replacement is not yet implemented.");
                 return null;
@@ -115,7 +115,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             return (lambda.Body as BlockStatement).Statements[0] as TExpression;
         }
 
-        private bool IsFieldReference()
+        private bool IsFieldAccessor()
         {
             if (!ReturnsValue()) return false;
 
@@ -127,6 +127,19 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (field == null) return false;
 
             return true;
+        }
+
+        private bool IsFieldAssignment()
+        {
+            if (ReturnsValue()) return false;
+
+            var assignmentStatement = FirstStatementAs<ExpressionStatement>();
+            if (assignmentStatement == null) return false;
+
+            var assignment = assignmentStatement.Expression as Assignment;
+            if (assignment == null) return false;
+            
+            return false;
         }
     }
 }
