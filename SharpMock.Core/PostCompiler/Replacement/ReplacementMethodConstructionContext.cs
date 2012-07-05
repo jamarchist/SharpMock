@@ -10,6 +10,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly IMethodDefinition fakeMethod;
         private readonly BlockStatement block;
         private readonly IFieldReference originalField;
+        private readonly bool isAssignment;
 
         public IMetadataHost Host { get { return host; } }
         public IMethodReference OriginalCall { get { return originalCall; } }
@@ -25,19 +26,25 @@ namespace SharpMock.Core.PostCompiler.Replacement
             this.originalCall = originalCall;
         }
 
-        public ReplacementMethodConstructionContext(IMetadataHost host, IFieldReference originalField, IMethodDefinition fakeMethod, BlockStatement block)
+        public ReplacementMethodConstructionContext(IMetadataHost host, IFieldReference originalField, IMethodDefinition fakeMethod, BlockStatement block, bool isAssignment)
         {
             this.host = host;
             this.block = block;
             this.fakeMethod = fakeMethod;
             this.originalField = originalField;
+            this.isAssignment = isAssignment;
         }
 
         public IReplacementMethodBuilder GetMethodBuilder()
         {
-            if (originalCall == null)
+            if (originalCall == null && !isAssignment)
             {
                 return new ReplacementFieldAccessorBuilder(this);
+            }
+
+            if (originalCall == null && isAssignment)
+            {
+                return new ReplacementFieldAssignmentBuilder(this);
             }
 
             if (originalCall.ResolvedMethod.IsConstructor)

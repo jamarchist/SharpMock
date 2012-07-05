@@ -6,12 +6,12 @@ using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class FieldReferenceVisitor : BaseCodeTraverser
+    public class FieldAssignmentVisitor : BaseCodeTraverser
     {
         private readonly IStatement parent;
         private readonly ILogger log;
 
-        public FieldReferenceVisitor(IStatement parent, ILogger log)
+        public FieldAssignmentVisitor(IStatement parent, ILogger log)
         {
             this.parent = parent;
             this.log = log;
@@ -23,7 +23,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             if (FieldReferenceReplacementRegistry.HasReplacementFor(fieldReference.AsReplaceable()))
             {
-                var replacementMethodToCall = FieldReferenceReplacementRegistry.GetReplacementFor(fieldReference);
+                var replacementMethodToCall = FieldAssignmentReplacementRegistry.GetReplacementFor(fieldReference);
 
                 var replacementExpression = new MethodCall();
                 replacementExpression.Type = replacementMethodToCall.Type;
@@ -37,25 +37,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     var assignment = expressionStatement.Expression as Assignment;
                     if (assignment != null)
                     {
-                        var source = assignment.Source as BoundExpression;
-                        if (source != null)
+                        var target = assignment.Target.Definition as FieldReference;
+                        if (target != null)
                         {
-                            var assignmentSource = source.Definition as FieldReference;
-                            if (assignmentSource != null)
+                            // If the target is what we're visiting ...
+                            if (target.ResolvedField.Equals(fieldReference.ResolvedField))
                             {
-                                if (fieldReference.ResolvedField.Equals(assignmentSource.ResolvedField))
-                                {
-                                    assignment.Source = replacementExpression;
-                                }                                
+                                replacementExpression.Arguments.Add(assignment.Source);
+                                expressionStatement.Expression = replacementExpression;
                             }
                         }
                     }
-                }
-
-                var returnStatement = parent as ReturnStatement;
-                if (returnStatement != null)
-                {
-                    returnStatement.Expression = replacementExpression;
                 }
             }
         }

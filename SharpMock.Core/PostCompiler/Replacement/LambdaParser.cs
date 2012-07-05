@@ -26,6 +26,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 return new FieldAccessorReplacementFactory(field, returnStatement);
             }
 
+            if (IsFieldAssignment())
+            {
+                var assignmentStatement = FirstStatementAs<ExpressionStatement>();
+                var assignment = assignmentStatement.Expression as Assignment;
+                var field = assignment.Target.Definition as FieldReference;
+
+                return new FieldAssignmentReplacementFactory(field, assignmentStatement, host);
+            }
+
             if (IsStaticMethodCallWithReturnValue() || IsVoidMethodCall() || IsMethodCall())
             {
                 return new MethodCallReplacementFactory(FirstStatementAs<IStatement>());                
@@ -138,8 +147,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             var assignment = assignmentStatement.Expression as Assignment;
             if (assignment == null) return false;
-            
-            return false;
+
+            var field = assignment.Target.Definition as FieldReference;
+            if (field == null) return false;
+
+            return true;
         }
     }
 }

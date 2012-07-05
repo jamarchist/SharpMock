@@ -188,7 +188,7 @@ namespace SharpMock.Core.PostCompiler
                     .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.Body = GetBody(host, fakeMethod, field);
+                fakeMethod.Body = GetBody(host, fakeMethod, field, false);
 
                 var parameterTypes = new List<ITypeDefinition>();
                 //foreach (var param in fakeMethod.Parameters)
@@ -200,6 +200,38 @@ namespace SharpMock.Core.PostCompiler
                     fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
 
                 FieldReferenceReplacementRegistry.ReplaceWith(field, fakeCallReference);
+            }
+
+            foreach (var field in FieldAssignmentReplacementRegistry.GetFieldsToIntercept())
+            {
+                var nsType = field.ContainingType.GetNamespaceType();
+                var fullNs = nsType.NamespaceBuilder();
+                var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+
+                log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
+
+                AddNamespaces(fullNs);
+                AddClass(fullNs.ToString(), nsType.Name.Value);
+
+                var methodClass = classes[fullNsWithType];
+                var methodName = String.Format("<assignment>{0}", field.Name.Value);
+                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, host.PlatformType.SystemVoid, host);
+
+                var customAttribute = new CustomAttribute();
+                customAttribute.Constructor = new UnitReflector(host)
+                    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
+                fakeMethod.Attributes = new List<ICustomAttribute>();
+                fakeMethod.Attributes.Add(customAttribute);
+                fakeMethod.AddParameter(0, "p0", field.Type, host);
+                fakeMethod.Body = GetBody(host, fakeMethod, field, true);
+
+                var parameterTypes = new List<ITypeDefinition>();
+                parameterTypes.Add(field.Type.ResolvedType);
+
+                var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
+                    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());            
+    
+                FieldAssignmentReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
         }
 
@@ -213,9 +245,9 @@ namespace SharpMock.Core.PostCompiler
         }
 
         private static void AddAlternativeInvocation(BlockStatement block,
-            IMethodDefinition fakeMethod, IFieldReference originalField, IMetadataHost host)
+            IMethodDefinition fakeMethod, IFieldReference originalField, IMetadataHost host, bool isAssignment)
         {
-            var context = new ReplacementMethodConstructionContext(host, originalField, fakeMethod, block);
+            var context = new ReplacementMethodConstructionContext(host, originalField, fakeMethod, block, isAssignment);
             var methodBuilder = context.GetMethodBuilder();
 
             methodBuilder.BuildMethod();
@@ -235,7 +267,7 @@ namespace SharpMock.Core.PostCompiler
             return body;
         }
 
-        private static SourceMethodBody GetBody(IMetadataHost host, IMethodDefinition method, IFieldReference originalField)
+        private static SourceMethodBody GetBody(IMetadataHost host, IMethodDefinition method, IFieldReference originalField, bool isAssignment)
         {
             var body = new SourceMethodBody(host, null, null);
             body.MethodDefinition = method;
@@ -244,7 +276,7 @@ namespace SharpMock.Core.PostCompiler
             var block = new BlockStatement();
             body.Block = block;
 
-            AddAlternativeInvocation(block, method, originalField, host);
+            AddAlternativeInvocation(block, method, originalField, host, isAssignment);
 
             return body;            
         }

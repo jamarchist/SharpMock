@@ -25,6 +25,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var fieldReferenceVisitor = new FieldReferenceVisitor(statement, log);
             fieldReferenceVisitor.Visit(statement);
 
+            var fieldAssignmentVisitor = new FieldAssignmentVisitor(statement, log);
+            fieldAssignmentVisitor.Visit(statement);
+
             base.Visit(statement);
         }
 

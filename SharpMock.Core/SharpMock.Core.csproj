@@ -253,7 +253,12 @@
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacementRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAccessorReplacer.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementFactory.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementRegistrar.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementRegistry.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacer.cs" />
+    <Compile Include="PostCompiler\Replacement\FieldAssignmentVisitor.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementDictionary.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementRegistry.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceVisitor.cs" />
@@ -286,6 +291,7 @@
     <Compile Include="PostCompiler\Replacement\NullReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableFieldAccessorInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementFieldAssignmentBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementConstructorBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFieldAccessorBuilder.cs" />

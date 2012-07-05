@@ -19,6 +19,7 @@ namespace SharpMock.Core.PostCompiler
             var replaceableCode = new ReplaceableCodeInfo();
             replaceableCode.Methods = new List<ReplaceableMethodInfo>(MethodReferenceReplacementRegistry.GetReplaceables());
             replaceableCode.FieldAccessors = new List<ReplaceableFieldAccessorInfo>(FieldReferenceReplacementRegistry.GetReplaceables());
+            replaceableCode.FieldAssignments = new List<ReplaceableFieldAccessorInfo>(FieldAssignmentReplacementRegistry.GetReplaceables());
 
             serializer.SerializeSpecifications(autoSpecs, replaceableCode);
             SerializeExplicitSpecifications(context.Args.TestAssemblyPath);

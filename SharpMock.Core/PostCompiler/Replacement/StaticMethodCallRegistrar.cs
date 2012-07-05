@@ -27,6 +27,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
             {
                 FieldReferenceReplacementRegistry.AddFieldToIntercept(fieldReference);
             }
+
+            if (matcher.ShouldReplaceAssignment(fieldReference))
+            {
+                FieldAssignmentReplacementRegistry.AddFieldToIntercept(fieldReference);
+            }
         }
 
         public override void Visit(ICreateObjectInstance createObjectInstance)
@@ -69,7 +74,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private class SpecifiedCodeMatcher : IReplacementMatcher
         {
             private readonly List<ReplaceableMethodInfo> specdReplacements;
-            private readonly List<ReplaceableFieldAccessorInfo> specdFieldAccessors; 
+            private readonly List<ReplaceableFieldAccessorInfo> specdFieldAccessors;
+            private readonly List<ReplaceableFieldAccessorInfo> specdFieldAssignments; 
             private readonly IUnitReflector reflector;
 
             public SpecifiedCodeMatcher(string assemblyLocation, IUnitReflector reflector)
@@ -79,15 +85,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var specifiedCode = serializer.DeserializeAllSpecifications();
                 var specifiedMethods = specifiedCode.Methods;
                 var specifiedFieldAccessors = specifiedCode.FieldAccessors;
-                //var assemblies = new List<string>();
+                var specifiedFieldAssignments = specifiedCode.FieldAssignments;
+
                 specdReplacements = new List<ReplaceableMethodInfo>();
                 specdFieldAccessors = new List<ReplaceableFieldAccessorInfo>();
-
-                //specifiedMethods.ForEach(m =>
-                //{
-                //    if (!assemblies.Contains(m.DeclaringType.Assembly.AssemblyPath))
-                //        assemblies.Add(m.DeclaringType.Assembly.AssemblyPath);
-                //});
+                specdFieldAssignments = new List<ReplaceableFieldAccessorInfo>();
 
                 foreach (var method in specifiedMethods)
                 {
@@ -118,6 +120,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     var fieldDefinition = reflector.From(declaringType).GetField(field.Name);
                     specdFieldAccessors.Add(fieldDefinition.AsReplaceable());
                 }
+
+                foreach (var field in specifiedFieldAssignments)
+                {
+                    var assembly = Assembly.LoadFrom(field.DeclaringType.Assembly.AssemblyPath);
+                    var declaringType = assembly.GetType(String.Format("{0}.{1}", field.DeclaringType.Namespace, field.DeclaringType.Name));
+
+                    var fieldDefinition = reflector.From(declaringType).GetField(field.Name);
+                    specdFieldAssignments.Add(fieldDefinition.AsReplaceable());
+                }
             }
 
             public bool ShouldReplace(IMethodReference methodToCall)
@@ -135,6 +146,14 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     f => new ReplaceableFieldAccessorInfoComparer().Equals(f, fieldReference.ResolvedField.AsReplaceable()));
 
                 return matches.Count > 0;
+            }
+
+            public bool ShouldReplaceAssignment(IFieldReference field)
+            {
+                var matches = specdFieldAssignments.FindAll(
+                    f => new ReplaceableFieldAccessorInfoComparer().Equals(f, field.ResolvedField.AsReplaceable()));
+
+                return matches.Count > 0;                
             }
         }
     }

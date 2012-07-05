@@ -1,3 +1,4 @@
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Replacement
@@ -6,26 +7,28 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly FieldReference field;
         private readonly ExpressionStatement assignment;
+        private readonly IMetadataHost host;
 
-        public FieldAssignmentReplacementFactory(FieldReference field, ExpressionStatement assignment)
+        public FieldAssignmentReplacementFactory(FieldReference field, ExpressionStatement assignment, IMetadataHost host)
         {
             this.field = field;
             this.assignment = assignment;
+            this.host = host;
         }
 
         public IReplacementRegistrar GetRegistrar()
         {
-            throw new System.NotImplementedException();
+            return new FieldAssignmentReplacementRegistrar(field);
         }
 
         public IReplacementBuilder GetBuilder()
         {
-            throw new System.NotImplementedException();
+            return new FieldAssignmentReplacementBuilder(field, host, assignment);
         }
 
         public IReplacer GetReplacer()
         {
-            throw new System.NotImplementedException();
+            return new FieldAssignmentReplacer(assignment);
         }
     }
 }
