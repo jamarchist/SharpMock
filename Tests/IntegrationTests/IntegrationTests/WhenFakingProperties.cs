@@ -30,7 +30,7 @@ namespace IntegrationTests.IntegrationTests
         }
 
         [Test]
-        public void StaticSetterIsIntercepted()
+        public void StaticGetterIsIntercepted()
         {
             Replace.CallsTo(() => StaticClass.StaticProperty).With(() => "some string");
 
@@ -41,7 +41,7 @@ namespace IntegrationTests.IntegrationTests
         }
 
         [Test]
-        public void StaticGetterIsIntercepted()
+        public void StaticSetterIsIntercepted()
         {
             Replace.CallsTo(() => StaticClass.StaticProperty = "ignored").With(() => { });
 

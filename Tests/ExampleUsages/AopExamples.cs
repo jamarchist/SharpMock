@@ -26,8 +26,7 @@ namespace ExampleUsages
         [Test]
         public void InterceptCallsInAssembly()
         {
-            var intercept = new Replace();
-            intercept.CallsTo(() => Dao.Insert(null)).With(
+            Replace.CallsTo(() => Dao.Insert(null)).With(
                 (Model m) =>
                     {
                         Console.WriteLine("Stopping insert.");

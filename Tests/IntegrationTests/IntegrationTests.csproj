@@ -132,7 +132,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />  
+
   <UsingTask TaskName="InterceptSpecifications" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
   <UsingTask TaskName="InterceptAllStaticMethods" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
   <UsingTask TaskName="PeVerify" AssemblyFile="$(MSBuildProjectDirectory)\..\..\SharpMock.PostCompiler.MSBuild\bin\$(Configuration)\SharpMock.PostCompiler.MSBuild.dll" />
@@ -142,6 +143,7 @@
     <PeVerify SpecificAssembly="$(OutputPath)\IntegrationTests.dll" />
     <PeVerify SpecificAssembly="$(OutputPath)\Scenarios.dll" />
   </Target>
+
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
