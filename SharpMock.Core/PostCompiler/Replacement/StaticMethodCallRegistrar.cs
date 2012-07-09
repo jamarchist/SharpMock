@@ -8,7 +8,7 @@ using SharpMock.Core.PostCompiler.Construction.Reflection;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class StaticMethodCallRegistrar : BaseCodeTraverser
+    public class StaticMethodCallRegistrar : CodeTraverser
     {
         private readonly IUnitReflector reflector;
         private readonly SpecifiedCodeMatcher matcher;
@@ -21,7 +21,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             matcher = new SpecifiedCodeMatcher(assemblyLocation, reflector);
         }
 
-        public override void Visit(IFieldReference fieldReference)
+        public override void TraverseChildren(IFieldReference fieldReference)
         {
             if (matcher.ShouldReplace(fieldReference))
             {
@@ -34,7 +34,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
         }
 
-        public override void Visit(ICreateObjectInstance createObjectInstance)
+        public override void TraverseChildren(ICreateObjectInstance createObjectInstance)
         {
             var container = createObjectInstance.Type as INamedEntity;
             var containerName = container == null ? "<unknown>" : container.Name.Value;
@@ -44,10 +44,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             VisitCallOrConstructor(createObjectInstance.MethodToCall);
 
-            base.Visit(createObjectInstance);
+            base.TraverseChildren(createObjectInstance);
         }
 
-        public override void Visit(IMethodCall methodCall)
+        public override void TraverseChildren(IMethodCall methodCall)
         {
             log.WriteTrace("StaticMethodCallRegistrar visiting call '{0}.{1}'.", 
                 (methodCall.MethodToCall.ContainingType as INamedEntity).Name.Value, 
@@ -55,7 +55,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             
             VisitCallOrConstructor(methodCall.MethodToCall);
 
-            base.Visit(methodCall);
+            base.TraverseChildren(methodCall);
         }
 
         private void VisitCallOrConstructor(IMethodReference methodToCall)

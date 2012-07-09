@@ -54,36 +54,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             this.log = log;
         }
 
-        public ConstructorOrMethodCall GetFirstMethodCall()
-        {
-            if (IsStaticMethodCallWithReturnValue() && !IsConstructor())
-            {
-                log.WriteTrace("MethodCall identified as static with return value.");
-                return FirstStatementAs<ReturnStatement>().Expression as MethodCall;
-            }
-
-            if (IsVoidMethodCall())
-            {
-                log.WriteTrace("MethodCall identified as void.");
-                return FirstStatementAs<ExpressionStatement>().Expression as MethodCall;
-            }
-
-            if (IsConstructor())
-            {
-                log.WriteTrace("MethodCall identified as .ctor.");
-                return FirstStatementAs<ReturnStatement>().Expression as CreateObjectInstance;
-            }
-
-            if (IsFieldAccessor())
-            {
-                //throw new NotImplementedException("FieldReference replacement is not yet implemented.");
-                return null;
-            }
-
-            log.WriteTrace("MethodCall defaulted to instance with return value.");
-            return FirstStatementAs<ReturnStatement>().Expression as MethodCall;
-        }
-
         private bool IsStaticMethodCallWithReturnValue()
         {
             return ReturnsValue() && IsMethodCall() && !IsVoidMethodCall();

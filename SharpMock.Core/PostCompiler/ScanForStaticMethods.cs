@@ -8,7 +8,7 @@ namespace SharpMock.Core.PostCompiler
         {
             var staticMethodCallRegistrar = 
                 new StaticMethodCallRegistrar(context.Host, context.AssemblyToAlter.Location, context.Log);
-            staticMethodCallRegistrar.Visit(context.AssemblyToAlter);
+            staticMethodCallRegistrar.TraverseChildren(context.AssemblyToAlter);
         }
     }
 }

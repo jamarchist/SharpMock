@@ -1,0 +1,284 @@
+Index: Sources/ControlAndDataFlowGraph/ControlAndDataFlowGraph.csproj
+===================================================================
+--- Sources/ControlAndDataFlowGraph/ControlAndDataFlowGraph.csproj	(revision 69512)
++++ Sources/ControlAndDataFlowGraph/ControlAndDataFlowGraph.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Microsoft.Cci.Analysis</RootNamespace>
+     <AssemblyName>Microsoft.Cci.Analysis.ControlAndDataFlowGraph</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+     <TargetFrameworkProfile />
+@@ -78,6 +78,10 @@
+     <Compile Include="TypeInferencer.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>
+Index: Sources/ILGenerator/ILGenerator.cs
+===================================================================
+--- Sources/ILGenerator/ILGenerator.cs	(revision 69512)
++++ Sources/ILGenerator/ILGenerator.cs	(working copy)
+@@ -10,6 +10,7 @@
+ //-----------------------------------------------------------------------------
+ using System;
+ using System.Collections.Generic;
++using System.Collections.ObjectModel;
+ using System.Text;
+ using System.Diagnostics.Contracts;
+ 
+@@ -879,11 +880,16 @@
+         Contract.Assume(this.handlers[0] != null && this.handlers[0].HandlerStart != null);
+         generatedCatchHandlerOffset = this.handlers[0].HandlerStart.Offset;
+       }
++
++        // Add by Ryan to compile to .NET 2.0
++        var syncPoints = new List<ISynchronizationPoint>();
++        if (synchronizationPoints != null) foreach (var syncPoint in synchronizationPoints) syncPoints.Add(syncPoint);
++
+       return new SynchronizationInformation() {
+         asyncMethod = this.asyncMethodDefinition,
+         moveNextMethod = this.method,
+         generatedCatchHandlerOffset = generatedCatchHandlerOffset,
+-        synchronizationPoints = this.synchronizationPoints == null ? Enumerable<ISynchronizationPoint>.Empty : this.synchronizationPoints.AsReadOnly()
++        synchronizationPoints = syncPoints.AsReadOnly()
+       };
+     }
+ 
+Index: Sources/ILGenerator/ILGenerator.csproj
+===================================================================
+--- Sources/ILGenerator/ILGenerator.csproj	(revision 69512)
++++ Sources/ILGenerator/ILGenerator.csproj	(working copy)
+@@ -25,7 +25,7 @@
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+     <IsWebBootstrapper>false</IsWebBootstrapper>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <PublishUrl>publish\</PublishUrl>
+     <Install>true</Install>
+     <InstallFrom>Disk</InstallFrom>
+@@ -115,6 +115,10 @@
+     <Compile Include="Properties\AssemblyInfo.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>
+Index: Sources/MetadataHelper/MetadataHelper.csproj
+===================================================================
+--- Sources/MetadataHelper/MetadataHelper.csproj	(revision 69512)
++++ Sources/MetadataHelper/MetadataHelper.csproj	(working copy)
+@@ -26,7 +26,7 @@
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+   </PropertyGroup>
+@@ -140,6 +140,10 @@
+     <Compile Include="Validator.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataModel\MetadataModel.csproj">
+       <Project>{33CAB640-0D03-43DF-81BD-22CDC6C0A597}</Project>
+       <Name>MetadataModel</Name>
+Index: Sources/MetadataModel/MetadataModel.csproj
+===================================================================
+--- Sources/MetadataModel/MetadataModel.csproj	(revision 69512)
++++ Sources/MetadataModel/MetadataModel.csproj	(working copy)
+@@ -26,7 +26,7 @@
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+   </PropertyGroup>
+@@ -141,6 +141,12 @@
+   <ItemGroup>
+     <Reference Include="System" />
+   </ItemGroup>
++  <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
++  </ItemGroup>
+   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+   <PropertyGroup>
+     <PostBuildEvent>
+Index: Sources/MutableMetadataModel/MutableMetadataModel.csproj
+===================================================================
+--- Sources/MutableMetadataModel/MutableMetadataModel.csproj	(revision 69512)
++++ Sources/MutableMetadataModel/MutableMetadataModel.csproj	(working copy)
+@@ -29,7 +29,7 @@
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <IsWebBootstrapper>false</IsWebBootstrapper>
+     <PublishUrl>publish\</PublishUrl>
+@@ -152,6 +152,10 @@
+     <Compile Include="Units.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>
+Index: Sources/PdbReader/PdbReader.csproj
+===================================================================
+--- Sources/PdbReader/PdbReader.csproj	(revision 69512)
++++ Sources/PdbReader/PdbReader.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Microsoft.Cci.Pdb</RootNamespace>
+     <AssemblyName>Microsoft.Cci.PdbReader</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <SccProjectName>
+     </SccProjectName>
+@@ -122,6 +122,10 @@
+     <Compile Include="SourceLocationProvider.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataModel\MetadataModel.csproj">
+       <Project>{33CAB640-0D03-43DF-81BD-22CDC6C0A597}</Project>
+       <Name>MetadataModel</Name>
+Index: Sources/PdbWriter/PdbWriter.csproj
+===================================================================
+--- Sources/PdbWriter/PdbWriter.csproj	(revision 69512)
++++ Sources/PdbWriter/PdbWriter.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Microsoft.Cci</RootNamespace>
+     <AssemblyName>Microsoft.Cci.PdbWriter</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <SccProjectName>
+     </SccProjectName>
+@@ -103,6 +103,10 @@
+     <Compile Include="Properties\AssemblyInfo.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\PeWriter\PeWriter.csproj">
+       <Project>{304A8B0B-851B-4AA6-A17D-5F87F39C5E5C}</Project>
+       <Name>PeWriter</Name>
+Index: Sources/PeReader/PeReader.csproj
+===================================================================
+--- Sources/PeReader/PeReader.csproj	(revision 69512)
++++ Sources/PeReader/PeReader.csproj	(working copy)
+@@ -25,7 +25,7 @@
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <PublishUrl>publish\</PublishUrl>
+     <Install>true</Install>
+@@ -127,6 +127,10 @@
+     <Compile Include="WindowsRuntimeHost.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>
+Index: Sources/PeWriter/PeWriter.csproj
+===================================================================
+--- Sources/PeWriter/PeWriter.csproj	(revision 69512)
++++ Sources/PeWriter/PeWriter.csproj	(working copy)
+@@ -24,7 +24,7 @@
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+     <SignAssembly>true</SignAssembly>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <PublishUrl>publish\</PublishUrl>
+     <Install>true</Install>
+@@ -113,6 +113,10 @@
+     <Compile Include="Properties\AssemblyInfo.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>
+Index: Sources/ReflectionEmitter/ReflectionEmitter.csproj
+===================================================================
+--- Sources/ReflectionEmitter/ReflectionEmitter.csproj	(revision 69512)
++++ Sources/ReflectionEmitter/ReflectionEmitter.csproj	(working copy)
+@@ -14,6 +14,7 @@
+     <FileAlignment>512</FileAlignment>
+     <SignAssembly>true</SignAssembly>
+     <AssemblyOriginatorKeyFile>..\Common\InterimKey.snk</AssemblyOriginatorKeyFile>
++    <TargetFrameworkProfile />
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+     <DebugSymbols>true</DebugSymbols>
+Index: Sources/SourceModel/SourceModel.csproj
+===================================================================
+--- Sources/SourceModel/SourceModel.csproj	(revision 69512)
++++ Sources/SourceModel/SourceModel.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Microsoft.Cci</RootNamespace>
+     <AssemblyName>Microsoft.Cci.SourceModel</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <SccProjectName>
+     </SccProjectName>
+@@ -112,6 +112,10 @@
+     <Compile Include="SourceModelHelper.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>

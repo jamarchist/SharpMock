@@ -6,7 +6,7 @@ using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class NewObjStatementVisitor : BaseCodeTraverser
+    public class NewObjStatementVisitor : CodeTraverser
     {
         private readonly IStatement parent;
         private readonly ILogger log;
@@ -17,9 +17,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
             this.log = log;
         }
 
-        public override void Visit(ICreateObjectInstance createObjectInstance)
+        public override void TraverseChildren(ICreateObjectInstance createObjectInstance)
         {
-            if (MethodReferenceReplacementRegistry.HasReplacementFor(createObjectInstance.MethodToCall.AsReplaceable()))
+            var replaceableConstructor = createObjectInstance.MethodToCall.AsReplaceable();
+            log.WriteTrace("Visiting constructor of '{0}'.", replaceableConstructor.DeclaringType.Name);
+
+            if (MethodReferenceReplacementRegistry.HasReplacementFor(replaceableConstructor))
             {
                 var replacementCall =
                     MethodReferenceReplacementRegistry.GetReplacementFor(createObjectInstance.MethodToCall);

@@ -7,7 +7,7 @@ using SharpMock.Core.Interception.Helpers;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class SpecifiedMethodCallReplacer : BaseCodeTraverser
+    public class SpecifiedMethodCallReplacer : CodeTraverser
     {
         private readonly IUnitReflector reflector;
         private readonly IMetadataHost host;
@@ -20,7 +20,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             reflector = new UnitReflector(host);
         }
 
-        public override void Visit(IMethodCall methodCall)
+        public override void TraverseChildren(IMethodCall methodCall)
         {
             var mutableMethodCall = methodCall as MethodCall;
 
@@ -40,7 +40,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 replacer.ReplaceWith(replacement);
             }
 
-            base.Visit(methodCall);
+            base.TraverseChildren(methodCall);
         }
     }
 }

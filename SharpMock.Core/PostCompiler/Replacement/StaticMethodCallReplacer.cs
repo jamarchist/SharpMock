@@ -6,7 +6,7 @@ using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class StaticMethodCallReplacer : BaseCodeTraverser
+    public class StaticMethodCallReplacer : CodeTraverser
     {
         private readonly IUnitReflector reflector;
         private readonly ILogger log;
@@ -15,23 +15,27 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             this.log = log;
             reflector = new UnitReflector(host);
+
+            
         }
 
-        public override void Visit(IStatement statement)
+        public override void TraverseChildren(IStatement statement)
         {
+            log.WriteTrace("Traversing {0} statement.", statement.GetType().Name);
+
             var statementVisitor = new NewObjStatementVisitor(statement, log);
-            statementVisitor.Visit(statement);
+            statementVisitor.Traverse(statement);
 
             var fieldReferenceVisitor = new FieldReferenceVisitor(statement, log);
-            fieldReferenceVisitor.Visit(statement);
+            fieldReferenceVisitor.Traverse(statement);
 
             var fieldAssignmentVisitor = new FieldAssignmentVisitor(statement, log);
-            fieldAssignmentVisitor.Visit(statement);
+            fieldAssignmentVisitor.Traverse(statement);
 
-            base.Visit(statement);
+            base.TraverseChildren(statement);
         }
 
-        public override void Visit(IMethodCall methodCall)
+        public override void TraverseChildren(IMethodCall methodCall)
         {
             var mutableMethodCall = methodCall as MethodCall;
             var method = mutableMethodCall.MethodToCall.AsReplaceable();
@@ -59,8 +63,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
             {
                 log.WriteTrace("  --NOT FOUND--");                
             }
-            
-            base.Visit(methodCall);
+
+            base.TraverseChildren(methodCall);
         }
     }  
 }

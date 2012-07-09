@@ -1,0 +1,419 @@
+Index: Ast.sln
+===================================================================
+--- Ast.sln	(revision 69512)
++++ Ast.sln	(working copy)
+@@ -102,6 +102,8 @@
+ EndProject
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewILToCodeModel", "Sources\NewILToCodeModel\NewILToCodeModel.csproj", "{A555D4CB-F16F-4049-A8CF-180B8A05C755}"
+ EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyDiagnostics", "EmptyDiagnostics\EmptyDiagnostics.csproj", "{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}"
++EndProject
+ Global
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+ 		Debug|Any CPU = Debug|Any CPU
+@@ -508,6 +510,16 @@
+ 		{A555D4CB-F16F-4049-A8CF-180B8A05C755}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+ 		{A555D4CB-F16F-4049-A8CF-180B8A05C755}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+ 		{A555D4CB-F16F-4049-A8CF-180B8A05C755}.Release|x86.ActiveCfg = Release|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Debug|x86.ActiveCfg = Debug|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Release|Any CPU.Build.0 = Release|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
++		{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}.Release|x86.ActiveCfg = Release|Any CPU
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+Index: EmptyDiagnostics/_System.cs
+===================================================================
+--- EmptyDiagnostics/_System.cs	(revision 0)
++++ EmptyDiagnostics/_System.cs	(working copy)
+@@ -0,0 +1,8 @@
++﻿using System;
++using System.Collections.Generic;
++using System.Text;
++
++namespace System
++{
++    public delegate TReturnType Func<T1, TReturnType>(T1 arg1);
++}
+Index: EmptyDiagnostics/EmptyDiagnostics.csproj
+===================================================================
+--- EmptyDiagnostics/EmptyDiagnostics.csproj	(revision 0)
++++ EmptyDiagnostics/EmptyDiagnostics.csproj	(working copy)
+@@ -0,0 +1,61 @@
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++  <PropertyGroup>
++    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
++    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
++    <ProductVersion>8.0.30703</ProductVersion>
++    <SchemaVersion>2.0</SchemaVersion>
++    <ProjectGuid>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</ProjectGuid>
++    <OutputType>Library</OutputType>
++    <AppDesignerFolder>Properties</AppDesignerFolder>
++    <RootNamespace>EmptyDiagnostics</RootNamespace>
++    <AssemblyName>EmptyDiagnostics</AssemblyName>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
++    <FileAlignment>512</FileAlignment>
++  </PropertyGroup>
++  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
++    <DebugSymbols>true</DebugSymbols>
++    <DebugType>full</DebugType>
++    <Optimize>false</Optimize>
++    <OutputPath>bin\Debug\</OutputPath>
++    <DefineConstants>DEBUG;TRACE</DefineConstants>
++    <ErrorReport>prompt</ErrorReport>
++    <WarningLevel>4</WarningLevel>
++  </PropertyGroup>
++  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
++    <DebugType>pdbonly</DebugType>
++    <Optimize>true</Optimize>
++    <OutputPath>bin\Release\</OutputPath>
++    <DefineConstants>TRACE</DefineConstants>
++    <ErrorReport>prompt</ErrorReport>
++    <WarningLevel>4</WarningLevel>
++  </PropertyGroup>
++  <PropertyGroup>
++    <SignAssembly>true</SignAssembly>
++  </PropertyGroup>
++  <PropertyGroup>
++    <AssemblyOriginatorKeyFile>SharpMock.snk</AssemblyOriginatorKeyFile>
++  </PropertyGroup>
++  <ItemGroup>
++    <Reference Include="System" />
++    <Reference Include="System.Data" />
++    <Reference Include="System.Xml" />
++  </ItemGroup>
++  <ItemGroup>
++    <Compile Include="System_Diagnostics_Contracts.cs" />
++    <Compile Include="Properties\AssemblyInfo.cs" />
++    <Compile Include="System_Runtime_CompilerServices.cs" />
++    <Compile Include="_System.cs" />
++  </ItemGroup>
++  <ItemGroup>
++    <None Include="SharpMock.snk" />
++  </ItemGroup>
++  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
++  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
++       Other similar extension points exist, see Microsoft.Common.targets.
++  <Target Name="BeforeBuild">
++  </Target>
++  <Target Name="AfterBuild">
++  </Target>
++  -->
++</Project>
+\ No newline at end of file
+Index: EmptyDiagnostics/Properties/AssemblyInfo.cs
+===================================================================
+--- EmptyDiagnostics/Properties/AssemblyInfo.cs	(revision 0)
++++ EmptyDiagnostics/Properties/AssemblyInfo.cs	(working copy)
+@@ -0,0 +1,36 @@
++﻿using System.Reflection;
++using System.Runtime.CompilerServices;
++using System.Runtime.InteropServices;
++
++// General Information about an assembly is controlled through the following 
++// set of attributes. Change these attribute values to modify the information
++// associated with an assembly.
++[assembly: AssemblyTitle("EmptyDiagnostics")]
++[assembly: AssemblyDescription("")]
++[assembly: AssemblyConfiguration("")]
++[assembly: AssemblyCompany("")]
++[assembly: AssemblyProduct("EmptyDiagnostics")]
++[assembly: AssemblyCopyright("Copyright ©  2012")]
++[assembly: AssemblyTrademark("")]
++[assembly: AssemblyCulture("")]
++
++// Setting ComVisible to false makes the types in this assembly not visible 
++// to COM components.  If you need to access a type in this assembly from 
++// COM, set the ComVisible attribute to true on that type.
++[assembly: ComVisible(false)]
++
++// The following GUID is for the ID of the typelib if this project is exposed to COM
++[assembly: Guid("f9e6aa35-1316-4e57-bc2c-11628c503e4b")]
++
++// Version information for an assembly consists of the following four values:
++//
++//      Major Version
++//      Minor Version 
++//      Build Number
++//      Revision
++//
++// You can specify all the values or you can default the Build and Revision Numbers 
++// by using the '*' as shown below:
++// [assembly: AssemblyVersion("1.0.*")]
++[assembly: AssemblyVersion("1.0.0.0")]
++[assembly: AssemblyFileVersion("1.0.0.0")]
+Index: EmptyDiagnostics/SharpMock.snk
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: EmptyDiagnostics/SharpMock.snk
+===================================================================
+--- EmptyDiagnostics/SharpMock.snk	(revision 0)
++++ EmptyDiagnostics/SharpMock.snk	(working copy)
+
+Property changes on: EmptyDiagnostics/SharpMock.snk
+___________________________________________________________________
+Added: svn:mime-type
+## -0,0 +1 ##
++application/octet-stream
+\ No newline at end of property
+Index: EmptyDiagnostics/System_Diagnostics_Contracts.cs
+===================================================================
+--- EmptyDiagnostics/System_Diagnostics_Contracts.cs	(revision 0)
++++ EmptyDiagnostics/System_Diagnostics_Contracts.cs	(working copy)
+@@ -0,0 +1,83 @@
++﻿using System;
++using System.Collections.Generic;
++using System.Text;
++
++namespace System.Diagnostics.Contracts
++{
++    public class Contract
++    {
++        [ConditionalAttribute("DEBUG")]
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Assert(bool ignored) { }
++
++        [ConditionalAttribute("DEBUG")]
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Assert(bool ignoredCondition, string ignoredMessage) { }
++
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Ensures(bool ignored) { }
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Ensures(bool ignoredCondition, string ignoredMessage) { }
++
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        [ConditionalAttribute("DEBUG")]
++        public static void Assume(bool ignored) { }
++        
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        [ConditionalAttribute("DEBUG")]
++        public static void Assume(bool ignoredCondition, string ignoredMessage) { }
++
++        public static bool ForAll<T>(IEnumerable<T> ignoredCollection, Predicate<T> ignoredPredicate) { return true; }
++
++        public static bool ForAll(int ignoredFromInclusive, int ignoredToExclusive, Predicate<int> ignoredPredicate) { return true; }
++
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Invariant(bool ignoredCondition) { }
++
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Invariant(bool ignoredCondition, string ignoredMessage) { }
++
++        public static T OldValue<T>(T ignoredValue) { return ignoredValue; }
++
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Requires(bool ignored) { }
++        [ConditionalAttribute("CONTRACTS_FULL")]
++        public static void Requires(bool ignoredCondition, string ignoredMessage) { }
++
++        public static T Result<T>() { return default(T); }
++
++        public static T ValueAtReturn<T>(out T ignoredValue) { ignoredValue = default(T); return ignoredValue; }
++    }
++
++    [ConditionalAttribute("CONTRACTS_FULL")]
++    [AttributeUsageAttribute(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property)]
++    public sealed class ContractVerificationAttribute : Attribute
++    {
++        public ContractVerificationAttribute(bool ignoredValue) { }
++    }
++
++    [ConditionalAttribute("CONTRACTS_FULL")]
++    [AttributeUsageAttribute(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Delegate, AllowMultiple = false,
++        Inherited = false)]
++    [ConditionalAttribute("DEBUG")]
++    public sealed class ContractClassAttribute : Attribute
++    {
++        public ContractClassAttribute(Type ignoredTypeContainingContracts) { }
++    }
++
++    [ConditionalAttribute("CONTRACTS_FULL")]
++    [AttributeUsageAttribute(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
++    public sealed class ContractClassForAttribute : Attribute
++    {
++        public ContractClassForAttribute(Type ignoredTypeContractsAreFor) { }
++    }
++
++    [ConditionalAttribute("CONTRACTS_FULL")]
++    [AttributeUsageAttribute(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
++    public sealed class ContractInvariantMethodAttribute : Attribute { }
++
++    [ConditionalAttribute("CONTRACTS_FULL")]
++    [AttributeUsageAttribute(AttributeTargets.Class | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Event | AttributeTargets.Parameter | AttributeTargets.Delegate, AllowMultiple = false,
++        Inherited = true)]
++    public sealed class PureAttribute : Attribute { }
++}
+Index: EmptyDiagnostics/System_Runtime_CompilerServices.cs
+===================================================================
+--- EmptyDiagnostics/System_Runtime_CompilerServices.cs	(revision 0)
++++ EmptyDiagnostics/System_Runtime_CompilerServices.cs	(working copy)
+@@ -0,0 +1,14 @@
++﻿using System;
++using System.Collections.Generic;
++using System.Text;
++
++namespace System.Runtime.CompilerServices
++{
++    public class ExtensionAttribute : Attribute
++    {
++        public ExtensionAttribute()
++        {
++            
++        }
++    }
++}
+Index: Sources/AssertionAdder/AssertionAdder.csproj
+===================================================================
+--- Sources/AssertionAdder/AssertionAdder.csproj	(revision 69512)
++++ Sources/AssertionAdder/AssertionAdder.csproj	(working copy)
+@@ -24,7 +24,7 @@
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+     <SignAssembly>true</SignAssembly>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+Index: Sources/AstsProjectedAsCodeModel/AstsProjectedAsCodeModel.csproj
+===================================================================
+--- Sources/AstsProjectedAsCodeModel/AstsProjectedAsCodeModel.csproj	(revision 69512)
++++ Sources/AstsProjectedAsCodeModel/AstsProjectedAsCodeModel.csproj	(working copy)
+@@ -26,7 +26,7 @@
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <PublishUrl>publish\</PublishUrl>
+     <Install>true</Install>
+Index: Sources/CodeModel/CodeModel.csproj
+===================================================================
+--- Sources/CodeModel/CodeModel.csproj	(revision 69512)
++++ Sources/CodeModel/CodeModel.csproj	(working copy)
+@@ -20,7 +20,7 @@
+     </SccProvider>
+     <SignAssembly>true</SignAssembly>
+     <OldToolsVersion>2.0</OldToolsVersion>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <PublishUrl>publish\</PublishUrl>
+     <Install>true</Install>
+@@ -117,6 +117,10 @@
+     <Compile Include="Visitors.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\..\metadata\Sources\MetadataHelper\MetadataHelper.csproj">
+       <Project>{4A34A3C5-6176-49D7-A4C5-B2B671247F8F}</Project>
+       <Name>MetadataHelper</Name>
+Index: Sources/CodeModelToIL/CodeModelToIL.csproj
+===================================================================
+--- Sources/CodeModelToIL/CodeModelToIL.csproj	(revision 69512)
++++ Sources/CodeModelToIL/CodeModelToIL.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Microsoft.Cci</RootNamespace>
+     <AssemblyName>Microsoft.Cci.CodeModelToIL</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <SccProjectName>
+     </SccProjectName>
+@@ -112,6 +112,10 @@
+     <Compile Include="Properties\AssemblyInfo.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\..\metadata\Sources\ILGenerator\ILGenerator.csproj">
+       <Project>{08156C78-403A-4112-AD81-8646AC51CD2F}</Project>
+       <Name>ILGenerator</Name>
+Index: Sources/ILToCodeModel/ILToCodeModel.csproj
+===================================================================
+--- Sources/ILToCodeModel/ILToCodeModel.csproj	(revision 69512)
++++ Sources/ILToCodeModel/ILToCodeModel.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Micorsoft.Cci.ILToCodeModel</RootNamespace>
+     <AssemblyName>Microsoft.Cci.ILToCodeModel</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <SignAssembly>true</SignAssembly>
+     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+@@ -84,6 +84,10 @@
+     <Compile Include="Unstacker.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\..\Metadata\Sources\ILGenerator\ILGenerator.csproj">
+       <Project>{08156C78-403A-4112-AD81-8646AC51CD2F}</Project>
+       <Name>ILGenerator</Name>
+Index: Sources/MutableCodeModel/MutableCodeModel.csproj
+===================================================================
+--- Sources/MutableCodeModel/MutableCodeModel.csproj	(revision 69512)
++++ Sources/MutableCodeModel/MutableCodeModel.csproj	(working copy)
+@@ -21,7 +21,7 @@
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <TargetFrameworkProfile />
+     <PublishUrl>publish\</PublishUrl>
+     <Install>true</Install>
+@@ -147,6 +147,10 @@
+     <Compile Include="Statements.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\..\Metadata\Sources\ILGenerator\ILGenerator.csproj">
+       <Project>{08156C78-403A-4112-AD81-8646AC51CD2F}</Project>
+       <Name>ILGenerator</Name>
+Index: Sources/NewILToCodeModel/NewILToCodeModel.csproj
+===================================================================
+--- Sources/NewILToCodeModel/NewILToCodeModel.csproj	(revision 69512)
++++ Sources/NewILToCodeModel/NewILToCodeModel.csproj	(working copy)
+@@ -10,7 +10,7 @@
+     <AppDesignerFolder>Properties</AppDesignerFolder>
+     <RootNamespace>Microsoft.Cci</RootNamespace>
+     <AssemblyName>Microsoft.Cci.NewILToCodeModel</AssemblyName>
+-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+     <FileAlignment>512</FileAlignment>
+     <TargetFrameworkProfile />
+     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+@@ -103,6 +103,10 @@
+     <Reference Include="System" />
+   </ItemGroup>
+   <ItemGroup>
++    <ProjectReference Include="..\..\EmptyDiagnostics\EmptyDiagnostics.csproj">
++      <Project>{3680E88E-43AD-4D8A-BDBB-99D708E0B73C}</Project>
++      <Name>EmptyDiagnostics</Name>
++    </ProjectReference>
+     <ProjectReference Include="..\..\Metadata\Sources\ControlAndDataFlowGraph\ControlAndDataFlowGraph.csproj">
+       <Project>{2596EFB0-87AE-42CE-89EB-84F35D6350D2}</Project>
+       <Name>ControlAndDataFlowGraph</Name>

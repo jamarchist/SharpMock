@@ -6,7 +6,7 @@ using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class FieldAssignmentVisitor : BaseCodeTraverser
+    public class FieldAssignmentVisitor : CodeTraverser
     {
         private readonly IStatement parent;
         private readonly ILogger log;
@@ -17,7 +17,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             this.log = log;
         }
 
-        public override void Visit(IFieldReference fieldReference)
+        public override void TraverseChildren(IFieldReference fieldReference)
         {
             log.WriteTrace("Visiting field: {0}.", fieldReference.Name.Value);
 
