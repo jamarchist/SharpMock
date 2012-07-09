@@ -12,7 +12,7 @@ namespace IntegrationTests.IntegrationTests
         [Test]
         public void InstanceSetterIsIntercepted()
         {
-            Replace.CallsTo((SomeConcreteClass c) => c.SomeProperty = string.Empty).With(() => { });
+            Replace.CallsTo((SomeConcreteClass c) => { c.SomeProperty = string.Empty; }).With(() => { });
 
             var code = new CodeUnderTest();
             code.CallsSomeConcreteClassPropertySetter();

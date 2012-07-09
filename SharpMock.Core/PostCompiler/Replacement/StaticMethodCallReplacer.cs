@@ -15,8 +15,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             this.log = log;
             reflector = new UnitReflector(host);
-
-            
         }
 
         public override void TraverseChildren(IStatement statement)

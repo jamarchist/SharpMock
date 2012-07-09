@@ -128,5 +128,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             return true;
         }
+
+        private bool IsImproperlyConstructedPropertySetter()
+        {
+            var block = (lambda.Body as BlockStatement);
+            return block.Statements.Count > 2;
+        }
     }
 }
