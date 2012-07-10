@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Microsoft.Cci;
+﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Diagnostics;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -12,28 +12,32 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly BlockStatement block;
         private readonly IFieldReference originalField;
         private readonly bool isAssignment;
+        private readonly ILogger log;
 
         public IMetadataHost Host { get { return host; } }
         public IMethodReference OriginalCall { get { return originalCall; } }
         public IMethodDefinition FakeMethod { get { return fakeMethod; } }
         public BlockStatement Block { get { return block; } }
         public IFieldReference OriginalField { get { return originalField; } }
+        public ILogger Log { get { return log; } }
 
-        public ReplacementMethodConstructionContext(IMetadataHost host, IMethodReference originalCall, IMethodDefinition fakeMethod, BlockStatement block)
+        public ReplacementMethodConstructionContext(IMetadataHost host, IMethodReference originalCall, IMethodDefinition fakeMethod, BlockStatement block, ILogger log)
         {
             this.host = host;
             this.block = block;
+            this.log = log;
             this.fakeMethod = fakeMethod;
             this.originalCall = originalCall;
         }
 
-        public ReplacementMethodConstructionContext(IMetadataHost host, IFieldReference originalField, IMethodDefinition fakeMethod, BlockStatement block, bool isAssignment)
+        public ReplacementMethodConstructionContext(IMetadataHost host, IFieldReference originalField, IMethodDefinition fakeMethod, BlockStatement block, bool isAssignment, ILogger log)
         {
             this.host = host;
             this.block = block;
             this.fakeMethod = fakeMethod;
             this.originalField = originalField;
             this.isAssignment = isAssignment;
+            this.log = log;
         }
 
         public IReplacementMethodBuilder GetMethodBuilder()

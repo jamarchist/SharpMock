@@ -128,6 +128,7 @@
     <Compile Include="Interception\InterceptionStrategies\InvokeOriginalCallSafe.cs" />
     <Compile Include="Interception\InterceptionStrategies\InvokeWithInvocation.cs" />
     <Compile Include="Interception\InterceptionStrategies\LazyIntercept.cs" />
+    <Compile Include="Interception\InterceptionStrategies\ReplaceOutRefArguments.cs" />
     <Compile Include="Interception\Interceptors\Expectations.cs" />
     <Compile Include="Interception\MatchingStrategies\AllOverloadsMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\AlwaysMatches.cs" />
@@ -338,6 +339,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticReflection\Method.cs" />
     <Compile Include="StaticReflection\VoidMethod.cs" />
+    <Compile Include="Syntax\Ignored.cs" />
     <Compile Include="Syntax\Replace.cs" />
     <Compile Include="Syntax\ReplacementOptions.cs" />
     <Compile Include="Syntax\IReplace.cs" />

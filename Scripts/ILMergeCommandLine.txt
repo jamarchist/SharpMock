@@ -1,0 +1,3 @@
+C:\Tools\ILMerge>ilmerge /wildcards /targetplatform:v2 /out:"C:\Projects\github\SharpMock\ProductRelease\S
+harpMock.Core.dll" "C:\Projects\github\SharpMock\SharpMock.Core\bin\Debug\SharpMock.Core.dll" "C:\Projects
+\github\SharpMock\SharpMock.Core\bin\Debug\Microsoft.*"                                                   

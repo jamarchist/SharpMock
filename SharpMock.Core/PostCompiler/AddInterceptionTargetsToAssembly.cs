@@ -154,7 +154,7 @@ namespace SharpMock.Core.PostCompiler
                     .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.Body = GetBody(host, fakeMethod, method);
+                fakeMethod.Body = GetBody(fakeMethod, method);
 
                 var parameterTypes = new List<ITypeDefinition>();
                 foreach (var param in fakeMethod.Parameters)
@@ -188,7 +188,7 @@ namespace SharpMock.Core.PostCompiler
                     .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.Body = GetBody(host, fakeMethod, field, false);
+                fakeMethod.Body = GetBody(fakeMethod, field, false);
 
                 var parameterTypes = new List<ITypeDefinition>();
                 //foreach (var param in fakeMethod.Parameters)
@@ -223,7 +223,7 @@ namespace SharpMock.Core.PostCompiler
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
                 fakeMethod.AddParameter(0, "p0", field.Type, host, false, false);
-                fakeMethod.Body = GetBody(host, fakeMethod, field, true);
+                fakeMethod.Body = GetBody(fakeMethod, field, true);
 
                 var parameterTypes = new List<ITypeDefinition>();
                 parameterTypes.Add(field.Type.ResolvedType);
@@ -235,25 +235,25 @@ namespace SharpMock.Core.PostCompiler
             }
         }
 
-        private static void AddAlternativeInvocation(BlockStatement block,
-            IMethodDefinition fakeMethod, IMethodReference originalCall, IMetadataHost host)
+        private void AddAlternativeInvocation(BlockStatement block,
+            IMethodDefinition fakeMethod, IMethodReference originalCall)
         {
-            var context = new ReplacementMethodConstructionContext(host, originalCall, fakeMethod, block);
+            var context = new ReplacementMethodConstructionContext(host, originalCall, fakeMethod, block, log);
             var methodBuilder = context.GetMethodBuilder();
 
             methodBuilder.BuildMethod();
         }
 
-        private static void AddAlternativeInvocation(BlockStatement block,
-            IMethodDefinition fakeMethod, IFieldReference originalField, IMetadataHost host, bool isAssignment)
+        private void AddAlternativeInvocation(BlockStatement block,
+            IMethodDefinition fakeMethod, IFieldReference originalField, bool isAssignment)
         {
-            var context = new ReplacementMethodConstructionContext(host, originalField, fakeMethod, block, isAssignment);
+            var context = new ReplacementMethodConstructionContext(host, originalField, fakeMethod, block, isAssignment, log);
             var methodBuilder = context.GetMethodBuilder();
 
             methodBuilder.BuildMethod();
         }
 
-        private static SourceMethodBody GetBody(IMetadataHost host, IMethodDefinition method, IMethodReference originalCall)
+        private SourceMethodBody GetBody(IMethodDefinition method, IMethodReference originalCall)
         {
             var body = new SourceMethodBody(host, null, null);
             body.MethodDefinition = method;
@@ -262,12 +262,12 @@ namespace SharpMock.Core.PostCompiler
             var block = new BlockStatement();
             body.Block = block;
 
-            AddAlternativeInvocation(block, method, originalCall, host);
+            AddAlternativeInvocation(block, method, originalCall);
 
             return body;
         }
 
-        private static SourceMethodBody GetBody(IMetadataHost host, IMethodDefinition method, IFieldReference originalField, bool isAssignment)
+        private SourceMethodBody GetBody(IMethodDefinition method, IFieldReference originalField, bool isAssignment)
         {
             var body = new SourceMethodBody(host, null, null);
             body.MethodDefinition = method;
@@ -276,7 +276,7 @@ namespace SharpMock.Core.PostCompiler
             var block = new BlockStatement();
             body.Block = block;
 
-            AddAlternativeInvocation(block, method, originalField, host, isAssignment);
+            AddAlternativeInvocation(block, method, originalField, isAssignment);
 
             return body;            
         }

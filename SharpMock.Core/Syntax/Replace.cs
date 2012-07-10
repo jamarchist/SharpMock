@@ -29,7 +29,8 @@ namespace SharpMock.Core.Syntax
             var interceptor = new CompoundInterceptor(
                 new LazyMatch(() => expectations.MatchingStrategy),
                 new Assert(() => expectations.Assertions),
-                new LazyIntercept(() => expectations.Invoker)
+                new LazyIntercept(() => expectations.Invoker),
+                new ReplaceOutRefArguments(expectations.OutAndRefParameters)
             );
 
             InterceptorRegistry.AddInterceptor(interceptor);
@@ -37,12 +38,5 @@ namespace SharpMock.Core.Syntax
 
             return new ReplacementOptions(expectations);
         }
-
-        
-    }
-
-    public static class Ignored<T>
-    {
-        public static T Value;
     }
 }
