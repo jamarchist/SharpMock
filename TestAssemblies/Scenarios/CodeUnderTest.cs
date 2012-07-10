@@ -124,6 +124,12 @@ namespace Scenarios
         {
             StaticClass.StaticProperty = "some value";
         }
+
+        public bool CallsMethodWithOutParameter(out int number)
+        {
+            return int.TryParse("can't parse.", out number);
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

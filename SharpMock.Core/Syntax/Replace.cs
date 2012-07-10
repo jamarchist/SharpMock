@@ -37,5 +37,12 @@ namespace SharpMock.Core.Syntax
 
             return new ReplacementOptions(expectations);
         }
+
+        
+    }
+
+    public static class Ignored<T>
+    {
+        public static T Value;
     }
 }

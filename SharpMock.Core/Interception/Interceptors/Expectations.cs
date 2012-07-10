@@ -30,6 +30,7 @@ namespace SharpMock.Core.Interception.Interceptors
 
         public IList<Delegate> Assertions { get; private set; }
         public Delegate Replacement { get; set; }
+        public object[] OutAndRefParameters { get; set; }
         private IMatchingStrategy matchingStrategy;
         public IMatchingStrategy MatchingStrategy
         {

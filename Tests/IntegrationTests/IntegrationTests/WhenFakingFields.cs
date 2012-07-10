@@ -29,16 +29,5 @@ namespace IntegrationTests.IntegrationTests
 
             Assert.AreNotEqual(5678, StaticClass.StaticField);
         }
-
-        //[Test]
-        //public void InstanceFieldAccessIsFaked()
-        //{
-        //    Replace.CallsTo((SealedClass s) => s.SomeField).With(() => 999);
-
-        //    var code = new CodeUnderTest();
-        //    var result = code.CallsInstanceField();
-        
-        //    Assert.AreEqual(999, result);
-        //}
     }
 }

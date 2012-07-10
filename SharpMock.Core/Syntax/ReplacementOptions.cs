@@ -50,6 +50,12 @@ namespace SharpMock.Core.Syntax
         public IReplacementOptions With<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>(Function<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> replacement) { return WithOptions(replacement); }
         public IReplacementOptions With<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>(Function<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> replacement) { return WithOptions(replacement); }
         public IReplacementOptions With<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>(Function<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> replacement) { return WithOptions(replacement); }
+        
+        public IReplacementOptions WithOutAndRefParameters(params object[] values)
+        {
+            currentExpectations.OutAndRefParameters = values;
+            return this;
+        }
 
         public IReplacementOptions MatchingWith(IMatchingStrategy matcher)
         {

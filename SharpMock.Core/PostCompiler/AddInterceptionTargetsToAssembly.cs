@@ -134,14 +134,14 @@ namespace SharpMock.Core.PostCompiler
                 ushort extraParameters = 0;
                 if (!method.ResolvedMethod.IsStatic && !method.ResolvedMethod.IsConstructor)
                 {
-                    fakeMethod.AddParameter(0, "target", method.ContainingType, host);
+                    fakeMethod.AddParameter(0, "target", method.ContainingType, host, false, false);
                     extraParameters = 1;
                 }
 
                 foreach (var parameter in method.Parameters)
                 {
                     fakeMethod.AddParameter((ushort)(parameter.Index + extraParameters), 
-                        "p" + parameter.Index, parameter.Type, host);
+                        "p" + parameter.Index, parameter.Type, host, parameter.IsByReference/*IsOut*/, parameter.IsByReference);
                 }
 
                 if (method.ResolvedMethod.IsConstructor)
@@ -222,7 +222,7 @@ namespace SharpMock.Core.PostCompiler
                     .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.AddParameter(0, "p0", field.Type, host);
+                fakeMethod.AddParameter(0, "p0", field.Type, host, false, false);
                 fakeMethod.Body = GetBody(host, fakeMethod, field, true);
 
                 var parameterTypes = new List<ITypeDefinition>();

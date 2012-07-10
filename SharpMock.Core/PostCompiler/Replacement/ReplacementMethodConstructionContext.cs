@@ -1,4 +1,5 @@
-﻿using Microsoft.Cci;
+﻿using System.Collections.Generic;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Replacement
@@ -50,6 +51,21 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (originalCall.ResolvedMethod.IsConstructor)
             {
                 return new ReplacementConstructorBuilder(this);
+            }
+
+            var hasOutOrRefParameters = false;
+            foreach (var parameter in originalCall.ResolvedMethod.Parameters)
+            {
+                if (parameter.IsOut || parameter.IsByReference)
+                {
+                    hasOutOrRefParameters = true;
+                    break;
+                }
+            }
+
+            if (hasOutOrRefParameters)
+            {
+                
             }
 
             if (!originalCall.Type.ResolvedType.Equals(host.PlatformType.SystemVoid.ResolvedType))
