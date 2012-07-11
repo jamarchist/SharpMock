@@ -16,8 +16,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         
         protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context) : base(context)
         {
-            AddStatement = new CommonStatementsAdder(context.Host, 
-                context.FakeMethod.Parameters, s => context.Block.Statements.Add(s), context.Log);
+            AddStatement = new CommonStatementsAdder(this, s => context.Block.Statements.Add(s), context.Log);
         }
 
         protected override void BuildMethodTemplate()
@@ -25,39 +24,15 @@ namespace SharpMock.Core.PostCompiler.Replacement
             Context.Log.WriteTrace(String.Empty);
             Context.Log.WriteTrace("BuildingMethod: {0}.", Context.OriginalCall.Name.Value);
 
-            Context.Log.WriteTrace("  Adding: var interceptor = new RegistryInterceptor();");
-            Context.Block.Statements.Add(
-                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>())
-            );
-
-            Context.Log.WriteTrace("  Adding: var invocation = new Invocation();");
-            Context.Block.Statements.Add(
-                Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>())
-            );
-
-            Context.Log.WriteTrace("  Adding: var interceptedType = typeof ({0});", 
-                (Context.OriginalCall.ContainingType.ResolvedType as INamedEntity).Name.Value);
-            Context.Block.Statements.Add(
-                Declare.Variable<Type>("interceptedType").As(Operators.TypeOf(Context.OriginalCall.ContainingType.ResolvedType))
-            );
-
-            Context.Log.WriteTrace("  Adding: var parameterTypes = new Type[{0}];", Context.OriginalCall.ParameterCount);
-            Context.Block.Statements.Add(
-                Declare.Variable<Type[]>("parameterTypes").As(Create.NewArray<Type>(Context.OriginalCall.ParameterCount))
-            );
-
-            Context.Log.WriteTrace("  Adding: var arguments = new List<object>();");
-            Context.Block.Statements.Add(
-                Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>())
-            );
+            AddStatement.DeclareRegistryInterceptor();
+            AddStatement.DeclareInvocation();
+            AddStatement.DeclareInterceptedType(Context.OriginalCall.ContainingType.ResolvedType);
+            AddStatement.DeclareParameterTypesArray(Context.OriginalCall.ParameterCount);
+            AddStatement.DeclareArgumentsList();
 
             foreach (var parameter in Context.OriginalCall.Parameters)
             {
-                Context.Log.WriteTrace("  Adding: parameterTypes[{0}] = typeof({1});", 
-                    parameter.Index, (parameter.Type.ResolvedType as INamedEntity).Name.Value);
-                Context.Block.Statements.Add(
-                    Locals.Array<Type>("parameterTypes")[parameter.Index].Assign(Operators.TypeOf(parameter.Type))
-                );
+                AddStatement.AssignParameterTypeValue(parameter.Index, parameter.Type.ResolvedType);
             }
 
             AddInterceptedMethodDeclaration();
@@ -254,19 +229,22 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         void DeclareRegistryInterceptor();
         void DeclareInvocation();
-        void DeclareInterceptedType();
-        void DeclareParameterTypes();
-        void AssignParameterTypeValues();
+        void DeclareInterceptedType(ITypeDefinition type);
+        void DeclareParameterTypesArray(int length);
+        void DeclareArgumentsList();
+        void AssignParameterTypeValue(int index, ITypeDefinition type);
 
     }
 
-    public class CommonStatementsAdder : MethodBodyBuilder, ICommonStatementsAdder
+    public class CommonStatementsAdder : ICommonStatementsAdder
     {
-        private readonly ILogger log; 
+        private readonly ILogger log;
+        private readonly IMethodBodyBuilder builder;
         private readonly VoidAction<IStatement> add; 
 
-        public CommonStatementsAdder(IMetadataHost host, IEnumerable<IParameterDefinition> parameters, VoidAction<IStatement> add, ILogger log) : base(host, parameters)
+        public CommonStatementsAdder(IMethodBodyBuilder builder, VoidAction<IStatement> add, ILogger log)
         {
+            this.builder = builder;
             this.add = add;
             this.log = log;
         }
@@ -275,28 +253,49 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             log.WriteTrace("  Adding: var interceptor = new RegistryInterceptor();");
             add(
-                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>())
+                builder.Declare.Variable<RegistryInterceptor>("interceptor").As(builder.Create.New<RegistryInterceptor>())
             );
         }
 
         public void DeclareInvocation()
         {
-            throw new NotImplementedException();
+            log.WriteTrace("  Adding: var invocation = new Invocation();");
+            add(
+                builder.Declare.Variable<Invocation>("invocation").As(builder.Create.New<Invocation>())
+            );
         }
 
-        public void DeclareInterceptedType()
+        public void DeclareInterceptedType(ITypeDefinition type)
         {
-            throw new NotImplementedException();
+            log.WriteTrace("  Adding: var interceptedType = typeof ({0});",
+                (type as INamedEntity).Name.Value);
+            add(
+                builder.Declare.Variable<Type>("interceptedType").As(builder.Operators.TypeOf(type))
+            );
         }
 
-        public void DeclareParameterTypes()
+        public void DeclareParameterTypesArray(int length)
         {
-            throw new NotImplementedException();
+            log.WriteTrace("  Adding: var parameterTypes = new Type[{0}];", length);
+            add(
+                builder.Declare.Variable<Type[]>("parameterTypes").As(builder.Create.NewArray<Type>(length))
+            );
         }
 
-        public void AssignParameterTypeValues()
+        public void DeclareArgumentsList()
         {
-            throw new NotImplementedException();
+            log.WriteTrace("  Adding: var arguments = new List<object>();");
+            add(
+                builder.Declare.Variable<List<object>>("arguments").As(builder.Create.New<List<object>>())
+            );
+        }
+
+        public void AssignParameterTypeValue(int index, ITypeDefinition type)
+        {
+            log.WriteTrace("  Adding: parameterTypes[{0}] = typeof({1});", index, (type as INamedEntity).Name.Value);
+            add(
+                builder.Locals.Array<Type>("parameterTypes")[index].Assign(builder.Operators.TypeOf(type))
+            );
         }
     }
 }
