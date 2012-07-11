@@ -117,11 +117,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             for (var pIndex = 0; pIndex < fakeMethodParameters.Count; pIndex++)
             //foreach (var originalParameter in Context.FakeMethod.Parameters)
             {
-                if ((!Context.OriginalCall.ResolvedMethod.IsStatic && !Context.OriginalCall.ResolvedMethod.IsConstructor) && pIndex == 0)
-                {
-                    continue;
-                }
-
                 var originalParameter = fakeMethodParameters[pIndex];
 
                 var parameterDefinition = new ParameterDefinition();
@@ -132,22 +127,28 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
                 anonymousMethod.Parameters.Add(parameterDefinition);
 
-                var argumentToAdd = new BoundExpression();
-                argumentToAdd.Definition = originalParameter;
-                argumentToAdd.Type = originalParameter.Type;
+                if ((!Context.OriginalCall.ResolvedMethod.IsStatic && !Context.OriginalCall.ResolvedMethod.IsConstructor) && pIndex == 0)
+                {
+                    Context.Log.WriteTrace("    info: Skipping instance parameter - IsStatic: {0}, IsConstructor: {1}, pIndex: {2}",
+                        Context.OriginalCall.ResolvedMethod.IsStatic, Context.OriginalCall.ResolvedMethod.IsConstructor, pIndex);
+                }
+                else
+                {
+                    var argumentToAdd = new BoundExpression();
+                    argumentToAdd.Definition = originalParameter;
+                    argumentToAdd.Type = originalParameter.Type;
 
-                // ...
-                // arguments.Add(p0);
-                // ...
-                Context.Log.WriteTrace("  Adding: arguments.Add({0});", originalParameter.Name.Value);
-                Context.Log.WriteTrace("    info: IsStatic = {0}, IsConstructor = {1}, pIndex = {2}.", 
-                    Context.OriginalCall.ResolvedMethod.IsStatic, Context.OriginalCall.ResolvedMethod.IsConstructor, pIndex);
-                var argumentAsObject = ChangeType.Box(argumentToAdd);
-                Context.Block.Statements.Add(
-                    Statements.Execute(
-                        Call.VirtualMethod("Add", typeof (object)).ThatReturnsVoid().WithArguments(argumentAsObject).On("arguments")
-                    )
-                );
+                    // ...
+                    // arguments.Add(p0);
+                    // ...
+                    Context.Log.WriteTrace("  Adding: arguments.Add({0});", originalParameter.Name.Value);
+                    var argumentAsObject = ChangeType.Box(argumentToAdd);
+                    Context.Block.Statements.Add(
+                        Statements.Execute(
+                            Call.VirtualMethod("Add", typeof(object)).ThatReturnsVoid().WithArguments(argumentAsObject).On("arguments")
+                        )
+                    );                    
+                }
             }
 
             var originalCallArguments = new List<IExpression>();
