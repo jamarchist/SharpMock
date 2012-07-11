@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>SharpMock by jamarchist</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/jamarchist/SharpMock">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/jamarchist/SharpMock/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/jamarchist/SharpMock/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>SharpMock</h1>
+          <p>If it moves, mock it.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/jamarchist">jamarchist</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h3>What is SharpMock?</h3>
+
+<p>SharpMock is an 'isolation framework' for testing .NET code. Its primary focus is on the ability to fake static methods, sealed methods, and constructors - elements that cannot be replaced by simple object-oriented methods. SharpMock is primarily aimed at testing legacy code that contains trouble spots for current free/open source isolation frameworks. SharpMock is also intended to require <em>only</em> .NET 2.0.</p>
+
+<h3>How does it work?</h3>
+
+<p>SharpMock uses <a href="http://cciast.codeplex.com/">Microsoft's Common Compiler Infrastructure</a> to replace specified method calls to special calls for use in tests. In a sense, it is a specialized AOP framework focused on the task of replacing method calls <em>at the call site</em>.</p>
+
+<h3>What is the current state of the project?</h3>
+
+<p>SharpMock is currently in a 'pre-alpha' state. At a minimally-tested level, these features seem to work:</p>
+
+<ul>
+<li>Replacing static method calls/properties</li>
+<li>Replacing instance method calls/properties (including methods on sealed classes or methods not marked virtual)</li>
+<li>Replacing static field access/assignment</li>
+<li>Replacing instance field access/assignment</li>
+<li>Replacing constructor calls with methods that return an instance of the constructed type</li>
+<li>Replacing calls to mscorlib types</li>
+</ul><p>This minimal feature set isn't very useful for legacy codebases as-is. Here is a short list of things that <strong>aren't</strong> working:</p>
+
+<ul>
+<li>Support for out/ref parameters</li>
+<li>Support for generics</li>
+<li>Support for non-public methods</li>
+<li>Support for events</li>
+<li>Support for parallelism</li>
+<li>Comprehensive API for call verification</li>
+<li>Comprehensive API for argument matching</li>
+<li>... a million other things ...</li>
+</ul><h3>What does the code for something that <strong>does</strong> work look like?</h3>
+
+<pre><code>        [Test]
+        public void Example()
+        {
+            Replace.CallsTo(() =&gt; StaticClass.StringReturnNoParameters()).With(() =&gt; "Interception Result");
+
+            var code = new CodeUnderTest();
+            var result = code.CallsStringReturnNoParameters();
+
+            Assert.AreEqual("Interception Result", result);
+        }
+</code></pre>
+
+<p>where the code under test looks like this:</p>
+
+<pre><code>        public string CallsStringReturnNoParameters()
+        {
+            return StaticClass.StringReturnNoParameters();
+        }
+</code></pre>
+
+<p>and the static method looks like this</p>
+
+<pre><code>        public static string StringReturnNoParameters()
+        {
+            return "some value";
+        }
+</code></pre>
+
+<h3>How do I try it out?</h3>
+
+<p>I intend to fill in this section in more detail soon. Until then, <a href="mailto:jamesryangray@gmail.com">drop me a line</a>.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
