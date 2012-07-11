@@ -157,46 +157,21 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 Declare.Variable("local_0", func).As(anonymousMethod)
             );
 
-            Context.Log.WriteTrace("  Adding: interceptor.ShouldIntercept(interceptedMethod);");
-            Context.Block.Statements.Add(
-                Declare.Variable<bool>("shouldIntercept").As(
-                    Call.VirtualMethod("ShouldIntercept", typeof(IInvocation)).ThatReturns<bool>().WithArguments("invocation").On("interceptor"))
-            );
-
-            Context.Log.WriteTrace("  Adding: invocation.OriginalCall = local_0;");
-            Context.Block.Statements.Add(
-                Do(Call.PropertySetter<Delegate>("OriginalCall").WithArguments("local_0").On("invocation"))
-            );
-
-            Context.Log.WriteTrace("  Adding: invocation.Arguments = arguments;");
-            Context.Block.Statements.Add(
-                Do(Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation"))
-            );
+            AddStatement.CallShouldInterceptOnInterceptor();
+            AddStatement.SetOriginalCallOnInvocation();
+            AddStatement.SetArgumentsOnInvocation();
 
             if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
             {
-                Context.Log.WriteTrace("  Adding: invocation.Target = null;");
-                Context.Block.Statements.Add(
-                    Do(Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"))
-                );             
+                AddStatement.SetTargetOnInvocationToNull();            
             }
             else
             {
-                Context.Log.WriteTrace("  Adding: invocation.Target = target;");
-                Context.Block.Statements.Add(
-                    Do(Call.PropertySetter<object>("Target").WithArguments(Params["target"]).On("invocation"))
-                );
+                AddStatement.SetTargetOnInvocationToTargetParameter();
             }
 
-            Context.Log.WriteTrace("  Adding: invocation.OriginalCallInfo = interceptedMethod;");
-            Context.Block.Statements.Add(
-                Do(Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedMethod").On("invocation"))
-            );
-
-            Context.Log.WriteTrace("  Adding: interceptor.Intercept(invocation);");
-            Context.Block.Statements.Add(
-                Do(Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor"))
-            );
+            AddStatement.SetOriginalCallInfoOnInvocation();
+            AddStatement.CallInterceptOnInterceptor();
 
             AddReturnStatement();
         }
@@ -233,7 +208,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
         void DeclareParameterTypesArray(int length);
         void DeclareArgumentsList();
         void AssignParameterTypeValue(int index, ITypeDefinition type);
-
+        void CallShouldInterceptOnInterceptor();
+        void SetOriginalCallOnInvocation();
+        void SetArgumentsOnInvocation();
+        void SetTargetOnInvocationToNull();
+        void SetTargetOnInvocationToTargetParameter();
+        void SetOriginalCallInfoOnInvocation();
+        void CallInterceptOnInterceptor();
     }
 
     public class CommonStatementsAdder : ICommonStatementsAdder
@@ -295,6 +276,66 @@ namespace SharpMock.Core.PostCompiler.Replacement
             log.WriteTrace("  Adding: parameterTypes[{0}] = typeof({1});", index, (type as INamedEntity).Name.Value);
             add(
                 builder.Locals.Array<Type>("parameterTypes")[index].Assign(builder.Operators.TypeOf(type))
+            );
+        }
+
+        public void CallShouldInterceptOnInterceptor()
+        {
+            log.WriteTrace("  Adding: interceptor.ShouldIntercept(interceptedMethod);");
+            add(
+                builder.Declare.Variable<bool>("shouldIntercept").As(
+                    builder.Call.VirtualMethod("ShouldIntercept", typeof(IInvocation)).ThatReturns<bool>().WithArguments("invocation").On("interceptor"))
+            );
+        }
+
+        public void SetOriginalCallOnInvocation()
+        {
+            log.WriteTrace("  Adding: invocation.OriginalCall = local_0;");
+            add(
+                builder.Do(builder.Call.PropertySetter<Delegate>("OriginalCall").WithArguments("local_0").On("invocation"))
+            );
+        }
+
+        public void SetArgumentsOnInvocation()
+        {
+            log.WriteTrace("  Adding: invocation.Arguments = arguments;");
+            add(
+                builder.Do(builder.Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation"))
+            );
+        }
+
+        public void SetTargetOnInvocationToNull()
+        {
+            log.WriteTrace("  Adding: invocation.Target = null;");
+            SetTargetOnInvocationTo(builder.Constant.Of<object>(null));
+        }
+
+        public void SetTargetOnInvocationToTargetParameter()
+        {
+            log.WriteTrace("  Adding: invocation.Target = target;");
+            SetTargetOnInvocationTo(builder.Params["target"]);
+        }
+
+        private void SetTargetOnInvocationTo(IExpression target)
+        {
+            add(
+                builder.Do(builder.Call.PropertySetter<object>("Target").WithArguments(target).On("invocation"))
+            );            
+        }
+
+        public void SetOriginalCallInfoOnInvocation()
+        {
+            log.WriteTrace("  Adding: invocation.OriginalCallInfo = interceptedMethod;");
+            add(
+                builder.Do(builder.Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedMethod").On("invocation"))
+            );
+        }
+
+        public void CallInterceptOnInterceptor()
+        {
+            log.WriteTrace("  Adding: interceptor.Intercept(invocation);");
+            add(
+                builder.Do(builder.Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor"))
             );
         }
     }
