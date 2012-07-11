@@ -10,24 +10,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
         }
 
-        protected override void AddInterceptionExtraResultHandling(LocalDeclarationStatement interceptionResultDeclaration)
-        {
-            Context.Block.Statements.Add(interceptionResultDeclaration);
-        }
-
-        protected override LocalDeclarationStatement AddInterceptionResultHandling(ReturnStatement returnStatement)
-        {
-            // ...
-            // var interceptionResult = (METHOD_RETURN_TYPE)invocation.Return;
-            // ...
-            // [ In order to produce the correct IL, we need to declare the correct variable type. 'Object' doesn't cut it. ]
-            var interceptionResultDeclaration = Declare.Variable("interceptionResult", Context.FakeMethod.Type).As(
-                ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.FakeMethod.Type));
-
-            returnStatement.Expression = Locals["interceptionResult"];
-            return interceptionResultDeclaration;
-        }
-
         protected override void AddReturnTypeSpecificGenericArguments(GenericTypeInstanceReference closedGenericFunction)
         {
             closedGenericFunction.GenericArguments.Add(Context.FakeMethod.Type);
@@ -46,6 +28,21 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             anonymousMethodBody.Statements.Add(originalCall);
             anonymousMethodReturnStatement.Expression = Locals["originalCallReturnValue"];
+        }
+
+        protected override void AddReturnStatement()
+        {
+            Context.Log.WriteTrace("  Adding: var interceptionResult = ({0})invocation.Return;",
+                (Context.FakeMethod.Type.ResolvedType as INamedEntity).Name.Value);
+            Context.Block.Statements.Add(
+                Declare.Variable("interceptionResult", Context.FakeMethod.Type).As(
+                    ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.FakeMethod.Type))
+            );
+
+            Context.Log.WriteTrace("  Adding: return interceptionResult;");
+            Context.Block.Statements.Add(
+                Return.Variable(Locals["interceptionResult"])
+            );
         }
     }
 }

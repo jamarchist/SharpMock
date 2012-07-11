@@ -1,4 +1,5 @@
-﻿using Microsoft.Cci;
+﻿using System.Collections.Generic;
+using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
 

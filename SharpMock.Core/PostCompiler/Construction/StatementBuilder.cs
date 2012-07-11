@@ -12,5 +12,18 @@ namespace SharpMock.Core.PostCompiler.Construction
 
             return callStatement;
         }
+
+        public ReturnStatement Return(IExpression expression)
+        {
+            var @return = new ReturnStatement();
+            @return.Expression = expression;
+
+            return @return;
+        }
+
+        public ReturnStatement Return()
+        {
+            return new ReturnStatement();
+        }
     }
 }

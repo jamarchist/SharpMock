@@ -9,16 +9,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
         }
 
-        protected override void AddInterceptionExtraResultHandling(LocalDeclarationStatement interceptionResultDeclaration)
-        {
-            // Do nothing
-        }
-
-        protected override LocalDeclarationStatement AddInterceptionResultHandling(ReturnStatement returnStatement)
-        {
-            return new LocalDeclarationStatement();
-        }
-
         protected override void AddReturnTypeSpecificGenericArguments(GenericTypeInstanceReference closedGenericFunction)
         {
             // Do nothing
@@ -35,6 +25,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
             originalMethodCallStatement.Expression = originalMethodCall;
 
             anonymousMethodBody.Statements.Add(originalMethodCallStatement);
+        }
+
+        protected override void AddReturnStatement()
+        {
+            Context.Block.Statements.Add(Return.Void());
         }
     }
 }

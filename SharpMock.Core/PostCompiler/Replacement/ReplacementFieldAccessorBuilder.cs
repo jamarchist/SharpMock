@@ -77,31 +77,31 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // ...
             // invocation.OriginalCall = local_0;
             // ...
-            var setDelegateStatement = Statements.Execute(
+            var setDelegateStatement = Do(
                 Call.PropertySetter<Delegate>("OriginalCall").WithArguments("local_0").On("invocation"));
 
             // ...
             // invocation.Target = null;
             // ...
-            var setTargetStatement = Statements.Execute(
+            var setTargetStatement = Do(
                     Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"));
 
             // ...
             // invocation.OriginalCallInfo = interceptedField;
             // ...
-            var setOriginalCallInfoStatement = Statements.Execute(
+            var setOriginalCallInfoStatement = Do(
                     Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedField").On("invocation"));
 
             // ...
             // invocation.Arguments = arguments;
             // ...
-            var setArgumentsStatement = Statements.Execute(
+            var setArgumentsStatement = Do(
                     Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation"));
 
             // ...
             // interceptor.Intercept(invocation);
             // ...
-            var interceptMethodCallStatement = Statements.Execute(
+            var interceptMethodCallStatement = Do(
                     Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor"));
 
             // ...

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
-using SharpMock.Core.PostCompiler.Construction.Declarations;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -28,18 +27,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
             anonymousMethodReturnStatement.Expression = Locals["originalConstructorResult"];
         }
 
-        protected override MethodCall CallGetMethodInfoMethod()
+        protected override void AddInterceptedMethodDeclaration()
         {
-            return Call.VirtualMethod("GetConstructor", typeof(Type[]))
+            Context.Log.WriteTrace("  Adding: var interceptedMethod = interceptedType.GetConstructor(parameterTypes);");
+            Context.Block.Statements.Add(
+                Declare.Variable<ConstructorInfo>("interceptedMethod").As(
+                Call.VirtualMethod("GetConstructor", typeof(Type[]))
                     .ThatReturns<ConstructorInfo>()
                     .WithArguments(
                         Locals["parameterTypes"])
-                    .On("interceptedType");
-        }
-
-        protected override IDynamicDeclarationOptions DeclareMethodInfoVariable()
-        {
-            return Declare.Variable("interceptedMethod", Reflector.Get<ConstructorInfo>());
+                    .On("interceptedType"))
+            );
         }
     }
 }
