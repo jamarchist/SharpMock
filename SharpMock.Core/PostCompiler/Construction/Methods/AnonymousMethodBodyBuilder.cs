@@ -40,8 +40,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
                 method.Parameters.Add(parameterDefinition);
             }
 
-            //if (returnType != null && returnType != typeof(void)) 
-                method.ReturnType = reflector.Get(returnType);
+            method.ReturnType = reflector.Get(returnType);
 
             var codeBuilder = new CodeBuilder(host, method.Parameters);
             code(codeBuilder);

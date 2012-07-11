@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Diagnostics;
 using SharpMock.Core.Interception;
 using SharpMock.Core.Interception.Interceptors;
+using SharpMock.Core.PostCompiler.Construction.Methods;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
     public abstract class ReplacementMethodBuilder : ReplacementMethodBuilderBase
     {
+        protected ICommonStatementsAdder AddStatement { get; private set; }
+        
         protected ReplacementMethodBuilder(ReplacementMethodConstructionContext context) : base(context)
         {
+            AddStatement = new CommonStatementsAdder(context.Host, 
+                context.FakeMethod.Parameters, s => context.Block.Statements.Add(s), context.Log);
         }
 
         protected override void BuildMethodTemplate()
@@ -45,28 +51,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>())
             );
 
-
             foreach (var parameter in Context.OriginalCall.Parameters)
             {
-                var indexer = new ArrayIndexer();
-                indexer.IndexedObject = Locals["parameterTypes"];
-                indexer.Indices.Add(new CompileTimeConstant { Type = Reflector.Get<int>(), Value = parameter.Index });
-                indexer.Type = Reflector.Get<Type>();
-                
-                var target = new TargetExpression();
-                target.Definition = indexer;
-                target.Instance = Locals["parameterTypes"];
-                target.Type = Reflector.Get<Type[]>();
-
-                var assignment = new Assignment();
-                assignment.Type = Reflector.Get<Type>();
-                assignment.Source = Operators.TypeOf(parameter.Type);
-                assignment.Target = target;
-
                 Context.Log.WriteTrace("  Adding: parameterTypes[{0}] = typeof({1});", 
                     parameter.Index, (parameter.Type.ResolvedType as INamedEntity).Name.Value);
                 Context.Block.Statements.Add(
-                    Do(assignment)
+                    Locals.Array<Type>("parameterTypes")[parameter.Index].Assign(Operators.TypeOf(parameter.Type))
                 );
             }
 
@@ -101,7 +91,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             var fakeMethodParameters = new List<IParameterDefinition>(Context.FakeMethod.Parameters);
             for (var pIndex = 0; pIndex < fakeMethodParameters.Count; pIndex++)
-            //foreach (var originalParameter in Context.FakeMethod.Parameters)
             {
                 var originalParameter = fakeMethodParameters[pIndex];
 
@@ -124,9 +113,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     argumentToAdd.Definition = originalParameter;
                     argumentToAdd.Type = originalParameter.Type;
 
-                    // ...
-                    // arguments.Add(p0);
-                    // ...
                     Context.Log.WriteTrace("  Adding: arguments.Add({0});", originalParameter.Name.Value);
                     var argumentAsObject = ChangeType.Box(argumentToAdd);
                     Context.Block.Statements.Add(
@@ -264,10 +250,53 @@ namespace SharpMock.Core.PostCompiler.Replacement
         protected abstract void AddReturnStatement();
     }
 
-    public interface ICommonStatementsBuilder
+    public interface ICommonStatementsAdder
     {
-        IStatement DeclareRegistryInterceptor { get; }
-        IStatement DeclareInvocation { get; }
-        IStatement DeclareInterceptedType { get; }
+        void DeclareRegistryInterceptor();
+        void DeclareInvocation();
+        void DeclareInterceptedType();
+        void DeclareParameterTypes();
+        void AssignParameterTypeValues();
+
+    }
+
+    public class CommonStatementsAdder : MethodBodyBuilder, ICommonStatementsAdder
+    {
+        private readonly ILogger log; 
+        private readonly VoidAction<IStatement> add; 
+
+        public CommonStatementsAdder(IMetadataHost host, IEnumerable<IParameterDefinition> parameters, VoidAction<IStatement> add, ILogger log) : base(host, parameters)
+        {
+            this.add = add;
+            this.log = log;
+        }
+
+        public void DeclareRegistryInterceptor()
+        {
+            log.WriteTrace("  Adding: var interceptor = new RegistryInterceptor();");
+            add(
+                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>())
+            );
+        }
+
+        public void DeclareInvocation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeclareInterceptedType()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeclareParameterTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AssignParameterTypeValues()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
