@@ -247,6 +247,7 @@
     <Compile Include="PostCompiler\PostCompilerPipeline.cs" />
     <Compile Include="PostCompiler\ReplaceInterceptedMethodsWithAlternativeInvocations.cs" />
     <Compile Include="PostCompiler\Replacement\CodeUnderTestVisitor.cs" />
+    <Compile Include="PostCompiler\Replacement\CommonStatementsAdder.cs" />
     <Compile Include="PostCompiler\Replacement\ConstructorReplacementBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ConstructorReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\ConstructorReplacer.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementDictionary.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementRegistry.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceVisitor.cs" />
+    <Compile Include="PostCompiler\Replacement\ICommonStatementsAdder.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementMethodBuilder.cs" />
