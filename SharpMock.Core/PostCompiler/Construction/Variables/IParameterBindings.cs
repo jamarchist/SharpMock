@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Cci;
 
 namespace SharpMock.Core.PostCompiler.Construction.Variables
@@ -6,5 +7,6 @@ namespace SharpMock.Core.PostCompiler.Construction.Variables
     {
         void AddBinding(IParameterDefinition definition);
         IBoundExpression this[string parameterName] { get; }
+        List<IBoundExpression> ToList();
     }
 }

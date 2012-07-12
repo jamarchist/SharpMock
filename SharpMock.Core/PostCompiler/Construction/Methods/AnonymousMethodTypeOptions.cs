@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
@@ -46,6 +47,9 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             var openGeneric = sharpMock.Actions[typeParameters.Length];
             var closedGenericType = new GenericTypeInstanceReference();
             closedGenericType.GenericType = openGeneric;
+            closedGenericType.InternFactory = host.InternFactory;
+            closedGenericType.TypeCode = PrimitiveTypeCode.NotPrimitive;
+            closedGenericType.PlatformType = host.PlatformType;
 
             var namedTypeParameters = new List<KeyValuePair<string, ITypeReference>>();
             for (var pIndex = 0; pIndex < typeParameters.Length; pIndex++)
@@ -55,7 +59,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             }
 
             return new AnonymousMethodBodyBuilder(host, reflector, closedGenericType,
-                host.PlatformType.SystemVoid, namedTypeParameters.GetRange(0, namedTypeParameters.Count).ToArray());
+                host.PlatformType.SystemVoid, namedTypeParameters.ToArray());
         }
 
         public IAnonymousMethodBodyBuilder Of<TDelegateType>()

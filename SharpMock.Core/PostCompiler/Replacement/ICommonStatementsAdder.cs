@@ -10,6 +10,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         void DeclareParameterTypesArray(int length);
         void DeclareArgumentsList();
         void AssignParameterTypeValue(int index, ITypeDefinition type);
+        void AddArgumentToList(IBoundExpression argument);
         void CallShouldInterceptOnInterceptor();
         void SetOriginalCallOnInvocation();
         void SetArgumentsOnInvocation();

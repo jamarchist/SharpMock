@@ -346,6 +346,7 @@
     <Compile Include="Syntax\ReplacementOptions.cs" />
     <Compile Include="Syntax\IReplace.cs" />
     <Compile Include="Syntax\IReplacementOptions.cs" />
+    <Compile Include="Utility\CollectionExtensions.cs" />
     <Compile Include="Utility\PeVerify.cs" />
   </ItemGroup>
   <ItemGroup />

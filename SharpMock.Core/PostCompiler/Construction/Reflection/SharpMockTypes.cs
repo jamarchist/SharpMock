@@ -1,20 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Cci;
 
 namespace SharpMock.Core.PostCompiler.Construction.Reflection
 {
     public class SharpMockTypes
     {
-        private readonly IDictionary<int, INamedTypeReference> functions = new Dictionary<int, INamedTypeReference>();
-        private readonly IDictionary<int, INamedTypeReference> actions = new Dictionary<int, INamedTypeReference>();
+        public interface IGenericMethodTypeDictionary { INamedTypeReference this[int numberOfParameters] { get; } }
 
-        public IDictionary<int, INamedTypeReference> Functions { get { return functions; } }
-        public IDictionary<int, INamedTypeReference> Actions { get { return actions; } }
+        private readonly IGenericMethodTypeDictionary functions;
+        private readonly IGenericMethodTypeDictionary actions;
+
+        public IGenericMethodTypeDictionary Functions { get { return functions; } }
+        public IGenericMethodTypeDictionary Actions { get { return actions; } }
 
         public IUnit Unit { get; private set; }
         
         public SharpMockTypes(IMetadataHost host)
         {
+            var funcs = new Dictionary<int, INamedTypeReference>();
+            var acts = new Dictionary<int, INamedTypeReference>();
+
             var sharpMockTypes =
                 host.LoadUnitFrom(
                     System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -25,12 +31,42 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             {
                 if (type.Name.Value == "VoidAction")
                 {
-                    actions.Add(type.GenericParameterCount, type);
+                    acts.Add(type.GenericParameterCount, type);
                 }
 
                 if (type.Name.Value == "Function")
                 {
-                    functions.Add(type.GenericParameterCount - 1, type);
+                    funcs.Add(type.GenericParameterCount - 1, type);
+                }
+            }
+
+            functions = new GenericMethodTypeDictionary(funcs, "Unable to find type Function<> with {0} input parameter arguments.");
+            actions = new GenericMethodTypeDictionary(acts, "Unable to find type VoidAction<> with {0} parameter arguments.");
+        }
+
+        private class GenericMethodTypeDictionary : IGenericMethodTypeDictionary
+        {
+            private readonly IDictionary<int, INamedTypeReference> types;
+            private readonly string errorMessageFormat;
+
+            public GenericMethodTypeDictionary(IDictionary<int, INamedTypeReference> types, string errorMessageFormat)
+            {
+                this.types = types;
+                this.errorMessageFormat = errorMessageFormat;
+            }
+
+            public INamedTypeReference this[int numberOfParameters]
+            {
+                get
+                {
+                    try
+                    {
+                        return types[numberOfParameters];
+                    }
+                    catch (KeyNotFoundException keyNotFound)
+                    {
+                        throw new InvalidOperationException(String.Format(errorMessageFormat, numberOfParameters), keyNotFound);
+                    }
                 }
             }
         }

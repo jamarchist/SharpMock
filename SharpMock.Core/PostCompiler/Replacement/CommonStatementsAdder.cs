@@ -71,6 +71,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 );
         }
 
+        public void AddArgumentToList(IBoundExpression argument)
+        {
+            log.WriteTrace("  Adding: arguments.Add({0});", (argument.Definition as IParameterDefinition).Name.Value);
+            add(
+                builder.Do(
+                    builder.Call.VirtualMethod("Add", typeof (object)).ThatReturnsVoid().WithArguments(builder.ChangeType.Box(argument)).On(
+                        "arguments")
+                    )
+                );
+        }
+
         public void CallShouldInterceptOnInterceptor()
         {
             log.WriteTrace("  Adding: interceptor.ShouldIntercept(interceptedMethod);");

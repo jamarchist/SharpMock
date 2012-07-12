@@ -21,5 +21,10 @@ namespace SharpMock.Core.PostCompiler.Construction.Variables
         {
             get { return bindings[parameterName]; }
         }
+
+        public List<IBoundExpression> ToList()
+        {
+            return new List<IBoundExpression>(bindings.Values);
+        }
     }
 }
