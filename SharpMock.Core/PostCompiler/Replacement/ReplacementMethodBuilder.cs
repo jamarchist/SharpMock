@@ -33,6 +33,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             AddInterceptedMethodDeclaration();
 
+            
+
             // This may not actually be generic
             var openGenericFunction = GetOpenGenericFunction();
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
@@ -11,36 +12,56 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
         private readonly IMetadataHost host;
         private readonly IUnitReflector reflector;
         private readonly ITypeReference delegateType;
-        private readonly Type returnType;
-        private readonly ParameterInfo[] parameters;
+
+        private readonly AnonymousDelegate method = new AnonymousDelegate();
+        private readonly ITypeReference returnTypeReference;
+
+        public AnonymousMethodBodyBuilder(IMetadataHost host, IUnitReflector reflector, ITypeReference delegateType, ITypeReference returnType, KeyValuePair<string, ITypeReference>[] parameterTypes)
+        {
+            this.host = host;
+            this.reflector = reflector;
+            this.delegateType = delegateType;
+            this.returnTypeReference = returnType;
+
+            for (var pIndex = 0; pIndex < parameterTypes.Length; pIndex++)
+            {
+                var parameterType = parameterTypes[pIndex];
+
+                var parameterDefinition = new ParameterDefinition();
+                parameterDefinition.Index = (ushort) pIndex;
+                parameterDefinition.Type = parameterType.Value;
+                parameterDefinition.Name = host.NameTable.GetNameFor("altered" + parameterType.Key);
+                parameterDefinition.ContainingSignature = method;
+
+                method.Parameters.Add(parameterDefinition);                
+            }
+        }
 
         public AnonymousMethodBodyBuilder(IMetadataHost host, IUnitReflector reflector, ITypeReference delegateType, Type returnType, ParameterInfo[] parameters)
         {
             this.host = host;
             this.reflector = reflector;
             this.delegateType = delegateType;
-            this.returnType = returnType;
-            this.parameters = parameters;
-        }
 
-        public IExpression WithBody(VoidAction<ICodeBuilder> code)
-        {
-            var method = new AnonymousDelegate();
-            method.Type = delegateType;
-            method.CallingConvention = CallingConvention.HasThis;
+            this.returnTypeReference = reflector.Get(returnType);
 
             foreach (var parameter in parameters)
             {
                 var parameterDefinition = new ParameterDefinition();
-                parameterDefinition.Index = (ushort) parameter.Position;
+                parameterDefinition.Index = (ushort)parameter.Position;
                 parameterDefinition.Type = reflector.Get(parameter.ParameterType);
                 parameterDefinition.Name = host.NameTable.GetNameFor("altered" + parameter.Name);
                 parameterDefinition.ContainingSignature = method;
 
                 method.Parameters.Add(parameterDefinition);
             }
+        }
 
-            method.ReturnType = reflector.Get(returnType);
+        public IExpression WithBody(VoidAction<ICodeBuilder> code)
+        {
+            method.Type = delegateType;
+            method.CallingConvention = CallingConvention.HasThis;
+            method.ReturnType = returnTypeReference;
 
             var codeBuilder = new CodeBuilder(host, method.Parameters);
             code(codeBuilder);
