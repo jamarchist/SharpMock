@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Cci;
+﻿using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
 
@@ -84,6 +83,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
             else
             {
+                if (originalCall.IsStatic)
+                {
+                    return new ReplacementStaticActionBuilder(this);
+                }
+
                 return new ReplacementActionBuilder(this);
             }
         }
