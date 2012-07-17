@@ -1,41 +1,53 @@
 ﻿using System;
+using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class ReplacementActionBuilder : ReplacementMethodBuilder
+    public class ReplacementActionBuilder : ReplacementMethodBuilderBase
     {
         public ReplacementActionBuilder(ReplacementMethodConstructionContext context) : base(context)
         {
         }
 
-        protected override void AddReturnTypeSpecificGenericArguments(GenericTypeInstanceReference closedGenericFunction)
+        protected override void BuildMethodTemplate()
         {
-            // Do nothing
-        }
+            Context.Log.WriteTrace(String.Empty);
+            Context.Log.WriteTrace("BuildingMethod: {0}.", Context.OriginalCall.Name.Value);
 
-        protected override ITypeReference GetOpenGenericFunction()
-        {
-            return SharpMockTypes.Actions[Context.OriginalCall.ParameterCount];
-        }
+            AddStatement.DeclareRegistryInterceptor();
+            AddStatement.DeclareInvocation();
+            AddStatement.DeclareInterceptedType(Context.OriginalCall.ContainingType.ResolvedType);
+            AddStatement.DeclareParameterTypesArray(Context.OriginalCall.ParameterCount);
+            AddStatement.DeclareArgumentsList();
 
-        protected override void AddOriginalMethodCallStatement(BlockStatement anonymousMethodBody, ReturnStatement anonymousMethodReturnStatement, MethodCall originalMethodCall)
-        {
-            var originalMethodCallStatement = new ExpressionStatement();
-            originalMethodCallStatement.Expression = originalMethodCall;
+            foreach (var parameter in Context.OriginalCall.Parameters)
+            {
+                AddStatement.AssignParameterTypeValue(parameter.Index, parameter.Type.ResolvedType);
+            }
 
-            anonymousMethodBody.Statements.Add(originalMethodCallStatement);
-        }
+            foreach (var parameter in Params.ToList())
+            {
+                if ((parameter.Definition as IParameterDefinition).Name.Value != "target")
+                {
+                    AddStatement.AddArgumentToList(parameter);
+                }
+            }
 
-        protected override void AddReturnStatement()
-        {
-            Context.Block.Statements.Add(Return.Void());
-        }
+            Context.Log.WriteTrace("  Adding: var interceptedMethod = interceptedType.GetMethod('{0}', parameterTypes);"
+                , Context.OriginalCall.Name.Value);
+            Context.Block.Statements.Add(
+                Declare.Variable<MethodInfo>("interceptedMethod").As(
+                Call.VirtualMethod("GetMethod", typeof(string), typeof(Type[]))
+                    .ThatReturns<MethodInfo>()
+                    .WithArguments(
+                        Constant.Of(Context.OriginalCall.Name.Value),
+                        Locals["parameterTypes"])
+                    .On("interceptedType"))
+            );
 
-        protected override void AddAnonymousMethodDeclaration()
-        {
             var parameterTypes = Context.OriginalCall.Parameters.Select(p => p.Type);
             var parameterCounter = 0;
 
@@ -83,6 +95,24 @@ namespace SharpMock.Core.PostCompiler.Replacement
             Context.Block.Statements.Add(
                 Declare.Variable("local_0", anonymousMethod.Type).As(anonymousMethod)
             );
+
+            AddStatement.CallShouldInterceptOnInterceptor();
+            AddStatement.SetOriginalCallOnInvocation();
+            AddStatement.SetArgumentsOnInvocation();
+
+            if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
+            {
+                AddStatement.SetTargetOnInvocationToNull();
+            }
+            else
+            {
+                AddStatement.SetTargetOnInvocationToTargetParameter();
+            }
+
+            AddStatement.SetOriginalCallInfoOnInvocation();
+            AddStatement.CallInterceptOnInterceptor();
+
+            Context.Block.Statements.Add(Return.Void());
         }
     }
 }
