@@ -75,6 +75,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             if (!originalCall.Type.ResolvedType.Equals(host.PlatformType.SystemVoid.ResolvedType))
             {
+                if (originalCall.IsStatic)
+                {
+                    return new ReplacementStaticFunctionBuilder(this);    
+                }
+
                 return new ReplacementFunctionBuilder(this);
             }
             else
