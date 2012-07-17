@@ -65,16 +65,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             AddStatement.CallShouldInterceptOnInterceptor();
             AddStatement.SetOriginalCallOnInvocation();
             AddStatement.SetArgumentsOnInvocation();
-
-            if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
-            {
-                AddStatement.SetTargetOnInvocationToNull();
-            }
-            else
-            {
-                AddStatement.SetTargetOnInvocationToTargetParameter();
-            }
-
+            AddStatement.SetTargetOnInvocationToNull();
             AddStatement.SetOriginalCallInfoOnInvocation();
             AddStatement.CallInterceptOnInterceptor();
 

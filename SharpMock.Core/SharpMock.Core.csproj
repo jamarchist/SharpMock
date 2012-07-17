@@ -300,7 +300,6 @@
     <Compile Include="PostCompiler\Replacement\ReplacementFieldAccessorBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFunctionWithOutOrRefParametersBuilder.cs" />
-    <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilderBase.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodConstructionContext.cs" />
     <Compile Include="PostCompiler\Construction\ReturnStatementBuilder.cs" />
