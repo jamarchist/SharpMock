@@ -52,13 +52,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             var parameterTypes = constructor.Parameters.Select(p => p.Type);
             var parameterTypesWithReturnType = new List<ITypeReference>(parameterTypes);
-            parameterTypesWithReturnType.Add(Context.FakeMethod.Type);
+            parameterTypesWithReturnType.Add(Context.ReturnType);
 
             var anonymousMethod = Anon.Func(parameterTypesWithReturnType.ToArray())
                 .WithBody(c =>
                 {
-                    c.AddLine(x => x.Declare.Variable("originalConstructorResult", Context.FakeMethod.Type)
-                      .As(x.Create.New(Context.FakeMethod.Type, parameterTypes.ToArray())));
+                    c.AddLine(x => x.Declare.Variable("originalConstructorResult", Context.ReturnType)
+                      .As(x.Create.New(Context.ReturnType, parameterTypes.ToArray())));
                     c.AddLine(x => x.Return.Variable(x.Locals["originalConstructorResult"]));
                 });
             Context.Block.Statements.Add(
@@ -73,10 +73,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
             AddStatement.CallInterceptOnInterceptor();
 
             Context.Log.WriteTrace("  Adding: var interceptionResult = ({0})invocation.Return;",
-                (Context.FakeMethod.Type.ResolvedType as INamedEntity).Name.Value);
+                (Context.ReturnType.ResolvedType as INamedEntity).Name.Value);
             Context.Block.Statements.Add(
-                Declare.Variable("interceptionResult", Context.FakeMethod.Type).As(
-                    ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.FakeMethod.Type))
+                Declare.Variable("interceptionResult", Context.ReturnType).As(
+                    ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.ReturnType))
             );
 
             Context.Log.WriteTrace("  Adding: return interceptionResult;");

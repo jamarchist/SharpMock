@@ -83,10 +83,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
             AddStatement.CallInterceptOnInterceptor();
 
             Context.Log.WriteTrace("  Adding: var interceptionResult = ({0})invocation.Return;",
-                                   (Context.FakeMethod.Type.ResolvedType as INamedEntity).Name.Value);
+                                   (Context.ReturnType.ResolvedType as INamedEntity).Name.Value);
             Context.Block.Statements.Add(
-                Declare.Variable("interceptionResult", Context.FakeMethod.Type).As(
-                    ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.FakeMethod.Type))
+                Declare.Variable("interceptionResult", Context.ReturnType).As(
+                    ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.ReturnType))
                 );
 
             Context.Log.WriteTrace("  Adding: return interceptionResult;");

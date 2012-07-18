@@ -238,6 +238,9 @@
     <Compile Include="PostCompiler\Construction\Expressions\InstanceCreator.cs" />
     <Compile Include="PostCompiler\Construction\Variables\IParameterBindings.cs" />
     <Compile Include="PostCompiler\Construction\Variables\ParameterBindings.cs" />
+    <Compile Include="PostCompiler\FakeNamespace.cs" />
+    <Compile Include="PostCompiler\FieldAccessorSourceWriter.cs" />
+    <Compile Include="PostCompiler\FieldAssignmentSourceWriter.cs" />
     <Compile Include="PostCompiler\GetMutableAssembly.cs" />
     <Compile Include="PostCompiler\GetMutableTargetAssembly.cs" />
     <Compile Include="PostCompiler\GetMutableTestAssembly.cs" />

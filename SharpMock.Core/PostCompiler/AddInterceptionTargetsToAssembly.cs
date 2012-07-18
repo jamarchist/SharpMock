@@ -1,114 +1,28 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
-using SharpMock.Core.Interception.Helpers;
 using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
-using SharpMock.PostCompiler.Core.CciExtensions;
 using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler
 {
     public class AddInterceptionTargetsToAssembly : IPostCompilerPipelineStep
     {
-        private NestedUnitNamespace fake;
-        private IDictionary<string, NestedUnitNamespace> namespaces;
-        private IDictionary<string, NamespaceTypeDefinition> classes;
+        private FakeNamespace fakeNamespace;
         private IMetadataHost host;
-        private Module module;
         private ILogger log;
 
         public void Execute(PostCompilerContext context)
         {
             host = context.Host;
-            module = context.AssemblyToAlter;
             log = context.Log;
 
-            ConfigureLocals();
+            fakeNamespace = new FakeNamespace(context.AssemblyToAlter, host, log);
             AddInterceptionTargets();    
-        }
-
-        private void ConfigureLocals()
-        {
-            fake = module.UnitNamespaceRoot.AddNestedNamespace("<Fake>", host);
-            namespaces = new Dictionary<string, NestedUnitNamespace>();
-            classes = new Dictionary<string, NamespaceTypeDefinition>();
-        }
-
-        private void AddNamespaces(ReverseStringBuilder reversedNamespaces)
-        {
-            log.WriteTrace("Adding fake namespace: '{0}'.", reversedNamespaces);
-            var allNamespaces = reversedNamespaces.ToStringArray();
-            var stack = StackedNamespaces(allNamespaces);
-            
-            foreach (var ns in stack)
-            {
-                if (!namespaces.ContainsKey(ns.Key))
-                {
-                    NestedUnitNamespace root = null;
-                    if (namespaces.ContainsKey(ns.Value.Root))
-                        root = namespaces[ns.Value.Root];
-                    else
-                        root = fake.AddNestedNamespace(ns.Value.Root, host);
-
-                    var newNamespace = root.AddNestedNamespace(ns.Value.LastElement, host);
-                    namespaces.Add(ns.Key, newNamespace);
-                }
-            }
-        }
-
-        private void AddClass(string fullNamespace, string className)
-        {
-            var fullyQualifiedName = String.Format("{0}.{1}", fullNamespace, className);
-            log.WriteTrace("Adding fake class: '{0}'.", fullyQualifiedName);
-            if (!classes.ContainsKey(fullyQualifiedName))
-            {
-                var ns = namespaces[fullNamespace];
-                var newClass = ns.AddStaticClass(module, className, host);
-
-                classes.Add(fullyQualifiedName, newClass);
-            }
-        }
-
-        private IDictionary<string, NamespaceInfo> StackedNamespaces(string[] namespaceElements)
-        {
-            var stack = new Dictionary<string, NamespaceInfo>();
-            for (var elementIndex = 0; elementIndex < namespaceElements.Length; elementIndex++)
-            {
-                var stackElement = StackedNamespace(namespaceElements, elementIndex);
-
-                var namespaceInfo = new NamespaceInfo();
-                namespaceInfo.FullNamespace = stackElement;
-                namespaceInfo.LastElement = namespaceElements[elementIndex];
-                namespaceInfo.Root = StackedNamespace(namespaceElements, elementIndex - 1);
-
-                stack.Add(namespaceInfo.FullNamespace, namespaceInfo);
-            }
-
-            return stack;
-        }
-
-        private string StackedNamespace(string[] elements, int lastElementIndex)
-        {
-            var stackElement = new StringBuilder();
-            for (var subIndex = 0; subIndex <= lastElementIndex; subIndex++)
-            {
-                stackElement.Append(elements[subIndex]);
-                stackElement.Append('.');
-            }
-
-            var stack = stackElement.ToString();
-
-            if (stack.Length > 0)
-            {
-                return stack.Trim('.');
-            }
-
-            return stack;
         }
 
         private void AddInterceptionTargets()
@@ -123,10 +37,10 @@ namespace SharpMock.Core.PostCompiler
 
                 log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
 
-                AddNamespaces(fullNs);
-                AddClass(fullNs.ToString(), nsType.Name.Value);
+                fakeNamespace.AddNamespaces(fullNs);
+                fakeNamespace.AddClass(fullNs.ToString(), nsType.Name.Value);
 
-                var methodClass = classes[fullNsWithType];
+                var methodClass = fakeNamespace.Classes[fullNsWithType];
                 var methodName = method.Name.Value == ".ctor" ? "<constructor>" : method.Name.Value;
                 var fakeMethod = methodClass.AddPublicStaticMethod(methodName, method.Type, host);
 
@@ -170,73 +84,46 @@ namespace SharpMock.Core.PostCompiler
 
             foreach (var field in FieldReferenceReplacementRegistry.GetFieldsToIntercept())
             {
-                var nsType = field.ContainingType.GetNamespaceType();
-                var fullNs = nsType.NamespaceBuilder();
-                var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+                ////var nsType = field.ContainingType.GetNamespaceType();
+                ////var fullNs = nsType.NamespaceBuilder();
+                ////var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
 
-                log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
+                ////log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
 
-                AddNamespaces(fullNs);
-                AddClass(fullNs.ToString(), nsType.Name.Value);
+                ////fakeNamespace.AddNamespaces(fullNs);
+                ////fakeNamespace.AddClass(fullNs.ToString(), nsType.Name.Value);
 
-                var methodClass = classes[fullNsWithType];
-                var methodName = String.Format("<accessor>{0}", field.Name.Value);
-                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, field.Type, host);
+                ////var methodClass = fakeNamespace.Classes[fullNsWithType];
+                ////var methodName = String.Format("<accessor>{0}", field.Name.Value);
+                ////var fakeMethod = methodClass.AddPublicStaticMethod(methodName, field.Type, host);
 
-                var customAttribute = new CustomAttribute();
-                customAttribute.Constructor = new UnitReflector(host)
-                    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
-                fakeMethod.Attributes = new List<ICustomAttribute>();
-                fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.Body = GetBody(fakeMethod, field, false);
+                ////var customAttribute = new CustomAttribute();
+                ////customAttribute.Constructor = new UnitReflector(host)
+                ////    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
+                ////fakeMethod.Attributes = new List<ICustomAttribute>();
+                ////fakeMethod.Attributes.Add(customAttribute);
+                ////fakeMethod.Body = GetBody(fakeMethod, field, false);
 
-                var parameterTypes = new List<ITypeDefinition>();
-                //foreach (var param in fakeMethod.Parameters)
-                //{
-                //    parameterTypes.Add(param.Type.ResolvedType);
-                //}
+                ////var parameterTypes = new List<ITypeDefinition>();
+                //////foreach (var param in fakeMethod.Parameters)
+                //////{
+                //////    parameterTypes.Add(param.Type.ResolvedType);
+                //////}
 
-                var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
-                    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
+                ////var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
+                ////    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
+
+                var fieldReplacementBuilder = new FieldAccessorSourceWriter(fakeNamespace, host, log, field);
+                var fakeCallReference = fieldReplacementBuilder.GetReference();
 
                 FieldReferenceReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
 
             foreach (var field in FieldAssignmentReplacementRegistry.GetFieldsToIntercept())
             {
-                // Step 1 - Add fake namespace and class
-                var nsType = field.ContainingType.GetNamespaceType();
-                var fullNs = nsType.NamespaceBuilder();
-                var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+                var fieldReplacementBuilder = new FieldAssignmentSourceWriter(fakeNamespace, host, log, field);
+                var fakeCallReference = fieldReplacementBuilder.GetReference();
 
-                log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
-
-                AddNamespaces(fullNs);
-                AddClass(fullNs.ToString(), nsType.Name.Value);
-
-                // Step 2 - Add fake method, named appropriately with appropriate return type
-                var methodClass = classes[fullNsWithType];
-                var methodName = String.Format("<assignment>{0}", field.Name.Value);
-                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, host.PlatformType.SystemVoid, host);
-
-                // Step 3 - Add custom attribute
-                // Step 4 - Add parameters
-                // Step 5 - Build body
-                var customAttribute = new CustomAttribute();
-                customAttribute.Constructor = new UnitReflector(host)
-                    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
-                fakeMethod.Attributes = new List<ICustomAttribute>();
-                fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.AddParameter(0, "assignedValue", field.Type, host, false, false);
-                fakeMethod.Body = GetBody(fakeMethod, field, true);
-
-                // Step 6 - Create reference
-                var parameterTypes = new List<ITypeDefinition>();
-                parameterTypes.Add(field.Type.ResolvedType);
-
-                var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
-                    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());            
-    
                 FieldAssignmentReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
         }
@@ -285,47 +172,6 @@ namespace SharpMock.Core.PostCompiler
             AddAlternativeInvocation(block, method, originalField, isAssignment);
 
             return body;
-        }
-
-        private class FieldAssignmentMethodDefiner
-        {
-            public IMethodDefinition GetMethodDefinition()
-            {
-                throw new NotImplementedException();       
-            }
-        }
-
-        private class FieldAssignmentSourceFactory
-        {
-            private readonly IFieldReference field;
-            private readonly IMetadataHost host;
-            private readonly ILogger log;
-            private readonly BlockStatement block = new BlockStatement();
-
-            public FieldAssignmentSourceFactory(IFieldReference field, IMetadataHost host, ILogger log)
-            {
-                this.field = field;
-                this.host = host;
-                this.log = log;
-            }
-
-            public FieldAssignmentMethodDefiner GetMethodDefiner()
-            {
-                return new FieldAssignmentMethodDefiner();
-            }
-
-            public IReplacementMethodBuilder GetMethodBuilder(IMethodDefinition methodDefinition)
-            {
-                var ctx = new ReplacementMethodConstructionContext(host, field, methodDefinition, block, true, log);
-                return new ReplacementFieldAssignmentBuilder(ctx, field);
-            } 
-        }
-
-        private class NamespaceInfo
-        {
-            public string FullNamespace { get; set; }
-            public string LastElement { get; set; }
-            public string Root { get; set; }
         }
     }
 }

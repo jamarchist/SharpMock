@@ -6,7 +6,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
     public abstract class ReplacementMethodBuilderBase : MethodBodyBuilder, IReplacementMethodBuilder
     {
         protected ReplacementMethodBuilderBase(ReplacementMethodConstructionContext context) : 
-            base(context.Host, context.FakeMethod.Parameters)
+            base(context.Host, context.FakeMethodParameters)
         {
             Context = context;
             SharpMockTypes = new SharpMockTypes(context.Host);
