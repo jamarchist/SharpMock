@@ -79,7 +79,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     return new ReplacementStaticFunctionBuilder(this);    
                 }
 
-                return new ReplacementFunctionBuilder(this);
+                if (originalCall.ResolvedMethod.IsAbstract || originalCall.ResolvedMethod.ContainingType.ResolvedType.IsInterface)
+                {
+                    return new ReplacementAbstractInstanceFunctionBuilder(this);
+                }
+
+                return new ReplacementInstanceFunctionBuilder(this);
             }
             else
             {
@@ -87,8 +92,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 {
                     return new ReplacementStaticActionBuilder(this);
                 }
+                
+                if (originalCall.ResolvedMethod.IsAbstract || originalCall.ResolvedMethod.ContainingType.ResolvedType.IsInterface)
+                {
+                    return new ReplacementAbstractInstanceActionBuilder(this);
+                }
 
-                return new ReplacementActionBuilder(this);
+                return new ReplacementInstanceActionBuilder(this);
             }
         }
     }

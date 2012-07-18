@@ -294,11 +294,13 @@
     <Compile Include="PostCompiler\Replacement\NullReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableFieldAccessorInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceActionBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFieldAssignmentBuilder.cs" />
-    <Compile Include="PostCompiler\Replacement\ReplacementActionBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementInstanceActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementConstructorBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFieldAccessorBuilder.cs" />
-    <Compile Include="PostCompiler\Replacement\ReplacementFunctionBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementInstanceFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFunctionWithOutOrRefParametersBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodBuilderBase.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementMethodConstructionContext.cs" />

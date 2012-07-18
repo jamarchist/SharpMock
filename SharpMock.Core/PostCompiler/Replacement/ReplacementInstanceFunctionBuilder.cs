@@ -7,9 +7,9 @@ using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class ReplacementFunctionBuilder : ReplacementMethodBuilderBase
+    public class ReplacementInstanceFunctionBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementFunctionBuilder(ReplacementMethodConstructionContext context) : base(context)
+        public ReplacementInstanceFunctionBuilder(ReplacementMethodConstructionContext context) : base(context)
         {
         }
 
@@ -59,35 +59,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
                             c.AddLine(x =>
                             {
                                 var parameters = x.Params.ToList();
-
-                                MethodCall originalMethodCall = null;
-                                if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
-                                {
-                                    originalMethodCall = x.Call.StaticMethod(Context.OriginalCall)
-                                                                .ThatReturns(Context.OriginalCall.Type)
-                                                                .WithArguments(parameters.Select(p => p as IExpression).ToArray())
-                                                                .On(Context.OriginalCall.ResolvedMethod.ContainingTypeDefinition);
-                                }
-                                else
-                                {
-                                    var target = Params["target"];
-
-                                    if (Context.OriginalCall.ContainingType.ResolvedType.IsInterface || Context.OriginalCall.ContainingType.ResolvedType.IsAbstract)
-                                    {
-                                        originalMethodCall = x.Call.VirtualMethod(Context.OriginalCall)
+                                var target = Params["target"];
+                                var originalMethodCall = x.Call.Method(Context.OriginalCall)
                                                                 .ThatReturns(Context.OriginalCall.Type)
                                                                 .WithArguments(parameters.Select(p => p as IExpression).ToArray())
                                                                 .On(target);
-                                    }
-                                    else
-                                    {
-                                        originalMethodCall = x.Call.Method(Context.OriginalCall)
-                                                                .ThatReturns(Context.OriginalCall.Type)
-                                                                .WithArguments(parameters.Select(p => p as IExpression).ToArray())
-                                                                .On(target);
-                                    }
-                                }
-
                                 return x.Declare.Variable("anonReturn", originalMethodCall.Type).As(originalMethodCall);
                             });
                             c.AddLine(x => x.Return.Variable(x.Locals["anonReturn"]));
@@ -99,16 +75,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             AddStatement.CallShouldInterceptOnInterceptor();
             AddStatement.SetOriginalCallOnInvocation();
             AddStatement.SetArgumentsOnInvocation();
-
-            if (Context.OriginalCall.ResolvedMethod.IsStatic || Context.OriginalCall.ResolvedMethod.IsConstructor)
-            {
-                AddStatement.SetTargetOnInvocationToNull();
-            }
-            else
-            {
-                AddStatement.SetTargetOnInvocationToTargetParameter();
-            }
-
+            AddStatement.SetTargetOnInvocationToTargetParameter();
             AddStatement.SetOriginalCallInfoOnInvocation();
             AddStatement.CallInterceptOnInterceptor();
 
