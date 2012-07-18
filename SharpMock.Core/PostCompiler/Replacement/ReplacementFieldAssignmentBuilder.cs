@@ -25,18 +25,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             );
 
             AddStatement.DeclareArgumentsList();
-
-            var fieldParameter = new ParameterDefinition();
-            fieldParameter.Type = field.Type;
-            fieldParameter.ContainingSignature = Context.FakeMethod;
-            fieldParameter.Index = 0;
-            fieldParameter.Name = Context.Host.NameTable.GetNameFor("assignedValue");
-
-            var argumentToAdd = new BoundExpression();
-            argumentToAdd.Definition = fieldParameter;
-            argumentToAdd.Type = field.Type;
-
-            AddStatement.AddArgumentToList(argumentToAdd);
+            AddStatement.AddArgumentToList(Params["assignedValue"]);
 
             var actionT = SharpMockTypes.Actions[1];
             var actionActualT = new GenericTypeInstanceReference();

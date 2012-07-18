@@ -204,6 +204,7 @@ namespace SharpMock.Core.PostCompiler
 
             foreach (var field in FieldAssignmentReplacementRegistry.GetFieldsToIntercept())
             {
+                // Step 1 - Add fake namespace and class
                 var nsType = field.ContainingType.GetNamespaceType();
                 var fullNs = nsType.NamespaceBuilder();
                 var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
@@ -213,18 +214,23 @@ namespace SharpMock.Core.PostCompiler
                 AddNamespaces(fullNs);
                 AddClass(fullNs.ToString(), nsType.Name.Value);
 
+                // Step 2 - Add fake method, named appropriately with appropriate return type
                 var methodClass = classes[fullNsWithType];
                 var methodName = String.Format("<assignment>{0}", field.Name.Value);
                 var fakeMethod = methodClass.AddPublicStaticMethod(methodName, host.PlatformType.SystemVoid, host);
 
+                // Step 3 - Add custom attribute
+                // Step 4 - Add parameters
+                // Step 5 - Build body
                 var customAttribute = new CustomAttribute();
                 customAttribute.Constructor = new UnitReflector(host)
                     .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.AddParameter(0, "p0", field.Type, host, false, false);
+                fakeMethod.AddParameter(0, "assignedValue", field.Type, host, false, false);
                 fakeMethod.Body = GetBody(fakeMethod, field, true);
 
+                // Step 6 - Create reference
                 var parameterTypes = new List<ITypeDefinition>();
                 parameterTypes.Add(field.Type.ResolvedType);
 
@@ -281,7 +287,39 @@ namespace SharpMock.Core.PostCompiler
             return body;
         }
 
-        
+        private class FieldAssignmentMethodDefiner
+        {
+            public IMethodDefinition GetMethodDefinition()
+            {
+                throw new NotImplementedException();       
+            }
+        }
+
+        private class FieldAssignmentSourceFactory
+        {
+            private readonly IFieldReference field;
+            private readonly IMetadataHost host;
+            private readonly ILogger log;
+            private readonly BlockStatement block = new BlockStatement();
+
+            public FieldAssignmentSourceFactory(IFieldReference field, IMetadataHost host, ILogger log)
+            {
+                this.field = field;
+                this.host = host;
+                this.log = log;
+            }
+
+            public FieldAssignmentMethodDefiner GetMethodDefiner()
+            {
+                return new FieldAssignmentMethodDefiner();
+            }
+
+            public IReplacementMethodBuilder GetMethodBuilder(IMethodDefinition methodDefinition)
+            {
+                var ctx = new ReplacementMethodConstructionContext(host, field, methodDefinition, block, true, log);
+                return new ReplacementFieldAssignmentBuilder(ctx, field);
+            } 
+        }
 
         private class NamespaceInfo
         {
