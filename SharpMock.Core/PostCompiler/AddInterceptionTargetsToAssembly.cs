@@ -278,8 +278,10 @@ namespace SharpMock.Core.PostCompiler
 
             AddAlternativeInvocation(block, method, originalField, isAssignment);
 
-            return body;            
+            return body;
         }
+
+        
 
         private class NamespaceInfo
         {

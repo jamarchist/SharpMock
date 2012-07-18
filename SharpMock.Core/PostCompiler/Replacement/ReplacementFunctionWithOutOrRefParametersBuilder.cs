@@ -10,17 +10,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementFunctionWithOutOrRefParametersBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementFunctionWithOutOrRefParametersBuilder(ReplacementMethodConstructionContext context) : base(context)
+        private readonly IMethodReference outRefFunction;
+
+        public ReplacementFunctionWithOutOrRefParametersBuilder(ReplacementMethodConstructionContext context, IMethodReference outRefFunction) : base(context)
         {
+            this.outRefFunction = outRefFunction;
         }
 
-        protected override void BuildMethodTemplate()
+        public override void BuildMethod()
         {
             //  ...
             //  var interceptedType = typeof (#SOMETYPE#);
             //  ...
             var interceptedTypeDeclaration =
-                Declare.Variable<Type>("interceptedType").As(Operators.TypeOf(Context.OriginalCall.ContainingType.ResolvedType));
+                Declare.Variable<Type>("interceptedType").As(Operators.TypeOf(outRefFunction.ContainingType.ResolvedType));
 
             //  ...
             //  var interceptedField = interceptedType.GetField(#SOMEFIELDNAME#);
@@ -31,7 +34,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                         .ThatReturns<MethodInfo>()
                         .WithArguments(
                             
-                            Constant.Of(Context.OriginalCall.Name.Value))
+                            Constant.Of(outRefFunction.Name.Value))
                         .On("interceptedType"));
 
             //  ... 
@@ -43,18 +46,18 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var funcT = SharpMockTypes.Functions[0];
             var funcActualT = new GenericTypeInstanceReference();
             funcActualT.GenericType = funcT;
-            funcActualT.GenericArguments.Add(Context.OriginalField.Type);
+            funcActualT.GenericArguments.Add(outRefFunction.Type);
 
             var accessor = new AnonymousDelegate();
             accessor.Type = funcActualT;
-            accessor.ReturnType = Context.OriginalField.Type;
+            accessor.ReturnType = outRefFunction.Type;
             accessor.CallingConvention = CallingConvention.HasThis;
 
             var accessorBody = new BlockStatement();
             var returnActualField = new ReturnStatement();
             var actualField = new BoundExpression();
-            actualField.Type = Context.OriginalField.Type;
-            actualField.Definition = Context.OriginalField;
+            actualField.Type = outRefFunction.Type;
+            actualField.Definition = outRefFunction;
             returnActualField.Expression = actualField;
             accessorBody.Statements.Add(returnActualField);
             accessor.Body = accessorBody;
@@ -111,8 +114,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
             // ...
             // var interceptionResult = (#SOMETYPE#)invocation.Return;
             // ...
-            var interceptionResultDeclaration = Declare.Variable("interceptionResult", Context.OriginalField.Type).As(
-                ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(Context.OriginalField.Type));
+            var interceptionResultDeclaration = Declare.Variable("interceptionResult", outRefFunction.Type).As(
+                ChangeType.Convert(Call.PropertyGetter<object>("Return").On("invocation")).To(outRefFunction.Type));
 
             // ...
             // return interceptionResult;

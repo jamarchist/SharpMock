@@ -7,22 +7,25 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementAbstractInstanceActionBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementAbstractInstanceActionBuilder(ReplacementMethodConstructionContext context) : base(context)
+        private readonly IMethodReference abstractInstanceAction;
+
+        public ReplacementAbstractInstanceActionBuilder(ReplacementMethodConstructionContext context, IMethodReference abstractInstanceAction) : base(context)
         {
+            this.abstractInstanceAction = abstractInstanceAction;
         }
 
-        protected override void BuildMethodTemplate()
+        public override void BuildMethod()
         {
             Context.Log.WriteTrace(String.Empty);
-            Context.Log.WriteTrace("BuildingMethod: {0}.", Context.OriginalCall.Name.Value);
+            Context.Log.WriteTrace("BuildingMethod: {0}.", abstractInstanceAction.Name.Value);
 
             AddStatement.DeclareRegistryInterceptor();
             AddStatement.DeclareInvocation();
-            AddStatement.DeclareInterceptedType(Context.OriginalCall.ContainingType.ResolvedType);
-            AddStatement.DeclareParameterTypesArray(Context.OriginalCall.ParameterCount);
+            AddStatement.DeclareInterceptedType(abstractInstanceAction.ContainingType.ResolvedType);
+            AddStatement.DeclareParameterTypesArray(abstractInstanceAction.ParameterCount);
             AddStatement.DeclareArgumentsList();
 
-            foreach (var parameter in Context.OriginalCall.Parameters)
+            foreach (var parameter in abstractInstanceAction.Parameters)
             {
                 AddStatement.AssignParameterTypeValue(parameter.Index, parameter.Type.ResolvedType);
             }
@@ -36,18 +39,18 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
 
             Context.Log.WriteTrace("  Adding: var interceptedMethod = interceptedType.GetMethod('{0}', parameterTypes);"
-                                   , Context.OriginalCall.Name.Value);
+                                   , abstractInstanceAction.Name.Value);
             Context.Block.Statements.Add(
                 Declare.Variable<MethodInfo>("interceptedMethod").As(
                     Call.VirtualMethod("GetMethod", typeof(string), typeof(Type[]))
                         .ThatReturns<MethodInfo>()
                         .WithArguments(
-                            Constant.Of(Context.OriginalCall.Name.Value),
+                            Constant.Of(abstractInstanceAction.Name.Value),
                             Locals["parameterTypes"])
                         .On("interceptedType"))
                 );
 
-            var parameterTypes = Context.OriginalCall.Parameters.Select(p => p.Type);
+            var parameterTypes = abstractInstanceAction.Parameters.Select(p => p.Type);
             var parameterCounter = 0;
 
             Context.Log.WriteTrace("  Adding: VoidAction<{0}> local_0 = ({1}) => {{",
@@ -59,7 +62,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                                                  var parameters = x.Params.ToList();
                                                  var target = Params["target"];
 
-                                                 var originalMethodCall = Call.VirtualMethod(Context.OriginalCall)
+                                                 var originalMethodCall = Call.VirtualMethod(abstractInstanceAction)
                                                      .ThatReturnsVoid()
                                                      .WithArguments(parameters.Select(p => p as IExpression).ToArray())
                                                      .On(target);

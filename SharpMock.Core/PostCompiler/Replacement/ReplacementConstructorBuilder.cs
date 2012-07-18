@@ -8,22 +8,25 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementConstructorBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementConstructorBuilder(ReplacementMethodConstructionContext context) : base(context)
+        private readonly IMethodReference constructor;
+
+        public ReplacementConstructorBuilder(ReplacementMethodConstructionContext context, IMethodReference constructor) : base(context)
         {
+            this.constructor = constructor;
         }
 
-        protected override void BuildMethodTemplate()
+        public override void BuildMethod()
         {
             Context.Log.WriteTrace(String.Empty);
-            Context.Log.WriteTrace("BuildingMethod: {0}.", Context.OriginalCall.Name.Value);
+            Context.Log.WriteTrace("BuildingMethod: {0}.", constructor.Name.Value);
 
             AddStatement.DeclareRegistryInterceptor();
             AddStatement.DeclareInvocation();
-            AddStatement.DeclareInterceptedType(Context.OriginalCall.ContainingType.ResolvedType);
-            AddStatement.DeclareParameterTypesArray(Context.OriginalCall.ParameterCount);
+            AddStatement.DeclareInterceptedType(constructor.ContainingType.ResolvedType);
+            AddStatement.DeclareParameterTypesArray(constructor.ParameterCount);
             AddStatement.DeclareArgumentsList();
 
-            foreach (var parameter in Context.OriginalCall.Parameters)
+            foreach (var parameter in constructor.Parameters)
             {
                 AddStatement.AssignParameterTypeValue(parameter.Index, parameter.Type.ResolvedType);
             }
@@ -47,7 +50,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             );
 
 
-            var parameterTypes = Context.OriginalCall.Parameters.Select(p => p.Type);
+            var parameterTypes = constructor.Parameters.Select(p => p.Type);
             var parameterTypesWithReturnType = new List<ITypeReference>(parameterTypes);
             parameterTypesWithReturnType.Add(Context.FakeMethod.Type);
 

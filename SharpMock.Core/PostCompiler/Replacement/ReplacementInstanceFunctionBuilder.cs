@@ -2,29 +2,31 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
-using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementInstanceFunctionBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementInstanceFunctionBuilder(ReplacementMethodConstructionContext context) : base(context)
+        private readonly IMethodReference instanceFunction;
+
+        public ReplacementInstanceFunctionBuilder(ReplacementMethodConstructionContext context, IMethodReference instanceFunction) : base(context)
         {
+            this.instanceFunction = instanceFunction;
         }
 
-        protected override void BuildMethodTemplate()
+        public override void BuildMethod()
         {
             Context.Log.WriteTrace(String.Empty);
-            Context.Log.WriteTrace("BuildingMethod: {0}.", Context.OriginalCall.Name.Value);
+            Context.Log.WriteTrace("BuildingMethod: {0}.", instanceFunction.Name.Value);
 
             AddStatement.DeclareRegistryInterceptor();
             AddStatement.DeclareInvocation();
-            AddStatement.DeclareInterceptedType(Context.OriginalCall.ContainingType.ResolvedType);
-            AddStatement.DeclareParameterTypesArray(Context.OriginalCall.ParameterCount);
+            AddStatement.DeclareInterceptedType(instanceFunction.ContainingType.ResolvedType);
+            AddStatement.DeclareParameterTypesArray(instanceFunction.ParameterCount);
             AddStatement.DeclareArgumentsList();
 
-            foreach (var parameter in Context.OriginalCall.Parameters)
+            foreach (var parameter in instanceFunction.Parameters)
             {
                 AddStatement.AssignParameterTypeValue(parameter.Index, parameter.Type.ResolvedType);
             }
@@ -38,20 +40,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
 
             Context.Log.WriteTrace("  Adding: var interceptedMethod = interceptedType.GetMethod('{0}', parameterTypes);"
-                , Context.OriginalCall.Name.Value);
+                , instanceFunction.Name.Value);
             Context.Block.Statements.Add(
                 Declare.Variable<MethodInfo>("interceptedMethod").As(
                 Call.VirtualMethod("GetMethod", typeof(string), typeof(Type[]))
                     .ThatReturns<MethodInfo>()
                     .WithArguments(
-                        Constant.Of(Context.OriginalCall.Name.Value),
+                        Constant.Of(instanceFunction.Name.Value),
                         Locals["parameterTypes"])
                     .On("interceptedType"))
             );
 
-            var parameterTypes = Context.OriginalCall.Parameters.Select(p => p.Type);
+            var parameterTypes = instanceFunction.Parameters.Select(p => p.Type);
             var parameterTypesWithReturnType = new List<ITypeReference>(parameterTypes);
-            parameterTypesWithReturnType.Add(Context.OriginalCall.Type);
+            parameterTypesWithReturnType.Add(instanceFunction.Type);
 
             var anonymousMethod = Anon.Func(parameterTypesWithReturnType.ToArray())
                         .WithBody(c =>
@@ -60,8 +62,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
                             {
                                 var parameters = x.Params.ToList();
                                 var target = Params["target"];
-                                var originalMethodCall = x.Call.Method(Context.OriginalCall)
-                                                                .ThatReturns(Context.OriginalCall.Type)
+                                var originalMethodCall = x.Call.Method(instanceFunction)
+                                                                .ThatReturns(instanceFunction.Type)
                                                                 .WithArguments(parameters.Select(p => p as IExpression).ToArray())
                                                                 .On(target);
                                 return x.Declare.Variable("anonReturn", originalMethodCall.Type).As(originalMethodCall);

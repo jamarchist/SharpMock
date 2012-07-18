@@ -17,11 +17,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
         protected ReplacementMethodConstructionContext Context { get; private set; }
         protected ICommonStatementsAdder AddStatement { get; private set; }
 
-        protected abstract void BuildMethodTemplate();
-
-        public void BuildMethod()
-        {
-            BuildMethodTemplate();
-        }
+        public abstract void BuildMethod();
     }
 }

@@ -1,61 +1,47 @@
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
-using SharpMock.Core.Interception;
-using SharpMock.Core.Interception.Interceptors;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementFieldAssignmentBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementFieldAssignmentBuilder(ReplacementMethodConstructionContext context) : base(context)
+        private readonly IFieldReference field;
+
+        public ReplacementFieldAssignmentBuilder(ReplacementMethodConstructionContext context, IFieldReference field) : base(context)
         {
+            this.field = field;
         }
 
-        protected override void BuildMethodTemplate()
+        public override void BuildMethod()
         {
-            //  ...
-            //  var interceptedType = typeof (#SOMETYPE#);
-            //  ...
-            var interceptedTypeDeclaration =
-                Declare.Variable<Type>("interceptedType").As(Operators.TypeOf(Context.OriginalField.ContainingType.ResolvedType));
+            AddStatement.DeclareInterceptedType(field.ContainingType.ResolvedType);
 
-            //  ...
-            //  var interceptedField = interceptedType.GetField(#SOMEFIELDNAME#);
-            //  ...
-            var interceptedMethodDeclaration =
+            Context.Log.WriteTrace("  Adding: var interceptedField = interceptedType.GetField('{0}');", field.Name.Value);
+            Context.Block.Statements.Add(
                 Declare.Variable<FieldInfo>("interceptedField").As(
-                    Call.VirtualMethod("GetField", typeof(string)).ThatReturns<FieldInfo>().WithArguments(
-                        Constant.Of(Context.OriginalField.Name.Value)).On("interceptedType"));
+                    Call.VirtualMethod("GetField", typeof (string)).ThatReturns<FieldInfo>().WithArguments(
+                        Constant.Of(field.Name.Value)).On("interceptedType"))
+            );
 
-            //  ... 
-            //  var arguments = new List<object>();
-            //  ...
-            var genericListOfObjectsDeclaration =
-                Declare.Variable<List<object>>("arguments").As(Create.New<List<object>>());
+            AddStatement.DeclareArgumentsList();
 
-            // ...
-            // arguments.Add(#p0#);
-            // ...
-            var parameters = new List<IParameterDefinition>(Context.FakeMethod.Parameters);
+            var fieldParameter = new ParameterDefinition();
+            fieldParameter.Type = field.Type;
+            fieldParameter.ContainingSignature = Context.FakeMethod;
+            fieldParameter.Index = 0;
+            fieldParameter.Name = Context.Host.NameTable.GetNameFor("assignedValue");
+
             var argumentToAdd = new BoundExpression();
-            argumentToAdd.Definition = parameters[0];
-            argumentToAdd.Type = Context.OriginalField.Type;
+            argumentToAdd.Definition = fieldParameter;
+            argumentToAdd.Type = field.Type;
 
-            var argumentAsObject = ChangeType.Box(argumentToAdd);
-            var addArgumentCallExpression = Do(
-                 Call.VirtualMethod("Add", typeof(object))
-                     .ThatReturnsVoid()
-                     .WithArguments(argumentAsObject)
-                     .On("arguments")
-                );
+            AddStatement.AddArgumentToList(argumentToAdd);
 
             var actionT = SharpMockTypes.Actions[1];
             var actionActualT = new GenericTypeInstanceReference();
             actionActualT.GenericType = actionT;
-            actionActualT.GenericArguments.Add(Context.OriginalField.Type);
+            actionActualT.GenericArguments.Add(field.Type);
 
             var assignment = new AnonymousDelegate();
             assignment.Type = actionActualT;
@@ -64,7 +50,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             var parameterDefinition = new ParameterDefinition();
             parameterDefinition.Index = 0;
-            parameterDefinition.Type = Context.OriginalField.Type;
+            parameterDefinition.Type = field.Type;
             parameterDefinition.Name = Context.Host.NameTable.GetNameFor("alteredValue");
             parameterDefinition.ContainingSignature = assignment;
 
@@ -73,92 +59,42 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var assignmentBody = new BlockStatement();
             var assignActualField = new ExpressionStatement();
             var actualField = new TargetExpression();
-            actualField.Type = Context.OriginalField.Type;
-            actualField.Definition = Context.OriginalField;
+            actualField.Type = field.Type;
+            actualField.Definition = field;
             var value = new BoundExpression();
-            value.Type = Context.OriginalField.Type;
+            value.Type = field.Type;
             value.Definition = parameterDefinition;
             var assignValueToField = new Assignment();
             assignValueToField.Source = value;
             assignValueToField.Target = actualField;
-            assignValueToField.Type = Context.OriginalField.Type;
+            assignValueToField.Type = field.Type;
             assignActualField.Expression = assignValueToField;
 
-            actualField.Type = Context.OriginalField.Type;
-            actualField.Definition = Context.OriginalField;
+            actualField.Type = field.Type;
+            actualField.Definition = field;
             
             assignmentBody.Statements.Add(assignActualField);
             assignmentBody.Statements.Add(new ReturnStatement());
             assignment.Body = assignmentBody;
 
-            var assignmentDeclaration = Declare.Variable("local_0", actionActualT).As(assignment);
+            Context.Block.Statements.Add(
+                Declare.Variable("local_0", actionActualT).As(assignment)
+            );
 
-            //  ...
-            //  var interceptor = new RegistryInterceptor();
-            //  ...
-            var registryInterceptorDeclaration =
-                Declare.Variable<RegistryInterceptor>("interceptor").As(Create.New<RegistryInterceptor>());
+            AddStatement.DeclareRegistryInterceptor();
+            AddStatement.DeclareInvocation();
+            AddStatement.SetArgumentsOnInvocation();
+            AddStatement.SetOriginalCallOnInvocation();
+            AddStatement.SetTargetOnInvocationToNull();
 
-            //  ...
-            //  var invocation = new Invocation();
-            //  ...
-            var invocationObjectDeclaration = Declare.Variable<Invocation>("invocation").As(Create.New<Invocation>());
+            Context.Block.Statements.Add(
+                Do(Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedField").On("invocation"))
+            );
 
-            //  ...
-            //  interceptor.ShouldIntercept(interceptedMethod);
-            //  ...
-            var shouldInterceptCall = Declare.Variable<bool>("shouldIntercept").As(
-                Call.VirtualMethod("ShouldIntercept", typeof(IInvocation)).ThatReturns<bool>().WithArguments("invocation").On("interceptor"));
-
-            // ...
-            // invocation.OriginalCall = local_0;
-            // ...
-            var setDelegateStatement = Do(
-                Call.PropertySetter<Delegate>("OriginalCall").WithArguments("local_0").On("invocation"));
-
-            // ...
-            // invocation.Target = null;
-            // ...
-            var setTargetStatement = Do(
-                Call.PropertySetter<object>("Target").WithArguments(Constant.Of<object>(null)).On("invocation"));
-
-            // ...
-            // invocation.OriginalCallInfo = interceptedField;
-            // ...
-            var setOriginalCallInfoStatement = Do(
-                Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedField").On("invocation"));
-
-            // ...
-            // invocation.Arguments = arguments;
-            // ...
-            var setArgumentsStatement = Do(
-                Call.PropertySetter<IList<object>>("Arguments").WithArguments("arguments").On("invocation"));
-
-            // ...
-            // interceptor.Intercept(invocation);
-            // ...
-            var interceptMethodCallStatement = Do(
-                Call.Method("Intercept", typeof(IInvocation)).ThatReturnsVoid().WithArguments("invocation").On("interceptor"));
-
-            // ...
-            // return;
-            // ...
-            var returnStatement = new ReturnStatement();
-
-            Context.Block.Statements.Add(registryInterceptorDeclaration);
-            Context.Block.Statements.Add(invocationObjectDeclaration);
-            Context.Block.Statements.Add(interceptedTypeDeclaration);
-            Context.Block.Statements.Add(interceptedMethodDeclaration);
-            Context.Block.Statements.Add(genericListOfObjectsDeclaration);
-            Context.Block.Statements.Add(addArgumentCallExpression);
-            Context.Block.Statements.Add(assignmentDeclaration);
-            Context.Block.Statements.Add(setDelegateStatement);
-            Context.Block.Statements.Add(setArgumentsStatement);
-            Context.Block.Statements.Add(setTargetStatement);
-            Context.Block.Statements.Add(setOriginalCallInfoStatement);
-            Context.Block.Statements.Add(shouldInterceptCall);
-            Context.Block.Statements.Add(interceptMethodCallStatement);
-            Context.Block.Statements.Add(returnStatement);
+            AddStatement.CallShouldInterceptOnInterceptor();
+            AddStatement.CallInterceptOnInterceptor();
+            
+            Context.Block.Statements.Add(Return.Void());
         }
     }
 }

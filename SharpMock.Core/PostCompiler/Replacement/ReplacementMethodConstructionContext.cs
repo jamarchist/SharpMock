@@ -15,10 +15,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly ILogger log;
 
         public IMetadataHost Host { get { return host; } }
-        public IMethodReference OriginalCall { get { return originalCall; } }
         public IMethodDefinition FakeMethod { get { return fakeMethod; } }
         public BlockStatement Block { get { return block; } }
-        public IFieldReference OriginalField { get { return originalField; } }
         public ILogger Log { get { return log; } }
 
         public ReplacementMethodConstructionContext(IMetadataHost host, IMethodReference originalCall, IMethodDefinition fakeMethod, BlockStatement block, ILogger log)
@@ -44,17 +42,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             if (originalCall == null && !isAssignment)
             {
-                return new ReplacementFieldAccessorBuilder(this);
+                return new ReplacementFieldAccessorBuilder(this, originalField);
             }
 
             if (originalCall == null && isAssignment)
             {
-                return new ReplacementFieldAssignmentBuilder(this);
+                return new ReplacementFieldAssignmentBuilder(this, originalField);
             }
 
             if (originalCall.ResolvedMethod.IsConstructor)
             {
-                return new ReplacementConstructorBuilder(this);
+                return new ReplacementConstructorBuilder(this, originalCall);
             }
 
             var hasOutOrRefParameters = false;
@@ -76,29 +74,29 @@ namespace SharpMock.Core.PostCompiler.Replacement
             {
                 if (originalCall.IsStatic)
                 {
-                    return new ReplacementStaticFunctionBuilder(this);    
+                    return new ReplacementStaticFunctionBuilder(this, originalCall);    
                 }
 
                 if (originalCall.ResolvedMethod.IsAbstract || originalCall.ResolvedMethod.ContainingType.ResolvedType.IsInterface)
                 {
-                    return new ReplacementAbstractInstanceFunctionBuilder(this);
+                    return new ReplacementAbstractInstanceFunctionBuilder(this, originalCall);
                 }
 
-                return new ReplacementInstanceFunctionBuilder(this);
+                return new ReplacementInstanceFunctionBuilder(this, originalCall);
             }
             else
             {
                 if (originalCall.IsStatic)
                 {
-                    return new ReplacementStaticActionBuilder(this);
+                    return new ReplacementStaticActionBuilder(this, originalCall);
                 }
                 
                 if (originalCall.ResolvedMethod.IsAbstract || originalCall.ResolvedMethod.ContainingType.ResolvedType.IsInterface)
                 {
-                    return new ReplacementAbstractInstanceActionBuilder(this);
+                    return new ReplacementAbstractInstanceActionBuilder(this, originalCall);
                 }
 
-                return new ReplacementInstanceActionBuilder(this);
+                return new ReplacementInstanceActionBuilder(this, originalCall);
             }
         }
     }

@@ -8,22 +8,25 @@ namespace SharpMock.Core.PostCompiler.Replacement
 {
     public class ReplacementStaticFunctionBuilder : ReplacementMethodBuilderBase
     {
-        public ReplacementStaticFunctionBuilder(ReplacementMethodConstructionContext context) : base(context)
+        private readonly IMethodReference staticFunction;
+
+        public ReplacementStaticFunctionBuilder(ReplacementMethodConstructionContext context, IMethodReference staticFunction) : base(context)
         {
+            this.staticFunction = staticFunction;
         }
 
-        protected override void BuildMethodTemplate()
+        public override void BuildMethod()
         {
             Context.Log.WriteTrace(String.Empty);
-            Context.Log.WriteTrace("BuildingMethod: {0}.", Context.OriginalCall.Name.Value);
+            Context.Log.WriteTrace("BuildingMethod: {0}.", staticFunction.Name.Value);
 
             AddStatement.DeclareRegistryInterceptor();
             AddStatement.DeclareInvocation();
-            AddStatement.DeclareInterceptedType(Context.OriginalCall.ContainingType.ResolvedType);
-            AddStatement.DeclareParameterTypesArray(Context.OriginalCall.ParameterCount);
+            AddStatement.DeclareInterceptedType(staticFunction.ContainingType.ResolvedType);
+            AddStatement.DeclareParameterTypesArray(staticFunction.ParameterCount);
             AddStatement.DeclareArgumentsList();
 
-            foreach (var parameter in Context.OriginalCall.Parameters)
+            foreach (var parameter in staticFunction.Parameters)
             {
                 AddStatement.AssignParameterTypeValue(parameter.Index, parameter.Type.ResolvedType);
             }
@@ -37,20 +40,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
             }
 
             Context.Log.WriteTrace("  Adding: var interceptedMethod = interceptedType.GetMethod('{0}', parameterTypes);"
-                                   , Context.OriginalCall.Name.Value);
+                                   , staticFunction.Name.Value);
             Context.Block.Statements.Add(
                 Declare.Variable<MethodInfo>("interceptedMethod").As(
                     Call.VirtualMethod("GetMethod", typeof(string), typeof(Type[]))
                         .ThatReturns<MethodInfo>()
                         .WithArguments(
-                            Constant.Of(Context.OriginalCall.Name.Value),
+                            Constant.Of(staticFunction.Name.Value),
                             Locals["parameterTypes"])
                         .On("interceptedType"))
                 );
 
-            var parameterTypes = Context.OriginalCall.Parameters.Select(p => p.Type);
+            var parameterTypes = staticFunction.Parameters.Select(p => p.Type);
             var parameterTypesWithReturnType = new List<ITypeReference>(parameterTypes);
-            parameterTypesWithReturnType.Add(Context.OriginalCall.Type);
+            parameterTypesWithReturnType.Add(staticFunction.Type);
 
             var anonymousMethod = Anon.Func(parameterTypesWithReturnType.ToArray())
                 .WithBody(c =>
@@ -59,10 +62,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     {
                         var parameters = x.Params.ToList();
 
-                        var originalMethodCall = x.Call.StaticMethod(Context.OriginalCall)
-                                .ThatReturns(Context.OriginalCall.Type)
+                        var originalMethodCall = x.Call.StaticMethod(staticFunction)
+                                .ThatReturns(staticFunction.Type)
                                 .WithArguments(parameters.Select(p => p as IExpression).ToArray())
-                                .On(Context.OriginalCall.ResolvedMethod.ContainingTypeDefinition);
+                                .On(staticFunction.ResolvedMethod.ContainingTypeDefinition);
 
                         return x.Declare.Variable("anonReturn", originalMethodCall.Type).As(originalMethodCall);
                     });
