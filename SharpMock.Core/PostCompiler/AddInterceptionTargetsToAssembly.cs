@@ -10,6 +10,31 @@ using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler
 {
+    internal class ReplacementParameters
+    {
+        public ReplacementParameterInfo Target { get; set; }
+        public List<ReplacementParameterInfo> OriginalParameters { get; set; }
+        public List<ReplacementParameterInfo> AllParameters
+        {
+            get
+            {
+                var all = new List<ReplacementParameterInfo>();
+                if (Target != null) all.Add(Target);
+                all.AddRange(OriginalParameters);
+
+                return all;
+            }
+        }
+    }
+
+    internal class ReplacementParameterInfo
+    {
+        public bool IsOut { get; set; }
+        public bool IsRef { get; set; }
+        public string Name { get; set; }
+        public ITypeReference Type { get; set; }
+    }
+
     public class AddInterceptionTargetsToAssembly : IPostCompilerPipelineStep
     {
         private FakeNamespace fakeNamespace;
@@ -84,35 +109,6 @@ namespace SharpMock.Core.PostCompiler
 
             foreach (var field in FieldReferenceReplacementRegistry.GetFieldsToIntercept())
             {
-                ////var nsType = field.ContainingType.GetNamespaceType();
-                ////var fullNs = nsType.NamespaceBuilder();
-                ////var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
-
-                ////log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
-
-                ////fakeNamespace.AddNamespaces(fullNs);
-                ////fakeNamespace.AddClass(fullNs.ToString(), nsType.Name.Value);
-
-                ////var methodClass = fakeNamespace.Classes[fullNsWithType];
-                ////var methodName = String.Format("<accessor>{0}", field.Name.Value);
-                ////var fakeMethod = methodClass.AddPublicStaticMethod(methodName, field.Type, host);
-
-                ////var customAttribute = new CustomAttribute();
-                ////customAttribute.Constructor = new UnitReflector(host)
-                ////    .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
-                ////fakeMethod.Attributes = new List<ICustomAttribute>();
-                ////fakeMethod.Attributes.Add(customAttribute);
-                ////fakeMethod.Body = GetBody(fakeMethod, field, false);
-
-                ////var parameterTypes = new List<ITypeDefinition>();
-                //////foreach (var param in fakeMethod.Parameters)
-                //////{
-                //////    parameterTypes.Add(param.Type.ResolvedType);
-                //////}
-
-                ////var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
-                ////    fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
-
                 var fieldReplacementBuilder = new FieldAccessorSourceWriter(fakeNamespace, host, log, field);
                 var fakeCallReference = fieldReplacementBuilder.GetReference();
 
@@ -137,15 +133,6 @@ namespace SharpMock.Core.PostCompiler
             methodBuilder.BuildMethod();
         }
 
-        private void AddAlternativeInvocation(BlockStatement block,
-            IMethodDefinition fakeMethod, IFieldReference originalField, bool isAssignment)
-        {
-            var context = new ReplacementMethodConstructionContext(host, originalField, fakeMethod, block, isAssignment, log);
-            var methodBuilder = context.GetMethodBuilder();
-
-            methodBuilder.BuildMethod();
-        }
-
         private SourceMethodBody GetBody(IMethodDefinition method, IMethodReference originalCall)
         {
             var body = new SourceMethodBody(host, null, null);
@@ -156,20 +143,6 @@ namespace SharpMock.Core.PostCompiler
             body.Block = block;
 
             AddAlternativeInvocation(block, method, originalCall);
-
-            return body;
-        }
-
-        private SourceMethodBody GetBody(IMethodDefinition method, IFieldReference originalField, bool isAssignment)
-        {
-            var body = new SourceMethodBody(host, null, null);
-            body.MethodDefinition = method;
-            body.LocalsAreZeroed = true;
-
-            var block = new BlockStatement();
-            body.Block = block;
-
-            AddAlternativeInvocation(block, method, originalField, isAssignment);
 
             return body;
         }

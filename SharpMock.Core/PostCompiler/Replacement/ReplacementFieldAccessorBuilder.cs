@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
-using SharpMock.Core.Interception;
-using SharpMock.Core.Interception.Interceptors;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
