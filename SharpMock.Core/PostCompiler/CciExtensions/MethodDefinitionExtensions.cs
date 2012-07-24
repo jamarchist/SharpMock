@@ -5,7 +5,7 @@ namespace SharpMock.Core.PostCompiler.CciExtensions
 {
     public static class MethodDefinitionExtensions
     {
-        public static IParameterTypeInformation AddParameter(this MethodDefinition method, 
+        public static IParameterDefinition AddParameter(this MethodDefinition method, 
             ushort parameterIndex, string parameterName, ITypeReference parameterType, IMetadataHost host, bool isOut, bool isRef)
         {
             var fakeMethodParameter = new ParameterDefinition();

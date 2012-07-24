@@ -2,6 +2,8 @@ namespace ScenarioDependencies
 {
     public class SomeConcreteClass
     {
+        public int SomeField;
+
         public string SomeProperty
         {
             get

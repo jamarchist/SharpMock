@@ -130,6 +130,12 @@ namespace Scenarios
             return int.TryParse("can't parse.", out number);
         }
 
+        public void SetsInstanceField(int value)
+        {
+            var sealedClass = new SealedClass();
+            sealedClass.SomeField = value;
+        }
+
         #region MoveToSampleExaminerProject
         //public object GetsCalled(string x, int y, object z)
         //{

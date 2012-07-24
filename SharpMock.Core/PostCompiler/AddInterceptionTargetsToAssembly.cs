@@ -12,9 +12,11 @@ namespace SharpMock.Core.PostCompiler
 {
     internal class ReplacementParameters
     {
+        private readonly List<ReplacementParameterInfo> originals = new List<ReplacementParameterInfo>();
+
         public ReplacementParameterInfo Target { get; set; }
-        public List<ReplacementParameterInfo> OriginalParameters { get; set; }
-        public List<ReplacementParameterInfo> AllParameters
+        public IEnumerable<ReplacementParameterInfo> OriginalParameters { get { return originals; } }
+        public IEnumerable<ReplacementParameterInfo> AllParameters
         {
             get
             {
@@ -25,6 +27,16 @@ namespace SharpMock.Core.PostCompiler
                 return all;
             }
         }
+
+        public void AddOriginalParameter(IParameterDefinition parameter)
+        {
+            var parameterInfo = new ReplacementParameterInfo();
+            parameterInfo.Name = parameter.Name.Value;
+            parameterInfo.IsOut = parameter.IsOut;
+            parameterInfo.IsRef = parameter.IsByReference;
+            parameterInfo.Type = parameter.Type;
+            parameterInfo.Definition = parameter;
+        }
     }
 
     internal class ReplacementParameterInfo
@@ -33,6 +45,7 @@ namespace SharpMock.Core.PostCompiler
         public bool IsRef { get; set; }
         public string Name { get; set; }
         public ITypeReference Type { get; set; }
+        public IParameterDefinition Definition { get; set; }
     }
 
     public class AddInterceptionTargetsToAssembly : IPostCompilerPipelineStep

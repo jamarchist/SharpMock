@@ -349,6 +349,7 @@
     <Compile Include="StaticReflection\VoidMethod.cs" />
     <Compile Include="Syntax\Ignored.cs" />
     <Compile Include="Syntax\Replace.cs" />
+    <Compile Include="Syntax\ReplacementOptionExtensions.cs" />
     <Compile Include="Syntax\ReplacementOptions.cs" />
     <Compile Include="Syntax\IReplace.cs" />
     <Compile Include="Syntax\IReplacementOptions.cs" />

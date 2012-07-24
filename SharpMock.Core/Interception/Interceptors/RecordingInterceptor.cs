@@ -4,11 +4,11 @@ namespace SharpMock.Core.Interception.Interceptors
 {
     public class RecordingInterceptor : IInterceptor
     {
-        private Expectations expectiations;
+        private Expectations expectations;
 
         public bool ShouldIntercept(IInvocation invocation)
         {
-            expectiations = new Expectations(invocation.OriginalCallInfo, invocation.Arguments);
+            expectations = new Expectations(invocation.OriginalCallInfo, invocation.Arguments);
             return true;
         }
 
@@ -25,7 +25,7 @@ namespace SharpMock.Core.Interception.Interceptors
 
         public Expectations GetExpectations()
         {
-            return expectiations;
+            return expectations;
         }
     }
 }
