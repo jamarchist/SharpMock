@@ -54,7 +54,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             if (originalCall == null && isAssignment)
             {
-                return new ReplacementFieldAssignmentBuilder(this, originalField);
+                return new ReplacementStaticFieldAssignmentBuilder(this, originalField);
             }
 
             if (originalCall.ResolvedMethod.IsConstructor)

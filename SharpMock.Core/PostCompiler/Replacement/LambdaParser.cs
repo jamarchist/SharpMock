@@ -14,6 +14,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var firstStatement = FirstStatementAs<ReturnStatement>();
                 var constructor = firstStatement.Expression as CreateObjectInstance;
 
+                log.WriteTrace("lambda identified as constructor.");
                 return new ConstructorReplacementFactory(constructor, firstStatement);                
             }
 
@@ -23,6 +24,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var fieldBinding = returnStatement.Expression as BoundExpression;
                 var field = fieldBinding.Definition as FieldReference;
 
+                log.WriteTrace("Lambda identified as static field accessor.");
                 return new FieldAccessorReplacementFactory(field, returnStatement);
             }
 
@@ -32,14 +34,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var assignment = assignmentStatement.Expression as Assignment;
                 var field = assignment.Target.Definition as FieldReference;
 
+                log.WriteTrace("Lambda identified as static field assignment.");
                 return new FieldAssignmentReplacementFactory(field, assignmentStatement, host);
             }
 
             if (IsStaticMethodCallWithReturnValue() || IsVoidMethodCall() || IsMethodCall())
             {
+                log.WriteTrace("Lamda identified as method call.");
                 return new MethodCallReplacementFactory(FirstStatementAs<IStatement>());                
             }
 
+            log.WriteTrace("Could not find a replacement factory for specified lambda.");
             return new NullReplacementFactory();
         }
 
@@ -127,12 +132,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (field == null) return false;
 
             return true;
-        }
-
-        private bool IsImproperlyConstructedPropertySetter()
-        {
-            var block = (lambda.Body as BlockStatement);
-            return block.Statements.Count > 2;
         }
     }
 }

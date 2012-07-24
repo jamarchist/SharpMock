@@ -67,7 +67,12 @@ namespace SharpMock.Core.PostCompiler
 
         private void AddParameters(MethodDefinition fakeMethod)
         {
-            fakeMethod.AddParameter(0, "assignedValue", field.Type, host, false, false);
+            if (!field.IsStatic)
+            {
+                fakeMethod.AddParameter(0, "target", field.ContainingType, host, false, false);
+            }
+
+            fakeMethod.AddParameter((ushort)(fakeMethod.Parameters.Count + 1), "assignedValue", field.Type, host, false, false);
         }
 
         private void BuildBody(MethodDefinition fakeMethod)
@@ -80,8 +85,18 @@ namespace SharpMock.Core.PostCompiler
             body.Block = block;
 
             var methodBuilderContext = new ReplacementMethodConstructionContext(host, field, fakeMethod, block, true, log);
-            var methodBuilder = new ReplacementFieldAssignmentBuilder(methodBuilderContext, field);
-            methodBuilder.BuildMethod();
+
+            IReplacementMethodBuilder methodBuilder = null;
+            if (field.IsStatic)
+            {
+                methodBuilder = new ReplacementStaticFieldAssignmentBuilder(methodBuilderContext, field);     
+            }
+            else
+            {
+                methodBuilder = new ReplacementInstanceFieldAssignmentBuilder(methodBuilderContext, field);
+            }
+
+            methodBuilder.BuildMethod();  
 
             fakeMethod.Body = body;
         }
@@ -89,9 +104,15 @@ namespace SharpMock.Core.PostCompiler
         private IMethodReference GetFakeMethodReference(IMethodDefinition fakeMethod)
         {
             var parameterTypes = new List<ITypeReference>();
+            if (!field.IsStatic)
+            {
+                parameterTypes.Add(field.ContainingType);
+            }
+
             parameterTypes.Add(field.Type.ResolvedType);
+
             var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
-                                                                      fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
+                fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
 
             return fakeCallReference;
         }

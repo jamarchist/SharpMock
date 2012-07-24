@@ -33,27 +33,27 @@ namespace IntegrationTests.IntegrationTests
             Assert.AreNotEqual(5678, StaticClass.StaticField);
         }
 
-        //[Test]
-        //public void InstanceFieldAssignmentIsFaked()
-        //{
-        //    Replace.CallsTo((SealedClass c) => c.SomeField = 0).With(() => { });
+        [Test]
+        public void InstanceFieldAssignmentIsFaked()
+        {
+            Replace.CallsTo((SealedClass c) => { c.SomeField = 0; }).With(() => { });
 
-        //    var code = new CodeUnderTest();
-        //    code.SetsInstanceField(99);
+            var code = new CodeUnderTest();
+            code.SetsInstanceField(99);
 
-        //    Assert.AreEqual(99, 0);
-        //}
+            Assert.AreEqual(99, 0);
+        }
 
-        //[Test]
-        //public void InstanceFieldAccessIsFaked()
-        //{
-        //    Replace.CallsTo((SealedClass c) => c.SomeField).With(() => 99);
+        [Test]
+        public void InstanceFieldAccessIsFaked()
+        {
+            Replace.CallsTo((SealedClass c) => c.SomeField).With(() => 99);
 
-        //    var code = new CodeUnderTest();
-        //    var result = code.CallsInstanceField();
+            var code = new CodeUnderTest();
+            var result = code.CallsInstanceField();
 
-        //    Assert.AreEqual(99, result);
-        //}
+            Assert.AreEqual(99, result);
+        }
 
         [Test]
         public void OriginalStaticFieldAccessSucceeds()

@@ -35,34 +35,50 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public override void TraverseChildren(IMethodCall methodCall)
         {
-            var mutableMethodCall = methodCall as MethodCall;
-            var method = mutableMethodCall.MethodToCall.AsReplaceable();
-
-            log.WriteTrace("Finding replacement for {0}.{1}", method.DeclaringType.Name, method.Name);
-            log.WriteTrace("  in '{0}' at '{1}'", method.DeclaringType.Assembly.Name, method.DeclaringType.Assembly.AssemblyPath);
-            
-            if (MethodReferenceReplacementRegistry.HasReplacementFor(method))
+            if (!IsSharpMockGenerated(methodCall))
             {
-                var replacementCall =
-                    MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);
-                mutableMethodCall.MethodToCall = replacementCall;
-                
-                if (!methodCall.IsStaticCall)
+                var mutableMethodCall = methodCall as MethodCall;
+                var method = mutableMethodCall.MethodToCall.AsReplaceable();
+
+                log.WriteTrace("Finding replacement for {0}.{1}", method.DeclaringType.Name, method.Name);
+                log.WriteTrace("  in '{0}' at '{1}'", method.DeclaringType.Assembly.Name, method.DeclaringType.Assembly.AssemblyPath);
+            
+                if (MethodReferenceReplacementRegistry.HasReplacementFor(method))
                 {
-                    mutableMethodCall.Arguments.Insert(0, mutableMethodCall.ThisArgument);
-                    mutableMethodCall.IsStaticCall = true;
-                    mutableMethodCall.IsVirtualCall = false;
-                    mutableMethodCall.ThisArgument = CodeDummy.Expression;
+                    var replacementCall =
+                        MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);
+                    mutableMethodCall.MethodToCall = replacementCall;
+                
+                    if (!methodCall.IsStaticCall)
+                    {
+                        mutableMethodCall.Arguments.Insert(0, mutableMethodCall.ThisArgument);
+                        mutableMethodCall.IsStaticCall = true;
+                        mutableMethodCall.IsVirtualCall = false;
+                        mutableMethodCall.ThisArgument = CodeDummy.Expression;
+                    }
+
+                    log.WriteTrace("  --REPLACEMENT FOUND--");
+                }
+                else
+                {
+                    log.WriteTrace("  --NOT FOUND--");                
                 }
 
-                log.WriteTrace("  --REPLACEMENT FOUND--");
+                base.TraverseChildren(methodCall);                
             }
-            else
+        }
+
+        private bool IsSharpMockGenerated(IMethodCall methodCall)
+        {
+            foreach (var customAttribute in methodCall.MethodToCall.ResolvedMethod.Attributes)
             {
-                log.WriteTrace("  --NOT FOUND--");                
+                if (customAttribute.Constructor.ResolvedMethod.Equals(reflector.From<SharpMockGeneratedAttribute>().GetConstructor(System.Type.EmptyTypes)))
+                {
+                    return true;
+                }
             }
 
-            base.TraverseChildren(methodCall);
+            return false;
         }
     }  
 }

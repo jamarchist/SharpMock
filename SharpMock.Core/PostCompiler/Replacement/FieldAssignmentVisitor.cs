@@ -43,6 +43,11 @@ namespace SharpMock.Core.PostCompiler.Replacement
                             // If the target is what we're visiting ...
                             if (target.ResolvedField.Equals(fieldReference.ResolvedField))
                             {
+                                if (!fieldReference.IsStatic)
+                                {
+                                    replacementExpression.Arguments.Add(assignment.Target.Instance);   
+                                }
+
                                 replacementExpression.Arguments.Add(assignment.Source);
                                 expressionStatement.Expression = replacementExpression;
                             }

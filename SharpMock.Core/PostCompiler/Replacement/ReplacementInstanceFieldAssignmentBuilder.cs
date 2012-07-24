@@ -4,11 +4,11 @@ using Microsoft.Cci.MutableCodeModel;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class ReplacementFieldAssignmentBuilder : ReplacementMethodBuilderBase
+    public class ReplacementInstanceFieldAssignmentBuilder : ReplacementMethodBuilderBase
     {
         private readonly IFieldReference field;
 
-        public ReplacementFieldAssignmentBuilder(ReplacementMethodConstructionContext context, IFieldReference field) : base(context)
+        public ReplacementInstanceFieldAssignmentBuilder(ReplacementMethodConstructionContext context, IFieldReference field) : base(context)
         {
             this.field = field;
         }
@@ -20,9 +20,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
             Context.Log.WriteTrace("  Adding: var interceptedField = interceptedType.GetField('{0}');", field.Name.Value);
             Context.Block.Statements.Add(
                 Declare.Variable<FieldInfo>("interceptedField").As(
-                    Call.VirtualMethod("GetField", typeof (string)).ThatReturns<FieldInfo>().WithArguments(
+                    Call.VirtualMethod("GetField", typeof(string)).ThatReturns<FieldInfo>().WithArguments(
                         Constant.Of(field.Name.Value)).On("interceptedType"))
-            );
+                );
 
             AddStatement.DeclareArgumentsList();
             AddStatement.AddArgumentToList(Params["assignedValue"]);
@@ -50,6 +50,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var actualField = new TargetExpression();
             actualField.Type = field.Type;
             actualField.Definition = field;
+            actualField.Instance = Params["target"];
             var value = new BoundExpression();
             value.Type = field.Type;
             value.Definition = parameterDefinition;
@@ -61,28 +62,28 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
             actualField.Type = field.Type;
             actualField.Definition = field;
-            
+
             assignmentBody.Statements.Add(assignActualField);
             assignmentBody.Statements.Add(new ReturnStatement());
             assignment.Body = assignmentBody;
 
             Context.Block.Statements.Add(
                 Declare.Variable("local_0", actionActualT).As(assignment)
-            );
+                );
 
             AddStatement.DeclareRegistryInterceptor();
             AddStatement.DeclareInvocation();
             AddStatement.SetArgumentsOnInvocation();
             AddStatement.SetOriginalCallOnInvocation();
-            AddStatement.SetTargetOnInvocationToNull();
+            AddStatement.SetTargetOnInvocationToTargetParameter();
 
             Context.Block.Statements.Add(
                 Do(Call.PropertySetter<MemberInfo>("OriginalCallInfo").WithArguments("interceptedField").On("invocation"))
-            );
+                );
 
             AddStatement.CallShouldInterceptOnInterceptor();
             AddStatement.CallInterceptOnInterceptor();
-            
+
             Context.Block.Statements.Add(Return.Void());
         }
     }

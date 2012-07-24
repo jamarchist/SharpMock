@@ -299,7 +299,8 @@
     <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceFunctionBuilder.cs" />
-    <Compile Include="PostCompiler\Replacement\ReplacementFieldAssignmentBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementInstanceFieldAssignmentBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementStaticFieldAssignmentBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementInstanceActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementConstructorBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementFieldAccessorBuilder.cs" />
