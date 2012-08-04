@@ -1,6 +1,9 @@
+using System;
 using System.Reflection;
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
+using SharpMock.Core.Interception.Registration;
+using SharpMock.Core.PostCompiler.Construction.Reflection;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -8,9 +11,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IFieldReference field;
 
-        public ReplacementFieldAccessorBuilder(ReplacementMethodConstructionContext context, IFieldReference field) : base(context)
+        public ReplacementFieldAccessorBuilder(ReplacementMethodConstructionContext context, ReplaceableFieldInfo fieldInfo) : base(context)
         {
-            this.field = field;
+            var reflector = new UnitReflector(context.Host);
+            field = reflector.From(fieldInfo.DeclaringType.FullName).GetField(fieldInfo.Name);
         }
 
         public override void BuildMethod()

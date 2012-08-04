@@ -10,20 +10,26 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IStatement parent;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        public FieldReferenceVisitor(IStatement parent, ILogger log)
+        public FieldReferenceVisitor(IStatement parent, ILogger log, ReplacementRegistry registry)
         {
             this.parent = parent;
             this.log = log;
+            this.registry = registry;
         }
 
         public override void TraverseChildren(IFieldReference fieldReference)
         {
             log.WriteTrace("Visiting field: {0}.", fieldReference.Name.Value);
 
-            if (FieldReferenceReplacementRegistry.HasReplacementFor(fieldReference.AsReplaceable()))
+            var replaceableField = fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor);
+
+            if (registry.IsRegistered(replaceableField))
+            //if (FieldReferenceReplacementRegistry.HasReplacementFor(fieldReference.AsReplaceable()))
             {
-                var replacementMethodToCall = FieldReferenceReplacementRegistry.GetReplacementFor(fieldReference);
+                var replacementMethodToCall = registry.GetReplacement(replaceableField);
+                //var replacementMethodToCall = FieldReferenceReplacementRegistry.GetReplacementFor(fieldReference);
 
                 var replacementExpression = new MethodCall();
                 replacementExpression.Type = replacementMethodToCall.Type;

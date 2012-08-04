@@ -6,7 +6,7 @@ namespace SharpMock.Core.PostCompiler
     {
         public void Execute(PostCompilerContext context)
         {
-            var replacer = new CodeUnderTestVisitor(context.Host, context.Log);
+            var replacer = new CodeUnderTestVisitor(context.Host, context.Log, context.Registry);
             replacer.TraverseChildren(context.AssemblyToAlter);
         }
     }

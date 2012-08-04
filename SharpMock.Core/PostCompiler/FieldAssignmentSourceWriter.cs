@@ -13,14 +13,14 @@ namespace SharpMock.Core.PostCompiler
     internal class FieldAssignmentSourceWriter
     {
         private readonly FakeNamespace fakeNamespace;
-        private readonly IFieldReference field;
         private readonly IMetadataHost host;
         private readonly ILogger log;
+        private readonly ReplaceableFieldInfo fieldInfo;
 
-        public FieldAssignmentSourceWriter(FakeNamespace fakeNamespace, IMetadataHost host, ILogger log, IFieldReference field)
+        public FieldAssignmentSourceWriter(FakeNamespace fakeNamespace, IMetadataHost host, ILogger log, IReplaceableReference fieldInfo)
         {
+            this.fieldInfo = fieldInfo as ReplaceableFieldInfo;
             this.fakeNamespace = fakeNamespace;
-            this.field = field;
             this.host = host;
             this.log = log;
         }
@@ -37,22 +37,21 @@ namespace SharpMock.Core.PostCompiler
 
         private string AddFakeNamespacesAndClass()
         {
-            var nsType = field.ContainingType.GetNamespaceType();
-            var fullNs = nsType.NamespaceBuilder();
-            var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+            var fullNamespace = fieldInfo.DeclaringType.Namespace;
+            var fullNamespaceWithType = String.Format("{0}.{1}", fullNamespace, fieldInfo.DeclaringType.Name);
 
-            log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
+            log.WriteTrace("Adding interception target for '{0}'.", fullNamespaceWithType);
 
-            fakeNamespace.AddNamespaces(fullNs);
-            fakeNamespace.AddClass(fullNs.ToString(), nsType.Name.Value);
+            fakeNamespace.AddNamespaces(fullNamespace);
+            fakeNamespace.AddClass(fullNamespace, fieldInfo.DeclaringType.Name);
 
-            return fullNsWithType;
+            return fullNamespaceWithType;
         }
 
         private MethodDefinition AddFakeMethod(string fullyQualifiedTypeName)
         {
             var methodClass = fakeNamespace.Classes[fullyQualifiedTypeName];
-            var methodName = String.Format("<assignment>{0}", field.Name.Value);
+            var methodName = String.Format("<assignment>{0}", fieldInfo.Name);
             return methodClass.AddPublicStaticMethod(methodName, host.PlatformType.SystemVoid, host);
         }
 
@@ -67,12 +66,16 @@ namespace SharpMock.Core.PostCompiler
 
         private void AddParameters(MethodDefinition fakeMethod)
         {
+            var reflector = new UnitReflector(host);
+            var containingType = reflector.Get(fieldInfo.DeclaringType.FullName);
+            var field = reflector.From(containingType).GetField(fieldInfo.Name);
+            
             if (!field.IsStatic)
             {
-                fakeMethod.AddParameter(0, "target", field.ContainingType, host, false, false);
+                fakeMethod.AddParameter(0, "target", containingType, host, false, false);
             }
 
-            fakeMethod.AddParameter((ushort)(fakeMethod.Parameters.Count + 1), "assignedValue", field.Type, host, false, false);
+            fakeMethod.AddParameter((ushort)(fakeMethod.Parameters.Count), "assignedValue", field.Type, host, false, false);
         }
 
         private void BuildBody(MethodDefinition fakeMethod)
@@ -84,16 +87,21 @@ namespace SharpMock.Core.PostCompiler
             var block = new BlockStatement();
             body.Block = block;
 
-            var methodBuilderContext = new ReplacementMethodConstructionContext(host, field, fakeMethod, block, true, log);
+            var methodBuilderContext = new ReplacementMethodConstructionContext(host, null, fakeMethod, block, true, log, fieldInfo);
 
             IReplacementMethodBuilder methodBuilder = null;
+
+            var reflector = new UnitReflector(host);
+            var containingType = reflector.Get(fieldInfo.DeclaringType.FullName);
+            var field = reflector.From(containingType).GetField(fieldInfo.Name);
+
             if (field.IsStatic)
             {
-                methodBuilder = new ReplacementStaticFieldAssignmentBuilder(methodBuilderContext, field);     
+                methodBuilder = new ReplacementStaticFieldAssignmentBuilder(methodBuilderContext, fieldInfo);     
             }
             else
             {
-                methodBuilder = new ReplacementInstanceFieldAssignmentBuilder(methodBuilderContext, field);
+                methodBuilder = new ReplacementInstanceFieldAssignmentBuilder(methodBuilderContext, fieldInfo);
             }
 
             methodBuilder.BuildMethod();  
@@ -103,6 +111,10 @@ namespace SharpMock.Core.PostCompiler
 
         private IMethodReference GetFakeMethodReference(IMethodDefinition fakeMethod)
         {
+            var reflector = new UnitReflector(host);
+            var containingType = reflector.Get(fieldInfo.DeclaringType.FullName);
+            var field = reflector.From(containingType).GetField(fieldInfo.Name);
+
             var parameterTypes = new List<ITypeReference>();
             if (!field.IsStatic)
             {

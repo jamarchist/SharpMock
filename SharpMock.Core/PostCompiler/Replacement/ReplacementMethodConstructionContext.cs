@@ -2,6 +2,7 @@
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
+using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
@@ -15,6 +16,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly ILogger log;
         private readonly IEnumerable<IParameterDefinition> fakeMethodParameters;
         private readonly ITypeReference returnType;
+        private readonly IReplaceableReference originalReference;
 
         public IMetadataHost Host { get { return host; } }
         public BlockStatement Block { get { return block; } }
@@ -22,24 +24,26 @@ namespace SharpMock.Core.PostCompiler.Replacement
         public IEnumerable<IParameterDefinition> FakeMethodParameters { get { return fakeMethodParameters; } }
         public ITypeReference ReturnType { get { return returnType; } }
 
-        public ReplacementMethodConstructionContext(IMetadataHost host, IMethodReference originalCall, IMethodDefinition fakeMethod, BlockStatement block, ILogger log)
+        public ReplacementMethodConstructionContext(IMetadataHost host, IMethodReference originalCall, IMethodDefinition fakeMethod, BlockStatement block, ILogger log, IReplaceableReference originalReference)
         {
             this.host = host;
             this.block = block;
             this.log = log;
+            this.originalReference = originalReference;
             this.originalCall = originalCall;
 
             fakeMethodParameters = fakeMethod.Parameters;
             returnType = fakeMethod.Type;
         }
 
-        public ReplacementMethodConstructionContext(IMetadataHost host, IFieldReference originalField, IMethodDefinition fakeMethod, BlockStatement block, bool isAssignment, ILogger log)
+        public ReplacementMethodConstructionContext(IMetadataHost host, IFieldReference originalField, IMethodDefinition fakeMethod, BlockStatement block, bool isAssignment, ILogger log, IReplaceableReference originalReference)
         {
             this.host = host;
             this.block = block;
             this.originalField = originalField;
             this.isAssignment = isAssignment;
             this.log = log;
+            this.originalReference = originalReference;
 
             fakeMethodParameters = fakeMethod.Parameters;
             returnType = fakeMethod.Type;
@@ -49,12 +53,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             if (originalCall == null && !isAssignment)
             {
-                return new ReplacementFieldAccessorBuilder(this, originalField);
+                return new ReplacementFieldAccessorBuilder(this, originalReference as ReplaceableFieldInfo);
             }
 
             if (originalCall == null && isAssignment)
             {
-                return new ReplacementStaticFieldAssignmentBuilder(this, originalField);
+                return new ReplacementStaticFieldAssignmentBuilder(this, originalReference as ReplaceableFieldInfo);
             }
 
             if (originalCall.ResolvedMethod.IsConstructor)

@@ -12,11 +12,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly IUnitReflector reflector;
         private readonly IMetadataHost host;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        public SpecifiedMethodCallReplacer(IMetadataHost host, ILogger log)
+        public SpecifiedMethodCallReplacer(IMetadataHost host, ILogger log, ReplacementRegistry registry)
         {
             this.host = host;
             this.log = log;
+            this.registry = registry;
             reflector = new UnitReflector(host);
         }
 
@@ -29,7 +31,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             {
                 var lambda = mutableMethodCall.Arguments[0] as AnonymousDelegate;
 
-                var parser = new LambdaParser(lambda, host, log);
+                var parser = new LambdaParser(lambda, host, log, registry);
 
                 var factory = parser.GetReplacementFactory();
 

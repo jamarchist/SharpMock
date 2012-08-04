@@ -1,6 +1,7 @@
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.Diagnostics;
+using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 
 namespace SharpMock.Core.PostCompiler
@@ -13,5 +14,6 @@ namespace SharpMock.Core.PostCompiler
         public IUnit SharpMockCore { get; set; }
         public ILogger Log { get; set; }
         public Assembly AssemblyToAlter { get; set; }
+        public ReplacementRegistry Registry { get; set; }
     }
 }

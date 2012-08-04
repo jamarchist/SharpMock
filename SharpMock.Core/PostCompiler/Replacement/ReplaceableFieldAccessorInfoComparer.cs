@@ -3,9 +3,9 @@ using SharpMock.Core.Interception.Registration;
 
 namespace SharpMock.Core.PostCompiler.Replacement
 {
-    public class ReplaceableFieldAccessorInfoComparer : EqualityComparer<ReplaceableFieldAccessorInfo>
+    public class ReplaceableFieldAccessorInfoComparer : EqualityComparer<ReplaceableFieldInfo>
     {
-        public override bool Equals(ReplaceableFieldAccessorInfo x, ReplaceableFieldAccessorInfo y)
+        public override bool Equals(ReplaceableFieldInfo x, ReplaceableFieldInfo y)
         {
             if (    x.Name == y.Name 
                     &&  x.DeclaringType.Namespace == y.DeclaringType.Namespace 
@@ -18,7 +18,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
             return false;
         }
 
-        public override int GetHashCode(ReplaceableFieldAccessorInfo obj)
+        public override int GetHashCode(ReplaceableFieldInfo obj)
         {
             return obj.GetHashCode();
         }

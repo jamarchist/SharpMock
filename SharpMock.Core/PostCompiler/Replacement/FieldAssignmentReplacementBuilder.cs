@@ -10,19 +10,24 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly FieldReference field;
         private readonly ExpressionStatement assignment;
         private readonly IMetadataHost host;
+        private readonly ReplacementRegistry registry;
 
-        public FieldAssignmentReplacementBuilder(FieldReference field, IMetadataHost host, ExpressionStatement assignment)
+        public FieldAssignmentReplacementBuilder(FieldReference field, IMetadataHost host, ExpressionStatement assignment, ReplacementRegistry registry)
         {
             this.field = field;
             this.host = host;
             this.assignment = assignment;
+            this.registry = registry;
         }
 
         public object BuildReplacement()
         {
-            if (FieldAssignmentReplacementRegistry.HasReplacementFor(field.AsReplaceable()))
+            var replaceableField = field.AsReplaceable(ReplaceableReferenceTypes.FieldAssignment);
+            if (registry.IsRegistered(replaceableField))
+            //if (FieldAssignmentReplacementRegistry.HasReplacementFor())
             {
-                var replacementCall = FieldAssignmentReplacementRegistry.GetReplacementFor(field);
+                var replacementCall = registry.GetReplacement(replaceableField);
+                //var replacementCall = FieldAssignmentReplacementRegistry.GetReplacementFor(field);
                 var methodCall = new MethodCall();
                 methodCall.Type = host.PlatformType.SystemVoid;
                 methodCall.IsStaticCall = true;

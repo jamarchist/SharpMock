@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -35,6 +36,17 @@ namespace SharpMock.Core.Utility
             }
 
             return stringBuilder.ToString();
+        }
+
+        public static List<T> As<T>(this IEnumerable collection) where T : class
+        {
+            var list = new List<T>();
+            foreach (var item in collection)
+            {
+                list.Add(item as T);
+            }
+
+            return list;
         }
     }
 }

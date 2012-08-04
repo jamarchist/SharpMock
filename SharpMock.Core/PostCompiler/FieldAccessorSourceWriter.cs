@@ -13,16 +13,18 @@ namespace SharpMock.Core.PostCompiler
     internal class FieldAccessorSourceWriter
     {
         private readonly FakeNamespace fakeNamespace;
-        private readonly IFieldReference field;
+        //private readonly IFieldReference field;
         private readonly IMetadataHost host;
         private readonly ILogger log;
+        private readonly ReplaceableFieldInfo fieldInfo;
 
-        public FieldAccessorSourceWriter(FakeNamespace fakeNamespace, IMetadataHost host, ILogger log, IFieldReference field)
+        public FieldAccessorSourceWriter(FakeNamespace fakeNamespace, IMetadataHost host, ILogger log, ReplaceableFieldInfo fieldInfo)
         {
             this.fakeNamespace = fakeNamespace;
-            this.field = field;
+            //this.field = field;
             this.host = host;
             this.log = log;
+            this.fieldInfo = fieldInfo;
         }
 
         public IMethodReference GetReference()
@@ -37,23 +39,25 @@ namespace SharpMock.Core.PostCompiler
 
         private string AddFakeNamespacesAndClass()
         {
-            var nsType = field.ContainingType.GetNamespaceType();
-            var fullNs = nsType.NamespaceBuilder();
-            var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+            var fullNamespace = fieldInfo.DeclaringType.Namespace;
+            var fullNamespaceWithType = String.Format("{0}.{1}", fullNamespace, fieldInfo.DeclaringType.Name);
 
-            log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
+            log.WriteTrace("Adding interception target for '{0}'.", fullNamespaceWithType);
 
-            fakeNamespace.AddNamespaces(fullNs);
-            fakeNamespace.AddClass(fullNs.ToString(), nsType.Name.Value);
+            fakeNamespace.AddNamespaces(fullNamespace);
+            fakeNamespace.AddClass(fullNamespace, fieldInfo.DeclaringType.Name);
 
-            return fullNsWithType;
+            return fullNamespaceWithType;
         }
 
         private MethodDefinition AddFakeMethod(string fullyQualifiedTypeName)
         {
+            var reflector = new UnitReflector(host);
+            var fieldType = reflector.Get(fieldInfo.FieldType.FullName);
+
             var methodClass = fakeNamespace.Classes[fullyQualifiedTypeName];
-            var methodName = String.Format("<accessor>{0}", field.Name.Value);
-            return methodClass.AddPublicStaticMethod(methodName, field.Type, host);
+            var methodName = String.Format("<accessor>{0}", fieldInfo.Name);
+            return methodClass.AddPublicStaticMethod(methodName, fieldType, host);
         }
 
         private void AddCustomAttribute(MethodDefinition fakeMethod)
@@ -79,8 +83,8 @@ namespace SharpMock.Core.PostCompiler
             var block = new BlockStatement();
             body.Block = block;
 
-            var methodBuilderContext = new ReplacementMethodConstructionContext(host, field, fakeMethod, block, false, log);
-            var methodBuilder = new ReplacementFieldAccessorBuilder(methodBuilderContext, field);
+            var methodBuilderContext = new ReplacementMethodConstructionContext(host, null, fakeMethod, block, false, log, fieldInfo);
+            var methodBuilder = new ReplacementFieldAccessorBuilder(methodBuilderContext, fieldInfo);
             methodBuilder.BuildMethod();
 
             fakeMethod.Body = body;

@@ -10,10 +10,12 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IUnitReflector reflector;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        public StaticMethodCallReplacer(IMetadataHost host, ILogger log)
+        public StaticMethodCallReplacer(IMetadataHost host, ILogger log, ReplacementRegistry registry)
         {
             this.log = log;
+            this.registry = registry;
             reflector = new UnitReflector(host);
         }
 
@@ -24,10 +26,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var statementVisitor = new NewObjStatementVisitor(statement, log);
             statementVisitor.Traverse(statement);
 
-            var fieldReferenceVisitor = new FieldReferenceVisitor(statement, log);
+            var fieldReferenceVisitor = new FieldReferenceVisitor(statement, log, registry);
             fieldReferenceVisitor.Traverse(statement);
 
-            var fieldAssignmentVisitor = new FieldAssignmentVisitor(statement, log);
+            var fieldAssignmentVisitor = new FieldAssignmentVisitor(statement, log, registry);
             fieldAssignmentVisitor.Traverse(statement);
 
             base.TraverseChildren(statement);
@@ -61,10 +63,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 }
                 else
                 {
-                    log.WriteTrace("  --NOT FOUND--");                
+                    log.WriteTrace("  --NOT FOUND--");
+                    //base.TraverseChildren(methodCall);
                 }
-
-                base.TraverseChildren(methodCall);                
             }
         }
 

@@ -10,11 +10,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly IMetadataHost host;
         private readonly IUnitReflector reflector;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        public CodeUnderTestVisitor(IMetadataHost host, ILogger log)
+        public CodeUnderTestVisitor(IMetadataHost host, ILogger log, ReplacementRegistry registry)
         {
             this.host = host;
             this.log = log;
+            this.registry = registry;
 
             reflector = new UnitReflector(host);
         }
@@ -29,26 +31,38 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public override void TraverseChildren(IMethodDefinition method)
         {
-            var sharpMockGenerated = reflector.Get<SharpMockGeneratedAttribute>().ResolvedType;
-            var methodAttributes = new List<ICustomAttribute>(method.Attributes);
-
-            //log.WriteTrace("Method '{0}' has {1} custom attributes.", method.Name.Value, methodAttributes.Count);
-
-            var sharpMockAttributes = methodAttributes.FindAll(a => a.Constructor.ContainingType.ResolvedType.Equals(sharpMockGenerated));
-
-            if (sharpMockAttributes.Count == 0)
+            if (!IsSharpMockGenerated(method))
             {
-                var replacer = new StaticMethodCallReplacer(host, log);
+                var replacer = new StaticMethodCallReplacer(host, log, registry);
                 replacer.TraverseChildren(method);
+
+                base.TraverseChildren(method);    
             }
-            else
+        }
+
+        private bool IsSharpMockGenerated(IMethodDefinition method)
+        {
+            foreach (var customAttribute in method.Attributes)
             {
-                var container = method.ContainingType as INamedEntity;
-                var containerName = container == null ? "<unknown>" : container.Name.Value;
-                log.WriteTrace("Skipping visit to '{0}.{1}' because SharpMockGeneratedAttribute was found.", containerName, method.Name.Value);
+                if (customAttribute.Constructor.ResolvedMethod.Equals(reflector.From<SharpMockGeneratedAttribute>().GetConstructor(System.Type.EmptyTypes)))
+                {
+                    return true;
+                }
             }
 
-            base.TraverseChildren(method);
+            return false;
+        }
+
+        public override void TraverseChildren(ISourceMethodBody sourceMethodBody)
+        {
+            log.WriteTrace("Traversing SourceMethodBody of {0}.", sourceMethodBody.MethodDefinition.Name.Value);
+            base.TraverseChildren(sourceMethodBody);
+        }
+
+        public override void TraverseChildren(IMethodCall methodCall)
+        {
+            log.WriteTrace("Traversing '{0}' method call.", methodCall.MethodToCall.ResolvedMethod.Name.Value);
+            base.TraverseChildren(methodCall);                
         }
     }
 }

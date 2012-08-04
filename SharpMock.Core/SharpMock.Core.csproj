@@ -144,12 +144,13 @@
     <Compile Include="Interception\MatchingStrategies\IArgumentMatcher.cs" />
     <Compile Include="Interception\MatchingStrategies\LazyMatch.cs" />
     <Compile Include="Interception\MatchingStrategies\MatchesExactly.cs" />
+    <Compile Include="Interception\Registration\IReplaceableReference.cs" />
     <Compile Include="Interception\Registration\IReplacementSpecification.cs" />
     <Compile Include="Interception\Registration\IInterceptionSpecification.cs" />
     <Compile Include="Interception\Registration\ISpecificationRegistry.cs" />
     <Compile Include="Interception\Registration\ReplaceableAssemblyInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableCodeInfo.cs" />
-    <Compile Include="Interception\Registration\ReplaceableFieldAccessorInfo.cs" />
+    <Compile Include="Interception\Registration\ReplaceableFieldInfo.cs" />
     <Compile Include="Interception\Registration\ReplaceableMethod.cs" />
     <Compile Include="Interception\Registration\ReplaceableCodeInfoSerializer.cs" />
     <Compile Include="Interception\Registration\ReplaceableParameterInfo.cs" />
@@ -261,11 +262,9 @@
     <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementFactory.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementRegistrar.cs" />
-    <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacementRegistry.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAssignmentReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\FieldAssignmentVisitor.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementDictionary.cs" />
-    <Compile Include="PostCompiler\Replacement\FieldReferenceReplacementRegistry.cs" />
     <Compile Include="PostCompiler\Replacement\FieldReferenceVisitor.cs" />
     <Compile Include="PostCompiler\Replacement\ICommonStatementsAdder.cs" />
     <Compile Include="PostCompiler\Replacement\IReplacementBuilder.cs" />
@@ -297,9 +296,11 @@
     <Compile Include="PostCompiler\Replacement\NullReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableFieldAccessorInfoComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplaceableReferenceTypes.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceFunctionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementInstanceFieldAssignmentBuilder.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplacementRegistry.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementStaticFieldAssignmentBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementInstanceActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementConstructorBuilder.cs" />
@@ -355,6 +356,7 @@
     <Compile Include="Syntax\IReplace.cs" />
     <Compile Include="Syntax\IReplacementOptions.cs" />
     <Compile Include="Utility\CollectionExtensions.cs" />
+    <Compile Include="Utility\Generate.cs" />
     <Compile Include="Utility\PeVerify.cs" />
   </ItemGroup>
   <ItemGroup />

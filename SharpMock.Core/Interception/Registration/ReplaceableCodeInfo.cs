@@ -7,14 +7,14 @@ namespace SharpMock.Core.Interception.Registration
     public class ReplaceableCodeInfo
     {
         public List<ReplaceableMethodInfo> Methods { get; set; }
-        public List<ReplaceableFieldAccessorInfo> FieldAccessors { get; set; }
-        public List<ReplaceableFieldAccessorInfo> FieldAssignments { get; set; } 
+        public List<ReplaceableFieldInfo> FieldAccessors { get; set; }
+        public List<ReplaceableFieldInfo> FieldAssignments { get; set; } 
 
         public ReplaceableCodeInfo()
         {
             Methods = new List<ReplaceableMethodInfo>();
-            FieldAccessors = new List<ReplaceableFieldAccessorInfo>();
-            FieldAssignments = new List<ReplaceableFieldAccessorInfo>();
+            FieldAccessors = new List<ReplaceableFieldInfo>();
+            FieldAssignments = new List<ReplaceableFieldInfo>();
         }
 
         public ReplaceableCodeInfo Merge(ReplaceableCodeInfo other)
@@ -22,8 +22,8 @@ namespace SharpMock.Core.Interception.Registration
             var mergeResult = new ReplaceableCodeInfo();
 
             var methodList = new List<ReplaceableMethodInfo>();
-            var fieldAccessorList = new List<ReplaceableFieldAccessorInfo>();
-            var fieldAssignmentList = new List<ReplaceableFieldAccessorInfo>();
+            var fieldAccessorList = new List<ReplaceableFieldInfo>();
+            var fieldAssignmentList = new List<ReplaceableFieldInfo>();
 
             methodList.AddRange(Methods);
             methodList.AddRange(other.Methods);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using SharpMock.Core.Interception.Registration;
 using SharpMock.Core.PostCompiler.Replacement;
+using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.PostCompiler
 {
@@ -16,10 +17,14 @@ namespace SharpMock.Core.PostCompiler
             var serializer = new ReplaceableCodeInfoSerializer(
                 Path.GetDirectoryName(context.Args.TestAssemblyPath));
 
+            var replaceableAssignments = context.Registry.GetRegisteredReferences(ReplaceableReferenceTypes.FieldAssignment);
+            var replaceableAccessors = context.Registry.GetRegisteredReferences(ReplaceableReferenceTypes.FieldAccessor);
+            var replaceableMethods = context.Registry.GetRegisteredReferences(ReplaceableReferenceTypes.Method);
+
             var replaceableCode = new ReplaceableCodeInfo();
-            replaceableCode.Methods = new List<ReplaceableMethodInfo>(MethodReferenceReplacementRegistry.GetReplaceables());
-            replaceableCode.FieldAccessors = new List<ReplaceableFieldAccessorInfo>(FieldReferenceReplacementRegistry.GetReplaceables());
-            replaceableCode.FieldAssignments = new List<ReplaceableFieldAccessorInfo>(FieldAssignmentReplacementRegistry.GetReplaceables());
+            replaceableCode.Methods = replaceableMethods.As<ReplaceableMethodInfo>();
+            replaceableCode.FieldAccessors = replaceableAccessors.As<ReplaceableFieldInfo>();
+            replaceableCode.FieldAssignments = replaceableAssignments.As<ReplaceableFieldInfo>();
 
             serializer.SerializeSpecifications(autoSpecs, replaceableCode);
             SerializeExplicitSpecifications(context.Args.TestAssemblyPath);

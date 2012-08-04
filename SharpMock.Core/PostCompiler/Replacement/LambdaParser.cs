@@ -15,7 +15,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var constructor = firstStatement.Expression as CreateObjectInstance;
 
                 log.WriteTrace("lambda identified as constructor.");
-                return new ConstructorReplacementFactory(constructor, firstStatement);                
+                return new ConstructorReplacementFactory(constructor, firstStatement, registry);                
             }
 
             if (IsFieldAccessor())
@@ -25,7 +25,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var field = fieldBinding.Definition as FieldReference;
 
                 log.WriteTrace("Lambda identified as static field accessor.");
-                return new FieldAccessorReplacementFactory(field, returnStatement);
+                return new FieldAccessorReplacementFactory(field, returnStatement, registry);
             }
 
             if (IsFieldAssignment())
@@ -35,13 +35,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var field = assignment.Target.Definition as FieldReference;
 
                 log.WriteTrace("Lambda identified as static field assignment.");
-                return new FieldAssignmentReplacementFactory(field, assignmentStatement, host);
+                return new FieldAssignmentReplacementFactory(field, assignmentStatement, host, registry);
             }
 
             if (IsStaticMethodCallWithReturnValue() || IsVoidMethodCall() || IsMethodCall())
             {
                 log.WriteTrace("Lamda identified as method call.");
-                return new MethodCallReplacementFactory(FirstStatementAs<IStatement>());                
+                return new MethodCallReplacementFactory(FirstStatementAs<IStatement>(), registry);                
             }
 
             log.WriteTrace("Could not find a replacement factory for specified lambda.");
@@ -51,12 +51,14 @@ namespace SharpMock.Core.PostCompiler.Replacement
         private readonly AnonymousDelegate lambda;
         private readonly IMetadataHost host;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        internal LambdaParser(AnonymousDelegate lambda, IMetadataHost host, ILogger log)
+        internal LambdaParser(AnonymousDelegate lambda, IMetadataHost host, ILogger log, ReplacementRegistry registry)
         {
             this.lambda = lambda;
             this.host = host;
             this.log = log;
+            this.registry = registry;
         }
 
         private bool IsStaticMethodCallWithReturnValue()

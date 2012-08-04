@@ -52,6 +52,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             throw new ApplicationException(String.Format("Unable to find type '{0}' in host's loaded units.", typeName));
         }
 
+        public ITypeReference Get(string fullyQualifiedName)
+        {
+            return FindTypeInLoadedUnits(fullyQualifiedName, 0);
+        }
+
         public ITypeReference Get(Type type)
         {
             if (type.IsArray)
@@ -114,6 +119,11 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
         public ITypeDefinitionExtensions From<TReflectionType>()
         {
             return Extend(Get(typeof (TReflectionType)));
+        }
+
+        public ITypeDefinitionExtensions From(string fullyQualifiedName)
+        {
+            return Extend(Get(fullyQualifiedName));
         }
 
         public ITypeDefinitionExtensions From(Type reflectionType)

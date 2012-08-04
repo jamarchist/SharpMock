@@ -6,18 +6,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
     internal class MethodCallReplacementFactory : IReplacementFactory
     {
         private readonly IStatement firstStatement;
+        private readonly ReplacementRegistry registry;
 
-        public MethodCallReplacementFactory(IStatement firstStatement)
+        public MethodCallReplacementFactory(IStatement firstStatement, ReplacementRegistry registry)
         {
             this.firstStatement = firstStatement;
+            this.registry = registry;
         }
 
         public IReplacementRegistrar GetRegistrar()
         {
             if (firstStatement is ReturnStatement)
-                return new MethodCallReplacementRegistrar((firstStatement as ReturnStatement).Expression as ConstructorOrMethodCall);
+                return new MethodCallReplacementRegistrar((firstStatement as ReturnStatement).Expression as ConstructorOrMethodCall, registry);
             else
-                return new MethodCallReplacementRegistrar((firstStatement as ExpressionStatement).Expression as ConstructorOrMethodCall);
+                return new MethodCallReplacementRegistrar((firstStatement as ExpressionStatement).Expression as ConstructorOrMethodCall, registry);
         }
 
         public IReplacementBuilder GetBuilder()

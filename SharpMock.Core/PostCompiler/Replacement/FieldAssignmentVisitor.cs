@@ -10,20 +10,26 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IStatement parent;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        public FieldAssignmentVisitor(IStatement parent, ILogger log)
+        public FieldAssignmentVisitor(IStatement parent, ILogger log, ReplacementRegistry registry)
         {
             this.parent = parent;
             this.log = log;
+            this.registry = registry;
         }
 
         public override void TraverseChildren(IFieldReference fieldReference)
         {
             log.WriteTrace("Visiting field: {0}.", fieldReference.Name.Value);
 
-            if (FieldReferenceReplacementRegistry.HasReplacementFor(fieldReference.AsReplaceable()))
+            var replaceableField = fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAssignment);
+
+            //if (FieldReferenceReplacementRegistry.HasReplacementFor(fieldReference.AsReplaceable()))
+            if (registry.IsRegistered(replaceableField))
             {
-                var replacementMethodToCall = FieldAssignmentReplacementRegistry.GetReplacementFor(fieldReference);
+                //var replacementMethodToCall = FieldAssignmentReplacementRegistry.GetReplacementFor(fieldReference);
+                var replacementMethodToCall = registry.GetReplacement(replaceableField);
 
                 var replacementExpression = new MethodCall();
                 replacementExpression.Type = replacementMethodToCall.Type;
@@ -43,7 +49,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                             // If the target is what we're visiting ...
                             if (target.ResolvedField.Equals(fieldReference.ResolvedField))
                             {
-                                if (!fieldReference.IsStatic)
+                                if (!fieldReference.ResolvedField.IsStatic)
                                 {
                                     replacementExpression.Arguments.Add(assignment.Target.Instance);   
                                 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Cci;
 using SharpMock.Core.Diagnostics;
+using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.PostCompiler.Core;
 
 namespace SharpMock.Core.PostCompiler
@@ -63,6 +64,7 @@ namespace SharpMock.Core.PostCompiler
             ctx.Log = log;
             ctx.SharpMockCore = sharpMockCore;
             ctx.SharpMockDelegateTypes = sharpMockDelegateTypes;
+            ctx.Registry = new ReplacementRegistry();
 
             pipeline.Execute(ctx);
         }
@@ -92,6 +94,7 @@ namespace SharpMock.Core.PostCompiler
             ctx.Log = log;
             ctx.SharpMockCore = sharpMockCore;
             ctx.SharpMockDelegateTypes = sharpMockDelegateTypes;
+            ctx.Registry = new ReplacementRegistry();
 
             pipeline.Execute(ctx);
         }

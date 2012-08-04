@@ -53,11 +53,13 @@ namespace SharpMock.Core.PostCompiler
         private FakeNamespace fakeNamespace;
         private IMetadataHost host;
         private ILogger log;
+        private ReplacementRegistry registry;
 
         public void Execute(PostCompilerContext context)
         {
             host = context.Host;
             log = context.Log;
+            registry = context.Registry;
 
             fakeNamespace = new FakeNamespace(context.AssemblyToAlter, host, log);
             AddInterceptionTargets();    
@@ -120,27 +122,30 @@ namespace SharpMock.Core.PostCompiler
                 MethodReferenceReplacementRegistry.ReplaceWith(method, fakeCallReference);
             }
 
-            foreach (var field in FieldReferenceReplacementRegistry.GetFieldsToIntercept())
+            foreach (var field in registry.GetRegisteredReferences(ReplaceableReferenceTypes.FieldAccessor))
             {
-                var fieldReplacementBuilder = new FieldAccessorSourceWriter(fakeNamespace, host, log, field);
+                var fieldReplacementBuilder = new FieldAccessorSourceWriter(fakeNamespace, host, log, field as ReplaceableFieldInfo);
                 var fakeCallReference = fieldReplacementBuilder.GetReference();
 
-                FieldReferenceReplacementRegistry.ReplaceWith(field, fakeCallReference);
+                registry.RegisterReplacement(field, fakeCallReference);
+
+                //FieldReferenceReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
 
-            foreach (var field in FieldAssignmentReplacementRegistry.GetFieldsToIntercept())
+            foreach (var field in registry.GetRegisteredReferences(ReplaceableReferenceTypes.FieldAssignment))
             {
                 var fieldReplacementBuilder = new FieldAssignmentSourceWriter(fakeNamespace, host, log, field);
                 var fakeCallReference = fieldReplacementBuilder.GetReference();
 
-                FieldAssignmentReplacementRegistry.ReplaceWith(field, fakeCallReference);
+                registry.RegisterReplacement(field, fakeCallReference);
+                //FieldAssignmentReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
         }
 
         private void AddAlternativeInvocation(BlockStatement block,
             IMethodDefinition fakeMethod, IMethodReference originalCall)
         {
-            var context = new ReplacementMethodConstructionContext(host, originalCall, fakeMethod, block, log);
+            var context = new ReplacementMethodConstructionContext(host, originalCall, fakeMethod, block, log, null);
             var methodBuilder = context.GetMethodBuilder();
 
             methodBuilder.BuildMethod();

@@ -29,6 +29,19 @@ namespace SharpMock.Core.PostCompiler
 
         public IDictionary<string, NamespaceTypeDefinition> Classes { get { return classes; } } 
 
+        public void AddNamespaces(string dotDelimitedNamespaces)
+        {
+            var reversedNamespaces = new ReverseStringBuilder();
+            var splitNamespaces = dotDelimitedNamespaces.Split(new char[] {'.'});
+
+            foreach (var @namespace in splitNamespaces)
+            {
+                reversedNamespaces.Prepend(@namespace);
+            }
+
+            AddNamespaces(reversedNamespaces);
+        }
+
         public void AddNamespaces(ReverseStringBuilder reversedNamespaces)
         {
             log.WriteTrace("Adding fake namespace: '{0}'.", reversedNamespaces);
