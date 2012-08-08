@@ -7,6 +7,7 @@ using SharpMock.Core.PostCompiler.CciExtensions;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
 using SharpMock.Core.PostCompiler.Replacement;
 using SharpMock.Core.Interception.Registration;
+using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.PostCompiler
 {
@@ -69,38 +70,46 @@ namespace SharpMock.Core.PostCompiler
         {
             host.LoadUnit(host.CoreAssemblySymbolicIdentity);
 
-            foreach (var method in MethodReferenceReplacementRegistry.GetMethodsToIntercept())
+            foreach (var method in registry.GetRegisteredReferences(ReplaceableReferenceTypes.Method))
             {
-                var nsType = method.ContainingType.GetNamespaceType();
-                var fullNs = nsType.NamespaceBuilder();
-                var fullNsWithType = String.Format("{0}.{1}", fullNs, nsType.Name.Value);
+                var methodInfo = method as ReplaceableMethodInfo;
 
-                log.WriteTrace("Adding interception target for '{0}'.", fullNsWithType);
+                var fullNamespace = methodInfo.DeclaringType.Namespace;
+                var fullNamespaceWithType = methodInfo.DeclaringType.FullName;
+               
+                log.WriteTrace("Adding interception target for '{0}'.", fullNamespaceWithType);
 
-                fakeNamespace.AddNamespaces(fullNs);
-                fakeNamespace.AddClass(fullNs.ToString(), nsType.Name.Value);
+                fakeNamespace.AddNamespaces(fullNamespace);
+                fakeNamespace.AddClass(fullNamespace, methodInfo.DeclaringType.Name);
 
-                var methodClass = fakeNamespace.Classes[fullNsWithType];
-                var methodName = method.Name.Value == ".ctor" ? "<constructor>" : method.Name.Value;
-                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, method.Type, host);
+                var reflector = new UnitReflector(host);
+                var methodType = reflector.Get(methodInfo.ReturnType.FullName);
+
+                var actualMethod = methodInfo.Name == ".ctor" ?
+                    reflector.From(fullNamespaceWithType).GetConstructor(methodInfo.Parameters.Select(p => reflector.Get(p.ParameterType.FullName)).ToArray()) :
+                    reflector.From(fullNamespaceWithType).GetMethod(methodInfo.Name, methodInfo.Parameters.Select(p => reflector.Get(p.ParameterType.FullName)).ToArray());
+
+                var methodClass = fakeNamespace.Classes[fullNamespaceWithType];
+                var methodName = methodInfo.Name == ".ctor" ? "<constructor>" : methodInfo.Name;
+                var fakeMethod = methodClass.AddPublicStaticMethod(methodName, methodType, host);
 
                 // if it's an instance method, we add a parameter at the end for the target
                 ushort extraParameters = 0;
-                if (!method.ResolvedMethod.IsStatic && !method.ResolvedMethod.IsConstructor)
+                if (!actualMethod.ResolvedMethod.IsStatic && !actualMethod.ResolvedMethod.IsConstructor)
                 {
-                    fakeMethod.AddParameter(0, "target", method.ContainingType, host, false, false);
+                    fakeMethod.AddParameter(0, "target", actualMethod.ContainingType, host, false, false);
                     extraParameters = 1;
                 }
 
-                foreach (var parameter in method.Parameters)
+                foreach (var parameter in actualMethod.Parameters)
                 {
                     fakeMethod.AddParameter((ushort)(parameter.Index + extraParameters), 
                         "p" + parameter.Index, parameter.Type, host, parameter.IsByReference/*IsOut*/, parameter.IsByReference);
                 }
 
-                if (method.ResolvedMethod.IsConstructor)
+                if (actualMethod.ResolvedMethod.IsConstructor)
                 {
-                    fakeMethod.Type = method.ResolvedMethod.ContainingTypeDefinition;
+                    fakeMethod.Type = actualMethod.ResolvedMethod.ContainingTypeDefinition;
                 }
 
                 var customAttribute = new CustomAttribute();
@@ -108,7 +117,7 @@ namespace SharpMock.Core.PostCompiler
                     .From<SharpMockGeneratedAttribute>().GetConstructor(Type.EmptyTypes);
                 fakeMethod.Attributes = new List<ICustomAttribute>();
                 fakeMethod.Attributes.Add(customAttribute);
-                fakeMethod.Body = GetBody(fakeMethod, method);
+                fakeMethod.Body = GetBody(fakeMethod, actualMethod);
 
                 var parameterTypes = new List<ITypeDefinition>();
                 foreach (var param in fakeMethod.Parameters)
@@ -119,7 +128,7 @@ namespace SharpMock.Core.PostCompiler
                 var fakeCallReference = new Microsoft.Cci.MethodReference(host, fakeMethod.ContainingTypeDefinition,
                     fakeMethod.CallingConvention, fakeMethod.Type, fakeMethod.Name, 0, parameterTypes.ToArray());
 
-                MethodReferenceReplacementRegistry.ReplaceWith(method, fakeCallReference);
+                registry.RegisterReplacement(method, fakeCallReference);
             }
 
             foreach (var field in registry.GetRegisteredReferences(ReplaceableReferenceTypes.FieldAccessor))
@@ -128,17 +137,14 @@ namespace SharpMock.Core.PostCompiler
                 var fakeCallReference = fieldReplacementBuilder.GetReference();
 
                 registry.RegisterReplacement(field, fakeCallReference);
-
-                //FieldReferenceReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
 
             foreach (var field in registry.GetRegisteredReferences(ReplaceableReferenceTypes.FieldAssignment))
             {
-                var fieldReplacementBuilder = new FieldAssignmentSourceWriter(fakeNamespace, host, log, field);
+                var fieldReplacementBuilder = new FieldAssignmentSourceWriter(fakeNamespace, host, log, field as ReplaceableFieldInfo);
                 var fakeCallReference = fieldReplacementBuilder.GetReference();
 
                 registry.RegisterReplacement(field, fakeCallReference);
-                //FieldAssignmentReplacementRegistry.ReplaceWith(field, fakeCallReference);
             }
         }
 

@@ -64,7 +64,7 @@ namespace SharpMock.Core.PostCompiler
             ctx.Log = log;
             ctx.SharpMockCore = sharpMockCore;
             ctx.SharpMockDelegateTypes = sharpMockDelegateTypes;
-            ctx.Registry = new ReplacementRegistry();
+            ctx.Registry = new ReplacementRegistry(log);
 
             pipeline.Execute(ctx);
         }
@@ -94,7 +94,7 @@ namespace SharpMock.Core.PostCompiler
             ctx.Log = log;
             ctx.SharpMockCore = sharpMockCore;
             ctx.SharpMockDelegateTypes = sharpMockDelegateTypes;
-            ctx.Registry = new ReplacementRegistry();
+            ctx.Registry = new ReplacementRegistry(log);
 
             pipeline.Execute(ctx);
         }

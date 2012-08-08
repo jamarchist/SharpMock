@@ -17,9 +17,9 @@ namespace SharpMock.Core.PostCompiler
         private readonly ILogger log;
         private readonly ReplaceableFieldInfo fieldInfo;
 
-        public FieldAssignmentSourceWriter(FakeNamespace fakeNamespace, IMetadataHost host, ILogger log, IReplaceableReference fieldInfo)
+        public FieldAssignmentSourceWriter(FakeNamespace fakeNamespace, IMetadataHost host, ILogger log, ReplaceableFieldInfo fieldInfo)
         {
-            this.fieldInfo = fieldInfo as ReplaceableFieldInfo;
+            this.fieldInfo = fieldInfo;
             this.fakeNamespace = fakeNamespace;
             this.host = host;
             this.log = log;

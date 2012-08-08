@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleUsages", "Tests\Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMock.PostCompiler.MSBuild", "SharpMock.PostCompiler.MSBuild\SharpMock.PostCompiler.MSBuild.csproj", "{7CE4EC1C-5EBE-4786-83EE-BC435881264B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMock.VisualStudio.Debugging", "SharpMock.VisualStudio.Debugging\SharpMock.VisualStudio.Debugging.csproj", "{BB411A5D-2637-4E4E-B8BD-D8647572F93A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -182,6 +184,16 @@ Global
 		{7CE4EC1C-5EBE-4786-83EE-BC435881264B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7CE4EC1C-5EBE-4786-83EE-BC435881264B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7CE4EC1C-5EBE-4786-83EE-BC435881264B}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BB411A5D-2637-4E4E-B8BD-D8647572F93A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

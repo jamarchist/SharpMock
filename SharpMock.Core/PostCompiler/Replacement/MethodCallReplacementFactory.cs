@@ -25,9 +25,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
         public IReplacementBuilder GetBuilder()
         {
             if (firstStatement is ReturnStatement)
-                return new MethodCallReplacementBuilder((firstStatement as ReturnStatement).Expression as ConstructorOrMethodCall);
+                return new MethodCallReplacementBuilder((firstStatement as ReturnStatement).Expression as ConstructorOrMethodCall, registry);
             else
-                return new MethodCallReplacementBuilder((firstStatement as ExpressionStatement).Expression as ConstructorOrMethodCall);
+                return new MethodCallReplacementBuilder((firstStatement as ExpressionStatement).Expression as ConstructorOrMethodCall, registry);
         }
 
         public IReplacer GetReplacer()

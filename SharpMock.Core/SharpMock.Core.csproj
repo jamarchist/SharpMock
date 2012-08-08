@@ -295,7 +295,7 @@
     <Compile Include="PostCompiler\Replacement\NullReplacementRegistrar.cs" />
     <Compile Include="PostCompiler\Replacement\NullReplacer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableFieldAccessorInfoComparer.cs" />
-    <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoComparer.cs" />
+    <Compile Include="PostCompiler\Replacement\ReplaceableMethodInfoOverloadComparer.cs" />
     <Compile Include="PostCompiler\Replacement\ReplaceableReferenceTypes.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceActionBuilder.cs" />
     <Compile Include="PostCompiler\Replacement\ReplacementAbstractInstanceFunctionBuilder.cs" />
@@ -318,8 +318,6 @@
     <Compile Include="PostCompiler\Construction\Expressions\IPropertySetter.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IPropertySetterTargetOptions.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\IPropertySetterValueOptions.cs" />
-    <Compile Include="PostCompiler\Replacement\MethodReferenceReplacementDictionary.cs" />
-    <Compile Include="PostCompiler\Replacement\MethodReferenceReplacementRegistry.cs" />
     <Compile Include="PostCompiler\PostCompiler.cs" />
     <Compile Include="PostCompiler\PostCompilerArgs.cs" />
     <Compile Include="PostCompiler\Construction\Expressions\PropertySetter.cs" />
@@ -356,8 +354,10 @@
     <Compile Include="Syntax\IReplace.cs" />
     <Compile Include="Syntax\IReplacementOptions.cs" />
     <Compile Include="Utility\CollectionExtensions.cs" />
+    <Compile Include="Utility\EquatableEnumerable.cs" />
     <Compile Include="Utility\Generate.cs" />
     <Compile Include="Utility\PeVerify.cs" />
+    <Compile Include="Utility\TraceHelper.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

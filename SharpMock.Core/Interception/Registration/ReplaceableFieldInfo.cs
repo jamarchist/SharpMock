@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.Interception.Registration
 {
     [Serializable]
+    [DebuggerDisplay("{DeclaringType.FullName}.{Name}")]
     public class ReplaceableFieldInfo : IReplaceableReference
     {
         public ReplaceableFieldInfo() { }

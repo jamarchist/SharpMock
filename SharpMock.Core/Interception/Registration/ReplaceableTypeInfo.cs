@@ -1,10 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Xml.Serialization;
 using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.Interception.Registration
 {
     [Serializable]
+    [DebuggerDisplay("{FullName} | {Assembly.Name}")]
     public class ReplaceableTypeInfo
     {
         public ReplaceableAssemblyInfo Assembly { get; set; }
@@ -17,12 +19,12 @@ namespace SharpMock.Core.Interception.Registration
         public override bool Equals(object obj)
         {
             return Generate.Equality(this, obj,
-                t => t.Namespace, t => t.Name);
+                t => t.Namespace, t => t.Name, t => t.Assembly);
         }
 
         public override int GetHashCode()
         {
-            return Generate.HashCode(23, 11, Namespace, Name);
+            return Generate.HashCode(23, 11, Namespace, Name, Assembly);
         }
     }
 }

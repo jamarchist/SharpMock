@@ -1,4 +1,6 @@
-﻿namespace SharpMock.Core.Utility
+﻿using System.Collections.Generic;
+
+namespace SharpMock.Core.Utility
 {
     public static class Generate
     {
@@ -27,6 +29,11 @@
             }
 
             return true;
+        }
+
+        public static EquatableEnumerable<T> EquatableEnumerable<T>(IEnumerable<T> @this) where T : class
+        {
+            return new EquatableEnumerable<T>(new List<T>(@this));
         }
     }
 }

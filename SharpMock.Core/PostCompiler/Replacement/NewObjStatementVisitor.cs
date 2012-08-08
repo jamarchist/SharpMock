@@ -10,11 +10,13 @@ namespace SharpMock.Core.PostCompiler.Replacement
     {
         private readonly IStatement parent;
         private readonly ILogger log;
+        private readonly ReplacementRegistry registry;
 
-        public NewObjStatementVisitor(IStatement parent, ILogger log)
+        public NewObjStatementVisitor(IStatement parent, ILogger log, ReplacementRegistry registry)
         {
             this.parent = parent;
             this.log = log;
+            this.registry = registry;
         }
 
         public override void TraverseChildren(ICreateObjectInstance createObjectInstance)
@@ -22,11 +24,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var replaceableConstructor = createObjectInstance.MethodToCall.AsReplaceable();
             log.WriteTrace("Visiting constructor of '{0}'.", replaceableConstructor.DeclaringType.Name);
 
-            if (MethodReferenceReplacementRegistry.HasReplacementFor(replaceableConstructor))
+            if (registry.IsRegistered(replaceableConstructor))
             {
-                var replacementCall =
-                    MethodReferenceReplacementRegistry.GetReplacementFor(createObjectInstance.MethodToCall);
-
+                var replacementCall = registry.GetReplacement(replaceableConstructor);
                 var newCall = new MethodCall();
                 newCall.Type = createObjectInstance.Type;
                 newCall.Arguments = new List<IExpression>(createObjectInstance.Arguments);

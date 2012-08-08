@@ -7,21 +7,22 @@ namespace SharpMock.Core.PostCompiler.Replacement
     internal class MethodCallReplacementBuilder : IReplacementBuilder
     {
         private readonly ConstructorOrMethodCall replacementTarget;
+        private readonly ReplacementRegistry registry;
 
-        public MethodCallReplacementBuilder(ConstructorOrMethodCall replacementTarget)
+        public MethodCallReplacementBuilder(ConstructorOrMethodCall replacementTarget, ReplacementRegistry registry)
         {
             this.replacementTarget = replacementTarget;
+            this.registry = registry;
         }
 
         public object BuildReplacement()
         {
             if (replacementTarget != null)
             {
-                if (MethodReferenceReplacementRegistry.HasReplacementFor(replacementTarget.MethodToCall.AsReplaceable()))
-                    //if (MethodReferenceReplacementRegistry.HasReplacementFor(firstMethodCall.MethodToCall))
+                var replaceable = replacementTarget.MethodToCall.AsReplaceable();
+                if (registry.IsRegistered(replaceable))
                 {
-                    var replacementCall =
-                        MethodReferenceReplacementRegistry.GetReplacementFor(replacementTarget.MethodToCall);
+                    var replacementCall = registry.GetReplacement(replaceable);
                     replacementTarget.MethodToCall = replacementCall;
 
                     if (replacementTarget is CreateObjectInstance)

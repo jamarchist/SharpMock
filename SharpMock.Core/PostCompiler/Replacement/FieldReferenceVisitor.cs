@@ -26,11 +26,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
             var replaceableField = fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor);
 
             if (registry.IsRegistered(replaceableField))
-            //if (FieldReferenceReplacementRegistry.HasReplacementFor(fieldReference.AsReplaceable()))
             {
                 var replacementMethodToCall = registry.GetReplacement(replaceableField);
-                //var replacementMethodToCall = FieldReferenceReplacementRegistry.GetReplacementFor(fieldReference);
-
+                
                 var replacementExpression = new MethodCall();
                 replacementExpression.Type = replacementMethodToCall.Type;
                 replacementExpression.Arguments = new List<IExpression>();

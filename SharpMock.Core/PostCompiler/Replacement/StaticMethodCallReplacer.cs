@@ -23,7 +23,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
         {
             log.WriteTrace("Traversing {0} statement.", statement.GetType().Name);
 
-            var statementVisitor = new NewObjStatementVisitor(statement, log);
+            var statementVisitor = new NewObjStatementVisitor(statement, log, registry);
             statementVisitor.Traverse(statement);
 
             var fieldReferenceVisitor = new FieldReferenceVisitor(statement, log, registry);
@@ -45,10 +45,9 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 log.WriteTrace("Finding replacement for {0}.{1}", method.DeclaringType.Name, method.Name);
                 log.WriteTrace("  in '{0}' at '{1}'", method.DeclaringType.Assembly.Name, method.DeclaringType.Assembly.AssemblyPath);
             
-                if (MethodReferenceReplacementRegistry.HasReplacementFor(method))
+                if (registry.IsRegistered(method))
                 {
-                    var replacementCall =
-                        MethodReferenceReplacementRegistry.GetReplacementFor(mutableMethodCall.MethodToCall);
+                    var replacementCall = registry.GetReplacement(method);
                     mutableMethodCall.MethodToCall = replacementCall;
                 
                     if (!methodCall.IsStaticCall)
@@ -64,7 +63,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 else
                 {
                     log.WriteTrace("  --NOT FOUND--");
-                    //base.TraverseChildren(methodCall);
                 }
             }
         }

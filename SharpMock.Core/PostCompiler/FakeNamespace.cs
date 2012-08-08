@@ -31,23 +31,22 @@ namespace SharpMock.Core.PostCompiler
 
         public void AddNamespaces(string dotDelimitedNamespaces)
         {
-            var reversedNamespaces = new ReverseStringBuilder();
-            var splitNamespaces = dotDelimitedNamespaces.Split(new char[] {'.'});
-
-            foreach (var @namespace in splitNamespaces)
-            {
-                reversedNamespaces.Prepend(@namespace);
-            }
-
-            AddNamespaces(reversedNamespaces);
+            log.WriteTrace("Adding fake namespace: '{0}'.", dotDelimitedNamespaces);
+            var allNamespaces = dotDelimitedNamespaces.Split(new char[] {'.'});
+            AddNamespaces(allNamespaces);
         }
 
         public void AddNamespaces(ReverseStringBuilder reversedNamespaces)
         {
             log.WriteTrace("Adding fake namespace: '{0}'.", reversedNamespaces);
             var allNamespaces = reversedNamespaces.ToStringArray();
+            AddNamespaces(allNamespaces);
+        }
+
+        private void AddNamespaces(string[] allNamespaces)
+        {
             var stack = StackedNamespaces(allNamespaces);
-            
+
             foreach (var ns in stack)
             {
                 if (!namespaces.ContainsKey(ns.Key))
@@ -61,7 +60,7 @@ namespace SharpMock.Core.PostCompiler
                     var newNamespace = root.AddNestedNamespace(ns.Value.LastElement, host);
                     namespaces.Add(ns.Key, newNamespace);
                 }
-            }
+            }            
         }
 
         public void AddClass(string fullNamespace, string className)

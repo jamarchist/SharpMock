@@ -11,6 +11,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
         IMethodDefinition GetConstructor(params Type[] arguments);
         IMethodDefinition GetConstructor(params ITypeReference[] arguments);
         IMethodDefinition GetMethod(string name, params Type[] arguments);
+        IMethodDefinition GetMethod(string name, params ITypeReference[] arguments);
         IMethodDefinition GetMethod(IMethodReference method);
         IMethodDefinition GetMethod(MethodInfo methodInfo);
         IEnumerable<IMethodDefinition> GetAllOverloadsOf(string name);

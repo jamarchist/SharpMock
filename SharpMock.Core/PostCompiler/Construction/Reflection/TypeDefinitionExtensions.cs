@@ -33,7 +33,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
             return GetMethod(".ctor", arguments);
         }
 
-        private IMethodDefinition GetMethod(string name, params ITypeReference[] arguments)
+        public IMethodDefinition GetMethod(string name, params ITypeReference[] arguments)
         {
             var method = TypeHelper.GetMethod(type, nameTable.GetNameFor(name), arguments);
 

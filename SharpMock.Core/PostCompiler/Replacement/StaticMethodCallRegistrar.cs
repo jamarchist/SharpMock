@@ -20,29 +20,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
             this.log = log;
             this.registry = registry;
             reflector = new UnitReflector(host);
-            matcher = new SpecifiedCodeMatcher(assemblyLocation, reflector);
+            matcher = new SpecifiedCodeMatcher(assemblyLocation, reflector, registry);
         }
 
         public override void TraverseChildren(IFieldReference fieldReference)
         {
-            //var accessedField = fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor);
-            //var assignedField = fieldReference.AsReplaceable(Repla)
-
             if (matcher.ShouldReplace(fieldReference))
             {
                 registry.RegisterReference(fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor));
-
-                //FieldReferenceReplacementRegistry.AddFieldToIntercept(fieldReference);
             }
 
             if (matcher.ShouldReplaceAssignment(fieldReference))
             {
                 registry.RegisterReference(fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAssignment));    
-
-                //FieldAssignmentReplacementRegistry.AddFieldToIntercept(fieldReference);
             }
-
-
         }
 
         public override void TraverseChildren(ICreateObjectInstance createObjectInstance)
@@ -74,8 +65,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
             if (matcher.ShouldReplace(methodToCall))
             {
                 registry.RegisterReference(methodToCall.AsReplaceable());
-
-                //MethodReferenceReplacementRegistry.AddMethodToIntercept(methodToCall);
             }            
         }
 
@@ -90,12 +79,17 @@ namespace SharpMock.Core.PostCompiler.Replacement
             private readonly List<ReplaceableFieldInfo> specdFieldAccessors;
             private readonly List<ReplaceableFieldInfo> specdFieldAssignments; 
             private readonly IUnitReflector reflector;
+            private readonly ReplacementRegistry registry;
 
-            public SpecifiedCodeMatcher(string assemblyLocation, IUnitReflector reflector)
+            public SpecifiedCodeMatcher(string assemblyLocation, IUnitReflector reflector, ReplacementRegistry registry)
             {
                 this.reflector = reflector;
+                this.registry = registry;
                 var serializer = new ReplaceableCodeInfoSerializer(assemblyLocation);
                 var specifiedCode = serializer.DeserializeAllSpecifications();
+
+                registry.Load(specifiedCode);
+
                 var specifiedMethods = specifiedCode.Methods;
                 var specifiedFieldAccessors = specifiedCode.FieldAccessors;
                 var specifiedFieldAssignments = specifiedCode.FieldAssignments;
@@ -109,64 +103,42 @@ namespace SharpMock.Core.PostCompiler.Replacement
                     var assembly = Assembly.LoadFrom(method.DeclaringType.Assembly.AssemblyPath);
                     var declaringType = assembly.GetType(
                         String.Format("{0}.{1}", method.DeclaringType.Namespace, method.DeclaringType.Name));
-                    var parameters = new List<Type>();
                     foreach (var parameter in method.Parameters)
                     {
-                        var parameterAssembly = Assembly.LoadFrom(parameter.ParameterType.Assembly.AssemblyPath);
-                        var parameterTypeName = String.Format("{0}.{1}",
-                            parameter.ParameterType.Namespace, parameter.ParameterType.Name);
-                        parameters.Add(parameterAssembly.GetType(parameterTypeName));
+                        Assembly.LoadFrom(parameter.ParameterType.Assembly.AssemblyPath);
                     }
 
                     var overloads = reflector.From(declaringType).GetAllOverloadsOf(method.Name);
                     foreach (var overload in overloads)
                     {
-                        specdReplacements.Add(overload.AsReplaceable());
+                        registry.RegisterReference(overload.AsReplaceable());
                     }
                 }
 
                 foreach (var field in specifiedFieldAccessors)
                 {
-                    var assembly = Assembly.LoadFrom(field.DeclaringType.Assembly.AssemblyPath);
-                    var declaringType = assembly.GetType(String.Format("{0}.{1}", field.DeclaringType.Namespace, field.DeclaringType.Name));
-
-                    var fieldDefinition = reflector.From(declaringType).GetField(field.Name);
-                    specdFieldAccessors.Add(fieldDefinition.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor));
+                    Assembly.LoadFrom(field.DeclaringType.Assembly.AssemblyPath);
                 }
 
                 foreach (var field in specifiedFieldAssignments)
                 {
-                    var assembly = Assembly.LoadFrom(field.DeclaringType.Assembly.AssemblyPath);
-                    var declaringType = assembly.GetType(String.Format("{0}.{1}", field.DeclaringType.Namespace, field.DeclaringType.Name));
-
-                    var fieldDefinition = reflector.From(declaringType).GetField(field.Name);
-                    specdFieldAssignments.Add(fieldDefinition.AsReplaceable(ReplaceableReferenceTypes.FieldAssignment));
+                    Assembly.LoadFrom(field.DeclaringType.Assembly.AssemblyPath);
                 }
             }
 
             public bool ShouldReplace(IMethodReference methodToCall)
             {
-                var matches =
-                    specdReplacements.FindAll(
-                        m => new ReplaceableMethodInfoComparer().Equals(m, methodToCall.AsReplaceable()));
-
-                return matches.Count > 0;
+                return registry.IsRegistered(methodToCall.AsReplaceable());
             }
 
             public bool ShouldReplace(IFieldReference fieldReference)
             {
-                var matches = specdFieldAccessors.FindAll(
-                    f => new ReplaceableFieldAccessorInfoComparer().Equals(f, fieldReference.ResolvedField.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor)));
-
-                return matches.Count > 0;
+                return registry.IsRegistered(fieldReference.AsReplaceable(ReplaceableReferenceTypes.FieldAccessor));
             }
 
             public bool ShouldReplaceAssignment(IFieldReference field)
             {
-                var matches = specdFieldAssignments.FindAll(
-                    f => new ReplaceableFieldAccessorInfoComparer().Equals(f, field.ResolvedField.AsReplaceable(ReplaceableReferenceTypes.FieldAssignment)));
-
-                return matches.Count > 0;                
+                return registry.IsRegistered(field.AsReplaceable(ReplaceableReferenceTypes.FieldAssignment));
             }
         }
     }
