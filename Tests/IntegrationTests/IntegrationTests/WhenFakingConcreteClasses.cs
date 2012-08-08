@@ -31,10 +31,10 @@ namespace IntegrationTests.IntegrationTests
 
     //        Replace.CallsTo((SealedClass s) => s.StringReturnOneParameter(0)).With(
     //            (int i) =>
-    //                {
-    //                    interception = string.Format("Method was called with {0}.", i);
-    //                    return "Fake return value.";
-    //                });
+    //            {
+    //                interception = string.Format("Method was called with {0}.", i);
+    //                return "Fake return value.";
+    //            });
 
     //        var code = new CodeUnderTest();
     //        var result = code.CallsSealedMethodWithParameter(42);

@@ -95,6 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreLibraryTests\WhenComparingReplaceables.cs" />
     <Compile Include="CoreLibraryTests\WhenConvertingToReplaceable.cs" />
     <Compile Include="IntegrationTests\WhenFakingConstructors.cs" />
     <Compile Include="IntegrationTests\WhenFakingInterfaces.cs" />
