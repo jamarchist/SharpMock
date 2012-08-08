@@ -65,7 +65,20 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         public void AssignParameterTypeValue(int index, ITypeDefinition type)
         {
-            log.WriteTrace("  Adding: parameterTypes[{0}] = typeof({1});", index, (type as INamedEntity).Name.Value);
+            var typeName = "<unknown>";
+            var namedType = type as INamedEntity;
+            if (namedType == null)
+            {
+                var vector = type as IArrayTypeReference;
+                if (vector != null)
+                {
+                    namedType = vector.ElementType as INamedEntity;
+                }
+            }
+
+            if (namedType != null) typeName = namedType.Name.Value;
+
+            log.WriteTrace("  Adding: parameterTypes[{0}] = typeof({1});", index, typeName);
             add(
                 builder.Locals.Array<Type>("parameterTypes")[index].Assign(builder.Operators.TypeOf(type))
                 );

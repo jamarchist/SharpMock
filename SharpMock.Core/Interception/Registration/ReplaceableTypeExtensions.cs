@@ -106,6 +106,11 @@ namespace SharpMock.Core.Interception.Registration
                 replaceable.Namespace = namespaceType.Namespace();
                 replaceable.Name = namespaceType.Name.Value;
 
+                if (typeReference.IsArray())
+                {
+                    replaceable.Name = String.Format("{0}[]", namespaceType.Name.Value);
+                }
+
                 var assembly = new ReplaceableAssemblyInfo();
                 assembly.Name = namespaceType.ContainingUnitNamespace.Unit.Name.Value;
                 assembly.AssemblyPath = namespaceType.AssemblyPath();
@@ -172,6 +177,11 @@ namespace SharpMock.Core.Interception.Registration
             }
 
             return namespaceType;
+        }
+
+        internal static bool IsArray(this ITypeReference typeReference)
+        {
+            return typeReference as IArrayTypeReference != null;
         }
     } 
 }

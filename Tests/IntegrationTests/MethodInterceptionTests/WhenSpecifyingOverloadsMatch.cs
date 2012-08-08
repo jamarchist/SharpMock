@@ -14,21 +14,21 @@ namespace IntegrationTests.MethodInterceptionTests
     [TestFixture]
     public class WhenSpecifyingOverloadsMatch : SharpMockTests
     {
-        [Test]
-        public void MethodWithMatchingOverloadIsIntercepted()
-        {
-            var dummy = new MethodReplacement();
-            Action<string> replacement = s => dummy.Call("Intercepted.");
+        //[Test]
+        //public void MethodWithMatchingOverloadIsIntercepted()
+        //{
+        //    var dummy = new MethodReplacement();
+        //    Action<string> replacement = s => dummy.Call("Intercepted.");
 
-            InterceptorRegistry.AddInterceptor(
-                new CompoundInterceptor(new AllOverloadsMatch(VoidMethod.Of(Console.WriteLine)),
-                    new InvokeCallSafe(() => replacement)
-                ));
+        //    InterceptorRegistry.AddInterceptor(
+        //        new CompoundInterceptor(new AllOverloadsMatch(VoidMethod.Of(Console.WriteLine)),
+        //            new InvokeCallSafe(() => replacement)
+        //        ));
 
-            var mocked = new CodeUnderTest();
-            mocked.CallsConsoleWriteLineFormatStingOverload();
+        //    var mocked = new CodeUnderTest();
+        //    mocked.CallsConsoleWriteLineFormatStingOverload();
 
-            Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);            
-        }
+        //    Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);            
+        //}
     }
 }

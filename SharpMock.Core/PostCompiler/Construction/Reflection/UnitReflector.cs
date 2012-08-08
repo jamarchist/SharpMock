@@ -36,6 +36,13 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
                 return cache[typeName];
             }
 
+            if (typeName.EndsWith("[]"))
+            {
+                var array = CreateArrayType(typeName.Substring(0, typeName.Length - 2));
+                cache.Add(typeName, array);
+                return array;
+            }
+
             foreach (var unit in host.LoadedUnits)
             {
                 var foundType = UnitHelper.FindType(nameTable, unit, typeName, numberOfGenericParameters);

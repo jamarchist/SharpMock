@@ -21,6 +21,16 @@ namespace ScenarioDependencies
 			throw new MethodNotInterceptedException("StaticClass.VoidReturnNoParameters");
 		}
 
+        public static void VoidReturnNoParameters(string ignoredOverloadParameter)
+        {
+            throw new MethodNotInterceptedException("StaticClass.VoidReturnNoParameters(string)");
+        }
+
+        public static void VoidReturnNoParameters(params object[] ignoredOverloadParameterArray)
+        {
+            throw new MethodNotInterceptedException("StaticClass.VoidReturnNoParameters(params object[])");
+        }
+
         public static string StringReturnNoParameters()
         {
             return "|| Original method return value. ||";

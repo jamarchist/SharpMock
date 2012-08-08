@@ -75,15 +75,10 @@ namespace SharpMock.Core.PostCompiler.Replacement
 
         private class SpecifiedCodeMatcher : IReplacementMatcher
         {
-            private readonly List<ReplaceableMethodInfo> specdReplacements;
-            private readonly List<ReplaceableFieldInfo> specdFieldAccessors;
-            private readonly List<ReplaceableFieldInfo> specdFieldAssignments; 
-            private readonly IUnitReflector reflector;
             private readonly ReplacementRegistry registry;
 
             public SpecifiedCodeMatcher(string assemblyLocation, IUnitReflector reflector, ReplacementRegistry registry)
             {
-                this.reflector = reflector;
                 this.registry = registry;
                 var serializer = new ReplaceableCodeInfoSerializer(assemblyLocation);
                 var specifiedCode = serializer.DeserializeAllSpecifications();
@@ -93,10 +88,6 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 var specifiedMethods = specifiedCode.Methods;
                 var specifiedFieldAccessors = specifiedCode.FieldAccessors;
                 var specifiedFieldAssignments = specifiedCode.FieldAssignments;
-
-                specdReplacements = new List<ReplaceableMethodInfo>();
-                specdFieldAccessors = new List<ReplaceableFieldInfo>();
-                specdFieldAssignments = new List<ReplaceableFieldInfo>();
 
                 foreach (var method in specifiedMethods)
                 {
