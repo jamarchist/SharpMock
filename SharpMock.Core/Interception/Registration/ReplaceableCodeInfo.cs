@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SharpMock.Core.Utility;
 
 namespace SharpMock.Core.Interception.Registration
 {
@@ -26,13 +27,16 @@ namespace SharpMock.Core.Interception.Registration
             var fieldAssignmentList = new List<ReplaceableFieldInfo>();
 
             methodList.AddRange(Methods);
-            methodList.AddRange(other.Methods);
+            var otherMethodList = other.Methods.Where(m => !methodList.Contains(m));
+            methodList.AddRange(otherMethodList);
 
             fieldAccessorList.AddRange(FieldAccessors);
-            fieldAccessorList.AddRange(other.FieldAccessors);
+            var otherFieldAccessorList = other.FieldAccessors.Where(f => !fieldAccessorList.Contains(f));
+            fieldAccessorList.AddRange(otherFieldAccessorList);
 
             fieldAssignmentList.AddRange(FieldAssignments);
-            fieldAssignmentList.AddRange(other.FieldAssignments);
+            var otherFieldAssignmentList = other.FieldAssignments.Where(f => !fieldAssignmentList.Contains(f));
+            fieldAssignmentList.AddRange(otherFieldAssignmentList);
 
             mergeResult.Methods = methodList;
             mergeResult.FieldAccessors = fieldAccessorList;
