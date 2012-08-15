@@ -51,8 +51,8 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 );
 
             var parameterTypes = staticAction.Parameters.Select(p => p.Type);
-            var parameterCounter = 0;
 
+            //var parameterCounter = 0;
             //Context.Log.WriteTrace("  Adding: VoidAction<{0}> local_0 = ({1}) => {{",
             //                       parameterTypes.Select(p => (p as INamedTypeReference).Name.Value).CommaDelimitedList(),
             //                       parameterTypes.Select(p => String.Format("alteredp{0}", parameterCounter++)).CommaDelimitedList());

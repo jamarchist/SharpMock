@@ -20,123 +20,123 @@ namespace IntegrationTests.IntegrationTests
             Assert.Pass();
         }
 
-        //[Test]
-        //public void ReplacementMethodIsInvoked()
-        //{
-        //    var wasCalled = false;
+        [Test]
+        public void ReplacementMethodIsInvoked()
+        {
+            var wasCalled = false;
 
-        //    Replace.CallsTo(() => StaticClass.VoidReturnNoParameters()).With(() => wasCalled = true);
+            Replace.CallsTo(() => StaticClass.VoidReturnNoParameters()).With(() => wasCalled = true);
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsVoidReturnNoParameters();
+            var code = new CodeUnderTest();
+            code.CallsVoidReturnNoParameters();
 
-        //    Assert.IsTrue(wasCalled);
-        //}
+            Assert.IsTrue(wasCalled);
+        }
 
-        //[Test]
-        //public void ReplacementMethodWithReturnValueIsInvoked()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => "Interception Result");
+        [Test]
+        public void ReplacementMethodWithReturnValueIsInvoked()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => "Interception Result");
 
-        //    var code = new CodeUnderTest();
-        //    var result = code.CallsStringReturnNoParameters();
+            var code = new CodeUnderTest();
+            var result = code.CallsStringReturnNoParameters();
 
-        //    Assert.AreEqual("Interception Result", result);
-        //}
+            Assert.AreEqual("Interception Result", result);
+        }
 
-        //[Test, ExpectedException(typeof(AssertionFailedException))]
-        //public void AssertionExceptionIsThrownIfAssertionFails()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
-        //        .Asserting((int x) => x == 77)
-        //        .With((int x) => x.ToString());
+        [Test, ExpectedException(typeof(AssertionFailedException))]
+        public void AssertionExceptionIsThrownIfAssertionFails()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .Asserting((int x) => x == 77)
+                .With((int x) => x.ToString());
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsStringReturnOneParameter();
-        //}
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
 
-        //[Test]
-        //public void AssertionExceptionIsNotThrownIfAssertionPasses()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
-        //        .With((int x) => x.ToString())
-        //        .Asserting((int x) => x == 999);
+        [Test]
+        public void AssertionExceptionIsNotThrownIfAssertionPasses()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .With((int x) => x.ToString())
+                .Asserting((int x) => x == 999);
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsStringReturnOneParameter();
-        //}
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
 
-        //[Test, ExpectedException(
-        //    ExpectedException = typeof(InvalidOperationException),
-        //    ExpectedMessage = "I threw this from a replacement.")]
-        //public void CustomExceptionCanBeThrownFromReplacement()
-        //{
-        //    Replace.CallsTo(() => StaticClass.VoidReturnNoParameters())
-        //        .With(() => { throw new InvalidOperationException("I threw this from a replacement."); });
+        [Test, ExpectedException(
+            ExpectedException = typeof(InvalidOperationException),
+            ExpectedMessage = "I threw this from a replacement.")]
+        public void CustomExceptionCanBeThrownFromReplacement()
+        {
+            Replace.CallsTo(() => StaticClass.VoidReturnNoParameters())
+                .With(() => { throw new InvalidOperationException("I threw this from a replacement."); });
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsVoidReturnNoParameters();
-        //}
+            var code = new CodeUnderTest();
+            code.CallsVoidReturnNoParameters();
+        }
 
-        //[Test, ExpectedException(typeof(AssertionFailedException))]
-        //public void MultipleAssertionsAreAllowed()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
-        //        .Asserting((int x) => x > 10)
-        //        .Asserting((int x) => x > 1000)
-        //        .With((int x) => "dummy return value");
+        [Test, ExpectedException(typeof(AssertionFailedException))]
+        public void MultipleAssertionsAreAllowed()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .Asserting((int x) => x > 10)
+                .Asserting((int x) => x > 1000)
+                .With((int x) => "dummy return value");
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsStringReturnOneParameter();
-        //}
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
 
-        //[Test, ExpectedException(typeof(AssertionFailedException))]
-        //public void MultipleAssertionsAreAllowedInVaryingOrder()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
-        //        .Asserting((int x) => x > 1000)
-        //        .Asserting((int x) => x > 10)
-        //        .With((int x) => "dummy return value");
+        [Test, ExpectedException(typeof(AssertionFailedException))]
+        public void MultipleAssertionsAreAllowedInVaryingOrder()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(1))
+                .Asserting((int x) => x > 1000)
+                .Asserting((int x) => x > 10)
+                .With((int x) => "dummy return value");
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsStringReturnOneParameter();
-        //}
+            var code = new CodeUnderTest();
+            code.CallsStringReturnOneParameter();
+        }
 
-        //[Test]
-        //public void CallsThatArentSpecifiedArentIntercepted()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => "Intercepted.");
+        [Test]
+        public void CallsThatArentSpecifiedArentIntercepted()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnNoParameters()).With(() => "Intercepted.");
 
-        //    var code = new CodeUnderTest();
-        //    var result = code.CallsTwoMethods();
+            var code = new CodeUnderTest();
+            var result = code.CallsTwoMethods();
 
-        //    Assert.AreEqual("Intercepted.", result.FirstValue);
-        //    Assert.AreEqual("|| Original method return value when passed '9876'. ||", result.SecondValue);
-        //}
+            Assert.AreEqual("Intercepted.", result.FirstValue);
+            Assert.AreEqual("|| Original method return value when passed '9876'. ||", result.SecondValue);
+        }
 
-        //[Test]
-        //public void MultipleOverloadsAreInterceptedWhenSpecified()
-        //{
-        //    Replace.CallsTo(() => StaticClass.Overloaded()).AndAllOverloads().With(() => { });
+        [Test]
+        public void MultipleOverloadsAreInterceptedWhenSpecified()
+        {
+            Replace.CallsTo(() => StaticClass.Overloaded()).AndAllOverloads().With(() => { });
 
-        //    var code = new CodeUnderTest();
-        //    code.CallsTwoOverloads();
-        //}
+            var code = new CodeUnderTest();
+            code.CallsTwoOverloads();
+        }
 
-        //[Test]
-        //public void CanIncludeInvocationWhenSpecified()
-        //{
-        //    Replace.CallsTo(() => StaticClass.StringReturnOneParameter(0))
-        //        .With((IInvocation i) =>
-        //                  {
-        //                      i.Return = i.OriginalCallInfo.Name;
-        //                  })
-        //        .AsInterceptor();
+        [Test]
+        public void CanIncludeInvocationWhenSpecified()
+        {
+            Replace.CallsTo(() => StaticClass.StringReturnOneParameter(0))
+                .With((IInvocation i) =>
+                          {
+                              i.Return = i.OriginalCallInfo.Name;
+                          })
+                .AsInterceptor();
 
-        //    var code = new CodeUnderTest();
-        //    var result = code.CallsStringReturnOneParameter();
+            var code = new CodeUnderTest();
+            var result = code.CallsStringReturnOneParameter();
 
-        //    Assert.AreEqual("StringReturnOneParameter", result);
-        //}
+            Assert.AreEqual("StringReturnOneParameter", result);
+        }
     }
 }

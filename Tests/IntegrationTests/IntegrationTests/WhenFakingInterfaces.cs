@@ -6,20 +6,20 @@ using TestUtilities;
 
 namespace IntegrationTests.IntegrationTests
 {
-    //[TestFixture]
-    //public class WhenFakingInterfaces : SharpMockTests
-    //{
-    //    [Test]
-    //    public void MethodCallIsIntercepted()
-    //    {
-    //        var wasCalled = false;
+    [TestFixture]
+    public class WhenFakingInterfaces : SharpMockTests
+    {
+        [Test]
+        public void MethodCallIsIntercepted()
+        {
+            var wasCalled = false;
 
-    //        Replace.CallsTo<ISomeInterface>(i => i.DoSomething()).With(() => wasCalled = true);
+            Replace.CallsTo<ISomeInterface>(i => i.DoSomething()).With(() => wasCalled = true);
 
-    //        var code = new CodeUnderTest();
-    //        code.CallsSomeInterface(null);
+            var code = new CodeUnderTest();
+            code.CallsSomeInterface(null);
 
-    //        Assert.IsTrue(wasCalled);
-    //    }
-    //}
+            Assert.IsTrue(wasCalled);
+        }
+    }
 }

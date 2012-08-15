@@ -8,20 +8,20 @@ using SharpMock.Core.Interception.Registration;
 
 namespace IntegrationTests.MethodInterceptionTests
 {
-    //public class TestSpecification : IInterceptionSpecification
-    //{
-    //    public void SpecifyInterceptors(ISpecificationRegistry registry)
-    //    {
-    //        VoidAction<IInvocation> interceptor = i =>
-    //        {
-    //            Console.WriteLine("BEFORE CALL.");
-    //            i.Arguments[0] = 888;
-    //        };
+    public class TestSpecification : IInterceptionSpecification
+    {
+        public void SpecifyInterceptors(ISpecificationRegistry registry)
+        {
+            VoidAction<IInvocation> interceptor = i =>
+            {
+                Console.WriteLine("BEFORE CALL.");
+                i.Arguments[0] = 888;
+            };
 
-    //        var compoundInterceptor =
-    //            new CompoundInterceptor(new AlwaysMatches(), new BeforeCall(() => interceptor));
-            
-    //        registry.AddInterceptor(compoundInterceptor);
-    //    }
-    //}
+            var compoundInterceptor =
+                new CompoundInterceptor(new AlwaysMatches(), new BeforeCall(() => interceptor));
+
+            registry.AddInterceptor(compoundInterceptor);
+        }
+    }
 }

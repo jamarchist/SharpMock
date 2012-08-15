@@ -13,45 +13,45 @@ namespace IntegrationTests.MethodInterceptionTests
     [TestFixture]
     public class WhenSpecifyingExactArgumentShouldMatch : SharpMockTests
     {
-        //[Test]
-        //public void MethodCallWithMatchingArgumentsIsIntercepted()
-        //{
-        //    var dummy = new MethodReplacement();
-        //    var arg = "This should not appear.";
-        //    Action<string> replacement = s => dummy.Call("Intercepted.");
-        //    var console = typeof(Console);
-        //    var writeLine = console.GetMethod("WriteLine", new[] {typeof (string)});
+        [Test]
+        public void MethodCallWithMatchingArgumentsIsIntercepted()
+        {
+            var dummy = new MethodReplacement();
+            var arg = "This should not appear.";
+            Action<string> replacement = s => dummy.Call("Intercepted.");
+            var console = typeof(Console);
+            var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
 
-        //    InterceptorRegistry.AddInterceptor(
-        //        new CompoundInterceptor(
-        //            new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly(arg)),
-        //            new InsteadOfCall(() => replacement)
-        //            ));
+            InterceptorRegistry.AddInterceptor(
+                new CompoundInterceptor(
+                    new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly(arg)),
+                    new InsteadOfCall(() => replacement)
+                    ));
 
-        //    var mocked = new CodeUnderTest();
-        //    mocked.CallsConsoleWriteLine();
+            var mocked = new CodeUnderTest();
+            mocked.CallsConsoleWriteLine();
 
-        //    Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);             
-        //}
+            Assert.AreEqual("Intercepted.", dummy.ReplacementArg1);
+        }
 
-        //[Test]
-        //public void MethodCallWithNonMatchingArgumentsIsNotIntercepted()
-        //{
-        //    var dummy = new MethodReplacement();
-        //    Action<string> replacement = s => dummy.Call("Intercepted.");
-        //    var console = typeof(Console);
-        //    var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
+        [Test]
+        public void MethodCallWithNonMatchingArgumentsIsNotIntercepted()
+        {
+            var dummy = new MethodReplacement();
+            Action<string> replacement = s => dummy.Call("Intercepted.");
+            var console = typeof(Console);
+            var writeLine = console.GetMethod("WriteLine", new[] { typeof(string) });
 
-        //    InterceptorRegistry.AddInterceptor(
-        //        new CompoundInterceptor(
-        //            new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly("Something that doesn't match.")),
-        //            new InsteadOfCall(() => replacement)
-        //            ));
+            InterceptorRegistry.AddInterceptor(
+                new CompoundInterceptor(
+                    new ArgumentsMatch(new EquivalentCallsMatch(writeLine), new MatchesExactly("Something that doesn't match.")),
+                    new InsteadOfCall(() => replacement)
+                    ));
 
-        //    var mocked = new CodeUnderTest();
-        //    mocked.CallsConsoleWriteLineNotIntercepted();
+            var mocked = new CodeUnderTest();
+            mocked.CallsConsoleWriteLineNotIntercepted();
 
-        //    Assert.AreNotEqual("Intercepted.", dummy.ReplacementArg1);
-        //}        
+            Assert.AreNotEqual("Intercepted.", dummy.ReplacementArg1);
+        }        
     }
 }
