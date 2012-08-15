@@ -7,20 +7,20 @@ using TestUtilities;
 
 namespace IntegrationTests.IntegrationTests
 {
-    //[TestFixture]
-    //public class WhenFakingConstructors : SharpMockTests
-    //{
-    //    [Test]
-    //    public void ReplacementIsUsed()
-    //    {
-    //        var preConstructedClass = new ClassWithConstructor(String.Empty);
-    //        Replace.CallsTo(() => new ClassWithConstructor())
-    //            .With(() => preConstructedClass);
+    [TestFixture]
+    public class WhenFakingConstructors : SharpMockTests
+    {
+        [Test]
+        public void ReplacementIsUsed()
+        {
+            var preConstructedClass = new ClassWithConstructor(String.Empty);
+            Replace.CallsTo(() => new ClassWithConstructor())
+                .With(() => preConstructedClass);
 
-    //        var code = new CodeUnderTest();
-    //        var result = code.CallsClassWithConstructor();
+            var code = new CodeUnderTest();
+            var result = code.CallsClassWithConstructor();
 
-    //        Assert.AreSame(preConstructedClass, result);
-    //    }
-    //}
+            Assert.AreSame(preConstructedClass, result);
+        }
+    }
 }
