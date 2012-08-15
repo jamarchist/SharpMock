@@ -26,21 +26,21 @@ namespace IntegrationTests.IntegrationTests
             Assert.AreEqual(3.14M, result.ThirdValue);
         }
 
-        //[Test]
-        //public void CreateDelegateMethodIsIntercepted()
-        //{
-        //    var wasCalled = false;
-        //    VoidAction setWasCalledEqualToTrue = () => { wasCalled = true; };
-        //    Delegate substitute = setWasCalledEqualToTrue;
+        [Test]
+        public void CreateDelegateMethodIsIntercepted()
+        {
+            var wasCalled = false;
+            VoidAction setWasCalledEqualToTrue = () => { wasCalled = true; };
+            Delegate substitute = setWasCalledEqualToTrue;
 
-        //    Replace.CallsTo(() => Delegate.CreateDelegate(null, null)).With((Type t, MethodInfo m) => substitute);
+            Replace.CallsTo(() => Delegate.CreateDelegate(null, null)).With((Type t, MethodInfo m) => substitute);
 
-        //    var code = new CodeWithMscorlibDependencies();
-        //    var createdDelegate = code.CreatesDelegate();
-        //    createdDelegate.DynamicInvoke(null);
+            var code = new CodeWithMscorlibDependencies();
+            var createdDelegate = code.CreatesDelegate();
+            createdDelegate.DynamicInvoke(null);
 
-        //    Assert.IsTrue(wasCalled);
-        //}
+            Assert.IsTrue(wasCalled);
+        }
 
         [Test]
         public void PropertyGetterIsIntercepted()

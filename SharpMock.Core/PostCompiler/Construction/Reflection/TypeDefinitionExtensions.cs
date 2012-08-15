@@ -106,16 +106,21 @@ namespace SharpMock.Core.PostCompiler.Construction.Reflection
 
         public IEnumerable<IMethodDefinition> GetAllOverloadsOf(string name)
         {
+            return GetAllOverloadsOf(name, TypeMemberVisibility.Public);
+        }
+
+        public IEnumerable<IMethodDefinition> GetAllOverloadsOf(string name, TypeMemberVisibility visibility)
+        {
             var methods = new List<IMethodDefinition>();
             foreach (var method in type.Methods)
             {
-                if (method.Name.Value == name)
+                if (method.Name.Value == name && method.Visibility == visibility)
                 {
-                    methods.Add(method);   
+                    methods.Add(method);
                 }
             }
 
-            return methods;
+            return methods;            
         }
 
         public IMethodDefinition GetPropertySetter<TPropertyType>(string propertyName)
