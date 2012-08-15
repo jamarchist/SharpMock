@@ -58,7 +58,7 @@ namespace SharpMock.Core.PostCompiler.Replacement
                 .WithBody(c =>
                 {
                     c.AddLine(x => x.Declare.Variable("originalConstructorResult", Context.ReturnType)
-                      .As(x.Create.New(Context.ReturnType, parameterTypes.ToArray())));
+                      .As(x.Create.New(Context.ReturnType, parameterTypes.ToArray()).WithArguments(x.Params.ToList().ToArray())));
                     c.AddLine(x => x.Return.Variable(x.Locals["originalConstructorResult"]));
                 });
             Context.Block.Statements.Add(

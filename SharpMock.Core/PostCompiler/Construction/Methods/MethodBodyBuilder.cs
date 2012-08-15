@@ -32,7 +32,7 @@ namespace SharpMock.Core.PostCompiler.Construction.Methods
             reflector = new UnitReflector(host);
             locals = new LocalVariableBindings(reflector);
             define = new DefinitionBuilder(reflector, locals, host.NameTable);
-            create = new InstanceCreator(reflector);
+            create = new InstanceCreator(reflector, locals);
             declare = new DeclarationBuilder(define);
             call = new MethodCallBuilder(host, reflector, locals);
             changeType = new Converter(reflector);

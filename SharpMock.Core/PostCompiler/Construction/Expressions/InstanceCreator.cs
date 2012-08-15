@@ -2,35 +2,30 @@
 using Microsoft.Cci;
 using Microsoft.Cci.MutableCodeModel;
 using SharpMock.Core.PostCompiler.Construction.Reflection;
+using SharpMock.Core.PostCompiler.Construction.Variables;
 
 namespace SharpMock.Core.PostCompiler.Construction.Expressions
 {
     public class InstanceCreator : IInstanceCreator
     {
         private readonly IUnitReflector reflector;
+        private readonly ILocalVariableBindings locals;
 
-        public InstanceCreator(IUnitReflector reflector)
+        public InstanceCreator(IUnitReflector reflector, ILocalVariableBindings locals)
         {
             this.reflector = reflector;
+            this.locals = locals;
         }
 
-        public CreateObjectInstance New(ITypeReference type, params ITypeReference[] constructorParameters)
+        public IInstanceCreatorOptions New(ITypeReference type, params ITypeReference[] constructorParameters)
         {
-            var createObjectInstance = new CreateObjectInstance();
-            createObjectInstance.Type = type.ResolvedType;
-            createObjectInstance.MethodToCall = reflector.From(type).GetConstructor(constructorParameters);
-
-            return createObjectInstance;
+            return new InstanceCreatorOptions(reflector, locals, type, constructorParameters);
         }
 
         public CreateObjectInstance New<TReflectionType>()
         {
-            var createObjectInstance = new CreateObjectInstance();
             var objectType = reflector.Get<TReflectionType>();
-            createObjectInstance.Type = objectType.ResolvedType;
-            createObjectInstance.MethodToCall = reflector.From<TReflectionType>().GetConstructor(Type.EmptyTypes);
-
-            return createObjectInstance;
+            return new InstanceCreatorOptions(reflector, locals, objectType).WithNoArguments();
         }
 
         public DefaultValue Default<TReflectionType>()

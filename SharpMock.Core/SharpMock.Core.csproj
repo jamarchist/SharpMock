@@ -180,6 +180,8 @@
     <Compile Include="PostCompiler\Construction\Classes\IClassBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Classes\IClassModifierOptions.cs" />
     <Compile Include="PostCompiler\Construction\Enums\IEnumAccessibilityOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Expressions\IInstanceCreatorOptions.cs" />
+    <Compile Include="PostCompiler\Construction\Expressions\InstanceCreatorOptions.cs" />
     <Compile Include="PostCompiler\Construction\Fields\FieldAccessibilityOptions.cs" />
     <Compile Include="PostCompiler\Construction\Fields\FieldBuilder.cs" />
     <Compile Include="PostCompiler\Construction\Fields\FieldConfiguration.cs" />
